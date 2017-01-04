@@ -11,6 +11,33 @@
     - offset - сдвиг в выдаче
     - category -  название категории относительно которой нужно искать
 
+Формат данных: 
+```
+{
+  "hits": [
+    {
+      "id": 12,
+      "title": "Question title",
+      "snippet": "Question snippet",
+      "image": "/path/to/image",
+      "score": 2.34,
+      "category": {
+        "id": 32,
+        "name": "category_name",
+      }
+    }
+  ],
+  "total": 299,
+  "category_assumptions": [
+    {
+      "id": 34,
+      "name": "Category name",
+      "score": 45.6
+    }
+  ]
+}
+```
+
 
 ### Вопросы
 
@@ -43,7 +70,7 @@
 ```
 {
     "ok": 1,
-    "data": {...}
+    "response": {...}
 }
 ```
 
