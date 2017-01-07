@@ -1,0 +1,5 @@
+env/
+qua.sublime*
+__pycache__/
+*.py[cod]
+*$py.class
