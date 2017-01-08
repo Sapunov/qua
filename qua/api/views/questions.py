@@ -21,6 +21,11 @@ class QuestionsBase(views.APIView):
 class QuestionsListView(QuestionsBase):
     def get(self, request, format=None):
         questions = Questions.objects.all()
+        params = request.query_params
+
+        if 'category' in params:
+            questions = questions.filter(categories=params['category'])
+
         serializer = serializers.QuestionsListSerializer(questions, many=True)
 
         return Response(serializer.data)

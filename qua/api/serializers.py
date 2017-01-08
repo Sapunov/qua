@@ -225,5 +225,24 @@ class QuestionsDetailSerializer(serializers.ModelSerializer):
         return instance
 
 
+class CategoryAssumptionsSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField()
+    score = serializers.FloatField()
+
+
+class SearchHitSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    title = serializers.CharField()
+    categories = CategoriesDetailSerializer(many=True, fields=('id', 'name'))
+    snippet = serializers.CharField()
+    score = serializers.FloatField()
+    image = serializers.CharField()
+    url = serializers.URLField()
+
+
 class SearchSerializer(serializers.Serializer):
-    pass
+    query = serializers.CharField()
+    total = serializers.IntegerField()
+    hits = SearchHitSerializer(many=True)
+    category_assumptions = CategoryAssumptionsSerializer(many=True)

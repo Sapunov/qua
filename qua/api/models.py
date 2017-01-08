@@ -64,14 +64,25 @@ class Questions(models.Model):
     updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
 
     def __str__(self):
-        return self.title
+        return '<{0}:{1:.30}>'.format(self.id, self.title)
 
     def archive(self):
         self.deleted = True
         self.save()
 
-    def search(self, query, category=None):
-        pass
+
+class SearchHistory(models.Model):
+    query = models.TextField()
+    user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    results = models.IntegerField()
+    searched_at = models.DateTimeField(auto_now_add=True)
+    clicked_at = models.DateTimeField(blank=True, null=True)
+    question = models.ForeignKey(
+        Questions, on_delete=models.PROTECT, related_name='+', blank=True, null=True)
+
+    def __str__(self):
+        return '({4}) <{0}:{1:.30}> -> {2} ({3})'.format(
+            self.id, self.query, self.question, self.user, self.results)
 
 
 class Answers(models.Model):
@@ -115,24 +126,3 @@ class Answers(models.Model):
 @receiver(post_save, sender=Answers)
 def delete_cached_html(sender, **kwargs):
     cache.delete(kwargs['instance'].name)
-
-
-class SearchHit:
-    id = None
-    title = None
-    snippet = None
-    image = None
-    score = None
-    category = None
-
-
-class CategoryAssumptions:
-    assumptions = None
-
-
-class SearchResults:
-    def __init__(self, query, hits, category_assumptions=None):
-        self.query = query
-        self.hits = hits
-        self.total = len(hits)
-        self.category_assumptions = category_assumptions
