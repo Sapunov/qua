@@ -1,17 +1,17 @@
 import logging
 
-from rest_framework import views
-from rest_framework.response import Response
 from rest_framework import exceptions
+from rest_framework.views import APIView
 
 from qua.api.search import search
+from qua.api.response import QuaApiResponse
 from qua.api.serializers import SearchSerializer
 
 
 log = logging.getLogger('qua.' + __name__)
 
 
-class SearchView(views.APIView):
+class SearchView(APIView):
     def get(self, request, format=None):
         params = request.query_params
 
@@ -30,4 +30,4 @@ class SearchView(views.APIView):
             params['query'], user=request.user, category=category)
         serializer = SearchSerializer(results)
 
-        return Response(serializer.data)
+        return QuaApiResponse(serializer.data)
