@@ -21,6 +21,8 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
 
+STATIC_ROOT = os.path.join(DATA, 'static')
+
 INSTALLED_APPS = [
     'qua.api',
     'qua.wi',
@@ -30,18 +32,28 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'rest_framework'
+    'rest_framework',
+    'corsheaders' # while development
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware', # while development
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+#    'django.middleware.clickjacking.XFrameOptionsMiddleware', # while development
     'django.contrib.messages.middleware.MessageMiddleware',
 ]
+
+# While development
+CORS_ORIGIN_WHITELIST = (
+    'localhost:4200'
+)
+
+# While development
+CORS_ALLOW_CREDENTIALS = True
 
 APPEND_SLASH = False
 
@@ -67,12 +79,24 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'qua.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(DATA, 'database.sqlite3'),
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(DATA, 'database.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE":   "django.db.backends.postgresql_psycopg2",
+            "NAME":     "qua",
+            "USER":     "qua_user",
+            "PASSWORD": "18pic81j67j4wDz",
+            "HOST":     "localhost",
+            "PORT":     "5432",
+        },
+    }
 
 AUTH_PASSWORD_VALIDATORS = [
     {

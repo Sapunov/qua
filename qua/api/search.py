@@ -1,7 +1,12 @@
+import logging
+
 from django.urls import reverse
 
 from qua.api.models import Questions, SearchHistory
 from qua import utils
+
+
+log = logging.getLogger('qua.' + __name__)
 
 
 class CategoryAssumptions:
@@ -18,6 +23,13 @@ class CategoryAssumptions:
         return len(self.assumptions)
 
 
+class UrlParams:
+    def __init__(self, shid, qid, token):
+        self.shid = shid
+        self.qid = qid
+        self.token = token
+
+
 class SearchHit:
     def __init__(self, id, title, categories, search_history_id,
         keywords=None, snippet=None, score=1.0, image=None
@@ -29,7 +41,7 @@ class SearchHit:
         self.keywords = keywords
         self.score = score
         self.image = image
-        self.url = self.make_tracker_url(search_history_id)
+        self.url_params = self.get_url_params(search_history_id)
 
     def __str__(self):
         return '<SearchHit:{0:.30}|{1}>'.format(self.title, self.score)
@@ -37,9 +49,8 @@ class SearchHit:
     def __repr__(self):
         return self.__str__()
 
-    def make_tracker_url(self, search_history_id):
-        return '{0}?track=search&shid={1}&qid={2}&token={3}'.format(
-            reverse('api-question', kwargs={'question_id': self.id}),
+    def get_url_params(self, search_history_id):
+        return UrlParams(
             search_history_id, self.id,
             utils.sign('{0}-{1}'.format(search_history_id, self.id))
         )
@@ -50,9 +61,13 @@ def make_assumptions(query):
 
 
 class SearchResults:
-    def __init__(self, query, queryset, search_history_id):
+    def __init__(self, query, queryset=None, search_history_id=None):
         self.query = query
-        self.total = queryset.count()
+        self.total = 0
+
+        if queryset is not None:
+            self.total = queryset.count()
+
         self.hits = []
         self.category_assumptions = None
 
@@ -72,7 +87,12 @@ class SearchResults:
 
 
 def search(query, user, category=None):
-    results = Questions.objects.filter(title__contains=query)
+    log.debug('Search for: %s', query)
+
+    if query == '':
+        return SearchResults(query)
+
+    results = Questions.objects.filter(title__contains=query, deleted=False)
 
     if category is not None:
         results.filter(categories__id=category)

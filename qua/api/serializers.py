@@ -231,6 +231,12 @@ class CategoryAssumptionsSerializer(serializers.Serializer):
     score = serializers.FloatField()
 
 
+class UrlParamsSerializer(serializers.Serializer):
+    shid = serializers.IntegerField()
+    qid = serializers.IntegerField()
+    token = serializers.CharField()
+
+
 class SearchHitSerializer(serializers.Serializer):
     id = serializers.IntegerField()
     title = serializers.CharField()
@@ -240,7 +246,7 @@ class SearchHitSerializer(serializers.Serializer):
     keywords = serializers.SlugRelatedField(
         read_only=True, many=True, slug_field='text')
     image = serializers.CharField()
-    url = serializers.URLField()
+    url_params = UrlParamsSerializer()
 
 
 class SearchSerializer(serializers.Serializer):
