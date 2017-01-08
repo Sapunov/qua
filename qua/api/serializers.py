@@ -237,6 +237,8 @@ class SearchHitSerializer(serializers.Serializer):
     categories = CategoriesDetailSerializer(many=True, fields=('id', 'name'))
     snippet = serializers.CharField()
     score = serializers.FloatField()
+    keywords = serializers.SlugRelatedField(
+        read_only=True, many=True, slug_field='text')
     image = serializers.CharField()
     url = serializers.URLField()
 

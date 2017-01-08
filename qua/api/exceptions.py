@@ -1,8 +1,13 @@
 from rest_framework.views import exception_handler
+from rest_framework.exceptions import APIException
 
 import logging
 
 log = logging.getLogger('qua.' + __name__)
+
+
+class QuaException(APIException):
+    pass
 
 
 def custom_api_exception_handler(exc, context):
@@ -21,3 +26,7 @@ def custom_api_exception_handler(exc, context):
         }
 
     return response
+
+
+class ExitDecoratorError(QuaException):
+    pass

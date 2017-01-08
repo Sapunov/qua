@@ -20,12 +20,13 @@ class CategoryAssumptions:
 
 class SearchHit:
     def __init__(self, id, title, categories, search_history_id,
-        snippet=None, score=1.0, image=None
+        keywords=None, snippet=None, score=1.0, image=None
     ):
         self.id = id
         self.title = title
         self.categories = categories
         self.snippet = snippet or self.title
+        self.keywords = keywords
         self.score = score
         self.image = image
         self.url = self.make_tracker_url(search_history_id)
@@ -37,11 +38,11 @@ class SearchHit:
         return self.__str__()
 
     def make_tracker_url(self, search_history_id):
-        return '{0}?shid={1}&qid={2}&redirect={3}&token={4}'.format(
-            reverse('tracker-search'), search_history_id, self.id,
+        return '{0}?track=search&shid={1}&qid={2}&token={3}'.format(
             reverse('api-question', kwargs={'question_id': self.id}),
+            search_history_id, self.id,
             utils.sign('{0}-{1}'.format(search_history_id, self.id))
-            )
+        )
 
 
 def make_assumptions(query):
@@ -59,7 +60,7 @@ class SearchResults:
             for result in queryset:
                 self.hits.append(
                     SearchHit(result.id, result.title, result.categories,
-                        search_history_id))
+                        search_history_id, result.keywords))
         else:
             self.category_assumptions = make_assumptions(query)
 

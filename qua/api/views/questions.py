@@ -4,6 +4,7 @@ from django.http import Http404
 
 from qua.api.models import Questions
 from qua.api import serializers
+from qua.api.tracker import trackable
 
 import logging
 
@@ -40,6 +41,7 @@ class QuestionsListView(QuestionsBase):
 
 
 class QuestionsDetailView(QuestionsBase):
+    @trackable
     def get(self, request, question_id, format=None):
         question = self.get_object(question_id)
         serializer = serializers.QuestionsDetailSerializer(question)
