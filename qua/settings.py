@@ -25,7 +25,7 @@ STATIC_ROOT = os.path.join(DATA, 'static')
 
 INSTALLED_APPS = [
     'qua.api',
-    'qua.wi',
+    'qua.ui',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
