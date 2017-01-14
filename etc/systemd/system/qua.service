@@ -1,0 +1,13 @@
+[Unit]
+Description=qua
+After=network.target
+
+[Service]
+Type=notify
+User=uwsgi
+ExecStart=/usr/bin/uwsgi --ini /etc/qua/uwsgi.ini
+Restart=always
+KillSignal=SIGQUIT
+
+[Install]
+WantedBy=multi-user.target

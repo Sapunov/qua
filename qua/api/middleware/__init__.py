@@ -11,16 +11,6 @@ class LoggingMiddleware:
         request.timer = time.time()
         request.logger = self.logger
 
-        try:
-            body_string = request.body.decode('utf-8')
-
-            if body_string:
-                self.logger.info('Request body: %s', body_string)
-        except UnicodeDecodeError:
-            pass
-
-        return None
-
     def process_response(self, request, response):
         self.logger.info(
             '%s [%s] %s (%.3f)',
