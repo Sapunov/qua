@@ -1,0 +1,11 @@
+{
+  "/api": {
+    "target": {
+      "host": "qua.sapunovnik.ru",
+      "protocol": "http",
+      "port": 80
+    },
+    "secure": false,
+    "changeOrigin": true
+  }
+}

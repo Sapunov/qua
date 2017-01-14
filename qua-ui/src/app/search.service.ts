@@ -1,6 +1,6 @@
 import { Injectable }    from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
-import { environment } from '../environments/environment';
+import { URLS } from '../environments/const';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -25,7 +25,7 @@ export class SearchService {
     let param: URLSearchParams = new URLSearchParams;
     param.set('query', query);
     options.search = param;
-    return this.http.get(`${environment.urls.search}`, options)
+    return this.http.get(`${URLS.search}`, options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
