@@ -2,4 +2,4 @@
 
 Questions and answers service
 
-- API documentation [here](docs/api/index.md)
+- API documentation [here](docs/api/README.md)
