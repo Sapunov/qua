@@ -23,6 +23,8 @@ export class AuthComponent implements OnInit {
       });
   }
   ngOnInit() {
-    this.authService.checkAuth();
+    if (this.authService.checkAuth()) {
+      this.router.navigate(['/']);
+    }
   }
 }
