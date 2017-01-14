@@ -1,5 +1,10 @@
 import { IUser } from './question.interface';
 
+export interface ICat {
+  id: number;
+  name: string;
+}
+
 export interface ICategory {
   created_at: string;
   created_by: IUser;

@@ -1,13 +1,18 @@
+import { ICat } from './category.interface';
+
 export interface IHits {
   id: number;
   title: string;
   snippet: string;
   image: string;
   score: number;
-  category: {
-    id: number
-    name: string;
-  };
+  keywords: string[];
+  categories: ICat[];
+  url_params: {
+    qid: number;
+    shid: number;
+    token: string;
+  }
 }
 
 export interface ICategoryAssumptions {

@@ -1,7 +1,7 @@
 import 'rxjs/add/operator/toPromise';
 import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
-import { environment } from '../environments/environment';
+import { URLS } from '../environments/const';
 
 import { INewQuestion, IQuestion } from './question.interface';
 import { IResponse } from './response.interface';
@@ -20,7 +20,7 @@ export class QuestionService {
       headers: this.headers,
       withCredentials: true
     });
-    return this.http.put(`${environment.urls.question}/${id}`, JSON.stringify(data), options)
+    return this.http.put(`${URLS.question}/${id}`, JSON.stringify(data), options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
@@ -38,7 +38,7 @@ export class QuestionService {
       headers: this.headers,
       withCredentials: true
     });
-    return this.http.post(environment.urls.question, JSON.stringify(data), options)
+    return this.http.post(URLS.question, JSON.stringify(data), options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
@@ -63,7 +63,7 @@ export class QuestionService {
       queryParams.set(key, urlParams.queryParams[key]);
     });
     options.search = queryParams;
-    return this.http.get(`${environment.urls.question}/${urlParams.params.id}`, options)
+    return this.http.get(`${URLS.question}/${urlParams.params.id}`, options)
       .toPromise()
       .then((response: any) => {
           return response.json() as IResponse;
