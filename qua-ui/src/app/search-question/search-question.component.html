@@ -1,0 +1,64 @@
+<div class="app-block search-question" *ngIf="question">
+  <div class="search-question-control">
+    <button class="control-edit" (click)="edit()">
+      <i class="fa fa-pencil" aria-hidden="true"></i>
+    </button>
+  </div>
+  <header class="search-question-header">
+    <div class="header-title">
+      <img src="" alt="">
+      <h1>{{ question.title }}</h1>
+    </div>
+    <div *ngIf="question.keywords.length" class="header-keywords">
+      <span class="keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
+    </div>
+    <div class="header-info info">
+      <div class="info-text">
+        <i class="fa fa-user"></i>
+        <span>Задал:</span>
+        <span>{{ question.created_by.first_name }}</span>
+        <span>{{ question.created_by.last_name }}</span>
+      </div>
+      <div class="info-text">
+        <i class="fa fa-clock-o"></i>
+        <span>Дата:</span>
+        <span>{{ question.created_at | date:'short' }}</span>
+      </div>
+    </div>
+  </header>
+  <div class="search-question-answer">
+    <div class="answer answer-noanswer" *ngIf="!raw">
+      <span>Ответа на вопрос еще нету! Но ты можешь ответить сам:)</span>
+      <button class="button-blue" (click)="reply()">Ответить</button>
+    </div>
+    <div class="answer answer-text" *ngIf="raw" [innerHTML]="question.answer.html"></div>
+    <div class="answer answer-info info" *ngIf="raw">
+      <div>
+        <div class="info-text">
+          <i class="fa fa-user"></i>
+          <span>Ответил:</span>
+          <span>{{ question.answer.created_by.first_name }}</span>
+          <span>{{ question.answer.created_by.last_name }}</span>
+        </div>
+        <div class="info-text">
+          <i class="fa fa-user"></i>
+          <span>Изменил:</span>
+          <span>{{ question.updated_by.first_name }}</span>
+          <span>{{ question.updated_by.last_name }}</span>
+        </div>
+      </div>
+      <div>
+        <div class="info-text">
+          <i class="fa fa-clock-o"></i>
+          <span>Дата:</span>
+          <span>{{ question.answer.created_at | date:'short' }}</span>
+        </div>
+        <div class="info-text">
+          <i class="fa fa-clock-o"></i>
+          <span>Дата изменения:</span>
+          <span>{{ question.updated_at | date:'short' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

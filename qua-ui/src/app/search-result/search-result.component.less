@@ -1,0 +1,85 @@
+@import '../../styles/variables.less';
+
+@indent-text: 5px;
+
+.search-result {
+  &-hit {
+    padding: 0;
+    flex-flow: column wrap;
+  }
+  &-empty {
+    flex-flow: row wrap;
+  }
+}
+
+.hit-header {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  flex-flow: column wrap;
+  cursor: pointer;
+  padding: @indent;
+  border-bottom: @border-bt;
+
+  &-title {
+    font-size: 1.1rem;
+    color: @text-color;
+
+  }
+
+  &:hover &-title {
+    text-decoration: underline;
+  }
+
+  &-keywords {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    flex: row wrap;
+    margin-top: @indent-text;
+  }
+
+  .keyword:not(:last-child) {
+    margin-right: @indent-text;
+  }
+}
+
+.hit-snippet {
+  padding: @indent;
+}
+
+.hit-info {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  flex-flow: row nowrap;
+  padding-left: @indent;
+  padding-right: @indent;
+  padding-bottom: @indent;
+
+  &-creator {
+    margin-right: @indent;
+  }
+
+  &-data {
+
+  }
+}
+
+.empty {
+  &-button {
+    margin-top: @indent;
+  }
+  &-title {
+    margin: 0;
+    flex: 0 100%;
+    font-size: 1.1rem;
+    font-weight: normal;
+  }
+}

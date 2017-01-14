@@ -1,0 +1,10 @@
+<form *ngIf="!sfHide" class="search-field" (ngSubmit)="getResults(query)" #searchForm="ngForm">
+  <i class="fa fa-search search-field-icon"></i>
+  <input
+    name="searchField"
+    class="search-field-input"
+    type="text"
+    placeholder="Поиск"
+    [(ngModel)] = "query"
+    (keyup)="keyup($event)" />
+</form>

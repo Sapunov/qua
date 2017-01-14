@@ -1,0 +1,28 @@
+<header class="search-header">
+  <div class="search-header-brand">
+    <img src="" alt="" class="search-header-logo">
+    <a [routerLink]="['/']">
+      <span class="search-header-name">QUA</span>
+    </a>
+  </div>
+  <div *ngIf="isAuth" class="search-header-control">
+    <div class="control-wrap">
+      <button class="control-btn control-add-question" [routerLink]="['/add']">
+        <i class="fa fa-pencil" aria-hidden="true"></i>
+        <span class="control-btn-text">Добавить вопрос</span>
+      </button>
+    </div>
+    <div class="control-wrap">
+      <button class="control-btn control-category" [routerLink]="['/category']">
+        <i class="fa fa-list" aria-hidden="true"></i>
+        <span class="control-btn-text">Категории</span>
+      </button>
+    </div>
+    <div class="control-wrap">
+      <button class="control-btn control-exit" (click)="exit()">
+      <i class="fa fa-sign-out" aria-hidden="true"></i>
+      <span class="control-btn-text">Выход</span>
+    </button>
+    </div>
+  </div>
+</header>

@@ -1,0 +1,20 @@
+<form class=" app-block auth" (ngSubmit)="onSubmit(authForm)" #authForm="ngForm" >
+  <h1 class="auth-title">Вход в Qua</h1>
+  <div class="auth-block">
+    <input
+      [(ngModel)]="username"
+      name="username"
+      class="input-st auth-input"
+      type="text"
+      placeholder="Логин"
+      required>
+    <input
+      [(ngModel)]="password"
+      name="password"
+      class="input-st auth-input"
+      type="password"
+      placeholder="Пароль"
+      required>
+    <button class="button-blue auth-button" type="submit">Войти</button>
+  </div>
+</form>

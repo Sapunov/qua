@@ -1,0 +1,120 @@
+@import '../../styles/variables.less';
+
+.search-category {
+  flex-flow: column nowrap;
+
+  &-header {
+    text-align: center;
+
+    > h1 {
+      font-size: 1.2rem;
+      font-weight: normal;
+      margin: 0;
+    }
+  }
+
+  &-form {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    flex-flow: row wrap;
+    margin-top: @indent;
+
+    > input {
+      flex: 2 1 auto;
+      margin-bottom: 0;
+    }
+
+    > button {
+      line-height: 1;
+      margin-left: @indent;
+    }
+  }
+}
+
+.category {
+  position: relative;
+  flex-flow: column nowrap;
+
+  &-title {
+
+    > span {
+      font-size: 1.1rem;
+    }
+  }
+
+  &-edit {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    flex-flow: row wrap;
+    &-inp {
+      margin: 0;
+    }
+
+    &-btn {
+      cursor: pointer;
+      margin-left: @indent - 10px;
+
+      &:last-child {
+        background-color: @color-red;
+      }
+    }
+  }
+
+  &-info {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    flex-flow: row wrap;
+    margin-top: @indent;
+
+    &-data {
+      margin-left: @indent;
+    }
+  }
+
+
+    &-control {
+      right: 0;
+      top: 0;
+      position: absolute;
+      overflow: hidden;
+
+      .control-delete {
+        transform: translate(59px);
+        padding: 17px 10px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        background-color: transparent;
+        transition: transform .5s ease;
+
+        &:after {
+          margin-left: 5px;
+          font-size: 0.8rem;
+          content: 'Удалить';
+        }
+
+        &:hover {
+          transform: translate(0);
+          color: @text-color;
+        }
+      }
+    }
+}
+
+.info-text {
+  > span:nth-child(2) {
+    text-decoration: underline;
+  }
+}
+
+.isEdit {
+  cursor: pointer;
+}

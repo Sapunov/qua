@@ -1,0 +1,37 @@
+<div class="search-result" *ngIf="result">
+  <div class="app-block search-result-empty" *ngIf="!result.query">
+    <h1 class="empty-title">
+      Начните поиск, введя любую фразу или слово в поисковую строку!
+    </h1>
+  </div>
+  <div class="app-block search-result-empty" *ngIf="!result.total && result.query">
+    <h1 class="empty-title">Чувак такого ответа на вопроса нету, добавь блять!</h1>
+    <button class="button-blue empty-button" (click)="addQuestion(result.query)">Добавить</button>
+  </div>
+  <div class="app-block search-result-hit" *ngFor="let hit of hits">
+    <header>
+      <a class="hit-header" (click)="getQuestion(hit.url_params, hit.id)">
+        <span class="hit-header-title">{{ hit.title }}</span>
+        <div *ngIf="hit.keywords.length" class="hit-header-keywords">
+          <span class="keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
+        </div>
+      </a>
+    </header>
+    <div class="hit-snippet">
+      <span class="hit-snippet-text">{{ hit.snippet }}</span>
+    </div>
+    <div class="hit-info">
+      <div class="hit-info-creator">
+        <i class="fa fa-user"></i>
+        <span>Создал:</span>
+        <span><u>Олег Озерицкий</u></span>
+      </div>
+      <div class="hit-info-data">
+        <i class="fa fa-clock-o"></i>
+        <span>Дата:</span>
+        <span>1/9/2017, 11:37 PM</span>
+      </div>
+    </div>
+  </div>
+</div>
+

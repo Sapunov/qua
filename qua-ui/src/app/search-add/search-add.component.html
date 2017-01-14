@@ -1,0 +1,17 @@
+<div class=" app-block search-add" *ngIf="question">
+  <h1 class="search-add-title">Здесь Вы можете задать любой вопрос. А если вы не имбицил, то можно еще и ответить сразу.</h1>
+  <form class="search-add-form" (ngSubmit)="onSubmit(inpQuestion.value)" #addForm="ngForm">
+    <input
+      name="title"
+      maxlength="300"
+      class="input-st form-input"
+      type="text"
+      placeholder="Текст вопроса"
+      [value]="question.title || ''"
+      #inpQuestion
+      required />
+    <app-markdown class="form-textarea" #md [raw]="question.answer"></app-markdown>
+    <!--<textarea name="answer" class="form-textarea" type="text" placeholder="Ответ на вопрос" ngModel></textarea>-->
+    <button class="button-blue form-submit" type="submit" [disabled]="!addForm.valid">Отправить</button>
+  </form>
+</div>
