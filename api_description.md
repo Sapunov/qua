@@ -153,7 +153,7 @@ API разрешает посылать к себе запросы со след
 - PUT **/questions/&lt;int:question_id&gt;** - обновление данных в вопросе `question_id`
 - DELETE **/questions/&lt;int:question_id&gt;** - архивирование вопроса `question_id`
 
-Формат данных
+Формат выходных данных при запросе одного вопроса
 
 `GET` **/api/questions/1**
 
@@ -209,6 +209,91 @@ API разрешает посылать к себе запросы со след
 }
 
 ```
+
+Формат выходных данных при запросе списка вопросов.
+
+Вместо поля `answer` выдается `answer_exists` с булевым значением есть ответ на вопрос или нет.
+
+`GET` **/api/questions**
+
+```
+{
+    "ok": 1,
+    "response":     [
+        {
+            "answer_exists": true,
+            "categories": [
+                {
+                    "id": 4,
+                    "name": "привет"
+                },
+                {
+                    "id": 12,
+                    "name": "жопа-2"
+                }
+            ],
+            "created_at": "2017-01-14T09:51:52.428555Z",
+            "created_by": {
+                "first_name": "",
+                "id": 1,
+                "last_name": "",
+                "username": "nsapunov"
+            },
+            "id": 49,
+            "keywords": [
+                "привет",
+                "nikita",
+                "слон"
+            ],
+            "title": "привет",
+            "updated_at": "2017-01-14T09:51:52.451319Z",
+            "updated_by": {
+                "first_name": "",
+                "id": 1,
+                "last_name": "",
+                "username": "nsapunov"
+            }
+        },
+        {
+            "answer_exists": false,
+            "categories": [],
+            "created_at": "2017-01-14T10:36:54.865758Z",
+            "created_by": {
+                "first_name": "",
+                "id": 1,
+                "last_name": "",
+                "username": "nsapunov"
+            },
+            "id": 50,
+            "keywords": [
+                "слон"
+            ],
+            "title": "Джигурда",
+            "updated_at": "2017-01-14T10:36:54.884780Z",
+            "updated_by": {
+                "first_name": "",
+                "id": 1,
+                "last_name": "",
+                "username": "nsapunov"
+            }
+        }
+    ]
+}
+```
+
+
+Формат данных для добавления/изменения вопроса
+
+```
+{
+    "title": "some title",
+    "keywords": ["one", "two", "three"],
+    "categories": [{"id": 1}, {"id": 3}],
+    "answers": {"raw": "some markdown"}
+}
+```
+
+При добавлении обязательным элементом является `title`, при изменении все поля необязательные и будет изменено только то поле, которое указано.
 
 
 ### Категории
