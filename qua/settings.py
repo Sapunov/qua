@@ -33,7 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'rest_framework',
-    'corsheaders' # while development
+    'corsheaders', # while development
 ]
 
 MIDDLEWARE = [
@@ -45,6 +45,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
 #    'django.middleware.clickjacking.XFrameOptionsMiddleware', # while development
     'django.contrib.messages.middleware.MessageMiddleware',
+    'qua.api.middleware.LoggingMiddleware',
 ]
 
 # While development
@@ -121,10 +122,12 @@ REST_FRAMEWORK = {
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
     'EXCEPTION_HANDLER': 'qua.api.exceptions.custom_api_exception_handler',
+    'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',)
 }
 
 JWT_AUTH = {
-    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=14)
+    'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'qua.api.response.custom_jwt_response_payload_handler',
 }
 
 LOGGING = {
@@ -132,12 +135,12 @@ LOGGING = {
     "disable_existing_loggers": True,
     "formatters": {
         "verbose": {
-            "format": "%(asctime)s FN:%(filename)s M:%(module)s "
-                      "FU:%(funcName)s L:%(lineno)s "
-                      "%(levelname)s:%(message)s"
+            "format": "%(asctime)s %(filename)s:"
+                      "%(funcName)s:%(lineno)s "
+                      "%(levelname)s: %(message)s"
         },
         "simple": {
-            "format": "%(levelname)s %(message)s"
+            "format": "%(asctime)s %(message)s"
         },
     },
     "handlers": {
@@ -152,6 +155,12 @@ LOGGING = {
             "filename": os.path.join(LOGS_DIR, "django.log"),
             "formatter": "verbose"
         },
+        "requests": {
+            "level": "INFO",
+            "class": "logging.FileHandler",
+            "filename": os.path.join(LOGS_DIR, "requests.log"),
+            "formatter": "simple"
+        },
     },
     "loggers": {
         "qua": {
@@ -159,6 +168,11 @@ LOGGING = {
             "level": "DEBUG",
             "propagate": True
         },
+        "qua.requests": {
+            "handlers": ['requests'],
+            "level": "INFO",
+            "propagate": False
+        }
     },
 }
 

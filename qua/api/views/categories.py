@@ -1,53 +1,44 @@
-from rest_framework import views, status
-from django.http import Http404
+from rest_framework.views import APIView
 
+from qua.api.models import Category
 from qua.api.response import QuaApiResponse
-from qua.api.models import Categories
-from qua.api import serializers
+from qua.api.serializers import CategorySerializer, CategoryListSerializer
+from qua.api.serializers import serialize, deserialize
+from qua.api.utils.shortcuts import get_object
 
 
-class CategoriesBase(views.APIView):
-    def get_object(self, pk):
-        try:
-            return Categories.objects.get(pk=pk)
-        except Categories.DoesNotExist:
-            raise Http404
-
-
-class CategoriesListView(CategoriesBase):
+class CategoryListView(APIView):
     def get(self, request, format=None):
-        categories = Categories.objects.all()
-        serializer = serializers.CategoriesListSerializer(categories, many=True)
+        categories = Category.objects.all()
+        serializer = serialize(CategoryListSerializer, categories, many=True)
 
         return QuaApiResponse(serializer.data)
 
     def post(self, request, format=None):
-        serializer = serializers.CategoriesDetailSerializer(data=request.data)
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
+        serializer = deserialize(CategorySerializer, data=request.data)
+        serializer.save(user=request.user)
 
-            return QuaApiResponse(serializer.data, status=status.HTTP_201_CREATED)
+        return QuaApiResponse(serializer.data)
 
 
-class CategoriesDetailView(CategoriesBase):
+class CategoryView(APIView):
+
     def get(self, request, category_id, format=None):
-        category = self.get_object(category_id)
-        serializer = serializers.CategoriesListSerializer(category)
+        category = get_object(Category, category_id)
+        serializer = serialize(CategoryListSerializer, category)
 
         return QuaApiResponse(serializer.data)
 
     def put(self, request, category_id, format=None):
-        category = self.get_object(category_id)
-        serializer = serializers.CategoriesDetailSerializer(
-            category, data=request.data)
+        category = get_object(Category, category_id)
+        serializer = serialize(CategorySerializer, category, data=request.data)
 
-        if serializer.is_valid(raise_exception=True):
-            serializer.save(user=request.user)
+        serializer.save(user=request.user)
 
-            return QuaApiResponse(serializer.data, status=status.HTTP_202_ACCEPTED)
+        return QuaApiResponse(serializer.data)
 
     def delete(self, request, category_id, format=None):
-        category = self.get_object(category_id)
+        category = get_object(Category, category_id)
         category.delete()
 
-        return QuaApiResponse(status=status.HTTP_204_NO_CONTENT)
+        return QuaApiResponse()

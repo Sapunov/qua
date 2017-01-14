@@ -1,74 +1,149 @@
-from django.db import models, transaction
+import logging
+import markdown
+
+from django.db import models
 from django.contrib.auth.models import User
 from django.core.cache import cache
-import markdown
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from rest_framework import exceptions
 
 from qua.api.utils import common
 from qua.api import constants
 
-import logging
 
 log = logging.getLogger('qua.' + __name__)
 
 
-class Categories(models.Model):
-    name = models.CharField(max_length=50)
-    created_at = models.DateTimeField(auto_now_add=True)
+class Base(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
-    updated_at = models.DateTimeField(auto_now=True)
     updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+
+class Category(Base):
+    name = models.CharField(max_length=50)
 
     def __str__(self):
-        return self.name
-
-
-class Keywords(models.Model):
-    text = models.CharField(max_length=50, unique=True)
+        return '<Category: ({0}) {1}>'.format(self.id, self.name)
 
     @classmethod
-    @transaction.atomic
-    def ensure_exists(cls, words):
-        log.debug('Check all adding keywords exists')
+    def create(cls, name, user):
+        return cls.objects.create(name=name, created_by=user, updated_by=user)
 
-        words = common.ensure_list(words)
+    @classmethod
+    def exists(cls, category):
+        """Check whether category(s) exists
 
-        for i in range(len(words)):
-            words[i] = common.word_normalize(words[i])
+        :category: list of primary keys
+        """
+        if isinstance(category, list):
+            return cls.objects.filter(pk__in=category).count() == len(category)
+        else:
+            return cls.objects.filter(pk=category).exists()
 
-        try:
-            exists = set(it.text for it in cls.objects.filter(text__in=words))
-        except cls.DoesNotExist:
-            exists = set()
 
-        log.debug('Words: <%s> already exist', exists)
+class Keyword(models.Model):
+    text = models.CharField(max_length=50, primary_key=True)
 
-        for kw in set(words) - exists:
-            cls.objects.create(text=kw)
+    @classmethod
+    def get_or_create(cls, words):
+        """Return QuesrySet of keywords. Create if not exists
 
-        return cls.objects.filter(text__in=set(words) | exists)
+        :words: list (or one word) of words (not normalized)
+        """
+        if isinstance(words, str):
+            words = [words]
+
+        keywords = []
+
+        for word in words:
+            normalized_word = common.word_normalize(word)
+
+            keyword, _ = cls.objects.get_or_create(pk=normalized_word)
+
+            keywords.append(keyword)
+
+        return keywords
 
     def __str__(self):
         return self.text
 
 
-class Questions(models.Model):
-    categories = models.ManyToManyField(Categories, blank=True)
-    title = models.CharField(max_length=200)
-    keywords = models.ManyToManyField(Keywords, blank=True)
+class Question(Base):
+    title = models.CharField(max_length=300)
+    categories = models.ManyToManyField(Category)
+    keywords = models.ManyToManyField(Keyword)
     deleted = models.BooleanField(default=False)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
-    updated_at = models.DateTimeField(auto_now=True)
-    updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    reindex = models.BooleanField(default=True)
+    # answer field in Answer
 
     def __str__(self):
-        return '<{0}:{1:.30}>'.format(self.id, self.title)
+        return '<Question: ({0}) {1:.30}>'.format(self.id, self.title)
+
+    @classmethod
+    def get(cls, pk=None, category=None, **kwargs):
+        if pk is not None:
+            try:
+                return cls.objects.get(pk=pk, deleted=False, **kwargs)
+            except cls.DoesNotExist:
+                raise exceptions.NotFound
+
+        results = cls.objects.filter(deleted=False, **kwargs)
+
+        if category is not None:
+            results = results.filter(categories=category)
+
+        return results
+
+    @classmethod
+    def create(cls, title, user, keywords=None, category_ids=None):
+        question = cls.objects.create(title=title, created_by=user, updated_by=user)
+
+        if keywords is not None:
+            question.keywords = keywords
+
+        if category_ids is not None:
+            question.categories = Category.objects.filter(pk__in=category_ids)
+
+        question.save()
+
+        return question
+
+    def update(self, user, title=None, keywords=None, category_ids=None):
+        updates = 0
+
+        if title is not None:
+            self.title = title
+            updates += 1
+
+        if keywords is not None:
+            self.keywords = keywords
+            updates += 1
+
+        if category_ids is not None:
+            self.categories = Category.objects.filter(pk__in=category_ids)
+            updates += 1
+
+        if updates > 0:
+            self.updated_by = user
+            self.save()
 
     def archive(self):
         self.deleted = True
         self.save()
+
+    def restore(self):
+        self.deleted = False
+        self.save()
+
+    @property
+    def answer_exists(self):
+        return hasattr(self, 'answer')
 
 
 class SearchHistory(models.Model):
@@ -78,35 +153,42 @@ class SearchHistory(models.Model):
     searched_at = models.DateTimeField(auto_now_add=True)
     clicked_at = models.DateTimeField(blank=True, null=True)
     question = models.ForeignKey(
-        Questions, on_delete=models.PROTECT, related_name='+', blank=True, null=True)
+        Question, on_delete=models.PROTECT, related_name='+', blank=True, null=True)
 
     def __str__(self):
         return '({4}) <{0}:{1:.30}> -> {2} ({3})'.format(
             self.id, self.query, self.question, self.user, self.results)
 
 
-class Answers(models.Model):
+class Answer(Base):
     raw = models.TextField()
     question = models.OneToOneField(
-        Questions, related_name='answer', on_delete=models.CASCADE)
-    snippet = models.CharField(max_length=200)
+        Question, related_name='answer', on_delete=models.CASCADE)
+
     version = models.IntegerField(default=1)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
-    updated_at = models.DateTimeField(auto_now=True)
-    updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
 
     def __str__(self):
-        return self.snippet
+        return self.raw[0:50]
 
     @classmethod
-    def create(cls, raw, user, question, snippet=None):
-        if snippet is None:
-            snippet = common.snippet(raw)
-        answer = cls.objects.create(raw=raw, snippet=snippet,
-            created_by=user, updated_by=user, question=question)
+    def create(cls, raw, user, question):
+        if raw == '':
+            return None
+
+        answer = cls.objects.create(
+            raw=raw, created_by=user, updated_by=user, question=question)
 
         return answer
+
+    def update(self, raw, user):
+        if self.raw != raw:
+            self.raw = raw
+            self.version += 1
+            self.updated_by = user
+
+            self.save()
+
+            cache.set(self.name, markdown.markdown(self.raw), constants.MONTH)
 
     @property
     def name(self):
@@ -117,12 +199,9 @@ class Answers(models.Model):
         html = cache.get(self.name)
 
         if html is None:
+            log.debug('Regenerating markdown. Raw: %s', self.raw)
+
             html = cache.get_or_set(
                 self.name, markdown.markdown(self.raw), constants.MONTH)
 
         return html
-
-
-@receiver(post_save, sender=Answers)
-def delete_cached_html(sender, **kwargs):
-    cache.delete(kwargs['instance'].name)

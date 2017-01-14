@@ -2,7 +2,7 @@ import logging
 
 from django.urls import reverse
 
-from qua.api.models import Questions, SearchHistory
+from qua.api.models import Question, SearchHistory
 from qua import utils
 
 
@@ -28,6 +28,7 @@ class UrlParams:
         self.shid = shid
         self.qid = qid
         self.token = token
+        self.track = 'search'
 
 
 class SearchHit:
@@ -92,7 +93,7 @@ def search(query, user, category=None):
     if query == '':
         return SearchResults(query)
 
-    results = Questions.objects.filter(title__contains=query, deleted=False)
+    results = Question.objects.filter(title__contains=query, deleted=False)
 
     if category is not None:
         results.filter(categories__id=category)

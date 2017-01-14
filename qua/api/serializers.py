@@ -1,17 +1,81 @@
 import logging
 
-from rest_framework import serializers
+from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
-from django.db import transaction
+from rest_framework import serializers
+from rest_framework.exceptions import ValidationError
 
-from qua.api import models
-from qua.api.utils import common
+from qua.api.models import Category, Question, Keyword, Answer
 
 
 log = logging.getLogger('qua.' + __name__)
 
 
+def deserialize(serializer_class, data):
+
+    log.debug('Deserializing %s with %s', data, serializer_class)
+
+    serializer = serializer_class(data=data)
+    serializer.is_valid(raise_exception=True)
+
+    log.debug('Validated data: %s', serializer.validated_data)
+
+    return serializer
+
+def serialize(serializer_class, instance, data=None, **kwargs):
+
+    log.debug('Serializing %s with %s for %s. Kwargs: %s',
+        data, serializer_class, instance, kwargs)
+
+    if data is None:
+        serializer = serializer_class(instance, **kwargs)
+    else:
+        serializer = serializer_class(instance, data=data, **kwargs)
+        serializer.is_valid(raise_exception=True)
+
+        log.debug('Validated data: %s', serializer.validated_data)
+
+    return serializer
+
+
+class AutoUpdatePrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
+
+    def __init__(self, model, **kwargs):
+        self.model = model
+        super(AutoUpdatePrimaryKeyRelatedField, self).__init__(**kwargs)
+
+    def get_queryset(self, data):
+        try:
+            return self.model.get_or_create(data)
+        except AttributeError:
+            raise AttributeError('Model must have "get_or_create" method')
+
+    def to_internal_value(self, data):
+        if self.pk_field is not None:
+            data = self.pk_field.to_internal_value(data)
+
+        try:
+            return self.get_queryset(data)[0]
+        except (TypeError, ValueError):
+            self.fail('incorrect_type', data_type=type(data).__name__)
+
+
+class PrimaryKeyExistsValidator:
+    def __init__(self, queryset, message=None):
+        self.queryset = queryset
+        self.message = message or 'Item with primary key {primary_key} does not exist'
+
+    def __call__(self, value):
+        assert ('id' in value and isinstance(value, dict)), 'Value must be a "dict" with "id" element'
+
+        try:
+            self.queryset.get(pk=value['id'])
+        except ObjectDoesNotExist:
+            raise ValidationError(self.message.format(primary_key=value['id']))
+
+
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
+
     def __init__(self, *args, **kwargs):
         fields = kwargs.pop('fields', None)
 
@@ -26,41 +90,37 @@ class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 
 
 class UserSerializer(DynamicFieldsModelSerializer):
+
     class Meta:
         model = User
-        fields = ('id', 'username', 'first_name', 'last_name', 'is_active', 'email')
+        fields = ('id', 'username', 'first_name', 'last_name')
 
 
-class CategoriesListSerializer(serializers.ModelSerializer):
+class CategoryListSerializer(serializers.ModelSerializer):
+    created_by = UserSerializer(read_only=True)
+    updated_by = UserSerializer(read_only=True)
+
     class Meta:
-        model = models.Categories
+        model = Category
         fields = '__all__'
 
-    created_by = UserSerializer(
-        read_only=True, fields=('id', 'username', 'first_name', 'last_name'))
-    updated_by = UserSerializer(
-        read_only=True, fields=('id', 'username', 'first_name', 'last_name'))
 
+class CategorySerializer(DynamicFieldsModelSerializer):
 
-class CategoriesDetailSerializer(DynamicFieldsModelSerializer):
-    class Meta:
-        model = models.Categories
-        fields = '__all__'
-
-    created_by = UserSerializer(
-        read_only=True, fields=('id', 'username', 'first_name', 'last_name'))
-    updated_by = UserSerializer(
-        read_only=True, fields=('id', 'username', 'first_name', 'last_name'))
+    id = serializers.IntegerField(required=False)
+    name = serializers.CharField(max_length=50, required=False)
+    created_by = UserSerializer(read_only=True)
+    updated_by = UserSerializer(read_only=True)
 
     def create(self, validated_data):
-        validated_data['created_by'] = validated_data.pop('user')
-        validated_data['updated_by'] = validated_data['created_by']
+        if 'name' not in validated_data:
+            raise ValidationError({'name': ['This field is required.']})
 
-        return models.Categories.objects.create(**validated_data)
+        return Category.create(validated_data['name'], validated_data['user'])
 
     def update(self, instance, validated_data):
         if 'name' not in validated_data:
-            return instance
+            raise ValidationError({'name': ['This field is required.']})
 
         instance.name = validated_data['name']
         instance.updated_by = validated_data['user']
@@ -69,178 +129,132 @@ class CategoriesDetailSerializer(DynamicFieldsModelSerializer):
 
         return instance
 
-
-class AnswerSerializer(DynamicFieldsModelSerializer):
     class Meta:
-        model = models.Answers
-        fields = ('id', 'html', 'version', 'created_at', 'created_by',
-            'updated_at', 'updated_by', 'snippet', 'raw')
-
-    created_by = UserSerializer(
-        fields=('id', 'username', 'first_name', 'last_name'))
-    updated_by = UserSerializer(
-        fields=('id', 'username', 'first_name', 'last_name'))
-
-
-class KeywordsSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Keywords
+        model = Category
         fields = '__all__'
 
 
-class QuestionsListSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.Questions
-        fields = ('id', 'title', 'categories', 'answer', 'keywords',
-            'created_at', 'created_by', 'updated_at', 'updated_by')
+class AnswerSerializer(DynamicFieldsModelSerializer):
+    html = serializers.CharField(required=False)
+    created_by = UserSerializer(read_only=True)
+    updated_by = UserSerializer(read_only=True)
 
-    categories = CategoriesDetailSerializer(many=True, fields=('id', 'name'))
-    answer = AnswerSerializer(read_only=True, fields=(
-        'snippet', 'created_by', 'created_at', 'updated_by', 'updated_at'))
+    class Meta:
+        model = Answer
+        exclude = ('id', 'question')
+
+
+class QuestionListSerializer(serializers.ModelSerializer):
+
+    categories = CategorySerializer(many=True, fields=('id', 'name'))
     keywords = serializers.SlugRelatedField(
         many=True, read_only=True, slug_field='text')
-    created_by = UserSerializer(
-        read_only=True, fields=('id', 'username', 'first_name', 'last_name'))
-    updated_by = UserSerializer(
-        read_only=True, fields=('id', 'username', 'first_name', 'last_name'))
 
+    answer_exists = serializers.BooleanField()
 
-class QuestionsDetailSerializer(serializers.ModelSerializer):
+    created_by = UserSerializer(read_only=True)
+    updated_by = UserSerializer(read_only=True)
+
     class Meta:
-        model = models.Questions
-        fields = ('id', 'title', 'categories', 'answer', 'keywords',
-            'created_at', 'created_by', 'updated_at', 'updated_by')
+        model = Question
+        exclude = ('deleted', 'reindex')
 
-    title = serializers.CharField(max_length=200, required=False)
-    categories = CategoriesDetailSerializer(
-        many=True, read_only=True, fields=('id', 'name'))
-    answer = AnswerSerializer(read_only=True)
-    keywords = serializers.SlugRelatedField(
-        read_only=True, many=True, slug_field='text')
-    created_by = UserSerializer(
-        read_only=True, fields=('id', 'username', 'first_name', 'last_name'))
-    updated_by = UserSerializer(
-        read_only=True, fields=('id', 'username', 'first_name', 'last_name'))
 
-    @transaction.atomic
+class QuestionSerializer(serializers.ModelSerializer):
+
+    title = serializers.CharField(max_length=300, required=False)
+    categories = CategorySerializer(
+        many=True,
+        fields=('id', 'name'),
+        validators=[PrimaryKeyExistsValidator(
+            queryset=Category.objects.all(),
+            message='Category with primary key {primary_key} does not exist'
+        )],
+        required=False
+    )
+    keywords = AutoUpdatePrimaryKeyRelatedField(model=Keyword, many=True, required=False)
+    answer = AnswerSerializer(required=False)
+    created_by = UserSerializer(read_only=True)
+    updated_by = UserSerializer(read_only=True)
+
     def create(self, validated_data):
-        log.debug('Initial data: %s', self.initial_data)
+        if 'title' not in validated_data:
+            raise ValidationError({'title': ['This field is required.']})
 
-        user = validated_data['user']
-        data = self.initial_data
+        if 'categories' in validated_data:
+            category_ids = [cat['id'] for cat in validated_data['categories']]
+        else:
+            category_ids = None
 
-        if 'title' not in data:
-            raise serializers.ValidationError({'title': ['This field is required']})
+        question = Question.create(
+            validated_data['title'],
+            validated_data['user'],
+            keywords=validated_data.get('keywords', None),
+            category_ids=category_ids
+        )
 
-        question = models.Questions.objects.create(
-            title=validated_data['title'], created_by=user, updated_by=user)
-
-        if 'keywords' in data:
-            keywords = models.Keywords.ensure_exists(data['keywords'])
-            question.keywords = keywords
-
-        if 'categories' in data:
-            log.debug('Categories: %s', data['categories'])
-            try:
-                category_ids = common.ensure_list(
-                    data['categories'], to_int=True)
-            except ValueError:
-                raise serializers.ValidationError({'categories': ['List of integers required']})
-
-            if models.Categories.objects.filter(
-                pk__in=category_ids).count() != len(category_ids):
-                raise serializers.ValidationError(
-                    {'categories': ['Specified categories doesn\'t exists']})
-
-            question.categories = models.Categories.objects.filter(
-                pk__in=category_ids)
-
-        question.save()
-
-        if 'answer' in data:
-            if 'raw' not in data['answer']:
-                raise serializers.ValidationError({'answer.raw': ['This field is required']})
-
-            models.Answers.create(raw=data['answer']['raw'],
-                user=user, question=question,
-                snippet=data['answer'].get('snippet', None))
+        if 'answer' in validated_data:
+            Answer.create(
+                validated_data['answer']['raw'],
+                validated_data['user'],
+                question
+            )
 
         return question
 
     def update(self, instance, validated_data):
-        log.debug('Validated_data: %s, Instance: %s, Initial_data: %s',
-            validated_data, instance, self.initial_data)
+        if 'categories' in validated_data:
+            category_ids = [cat['id'] for cat in validated_data['categories']]
+        else:
+            category_ids = None
 
-        user = validated_data['user']
-        data = self.initial_data
+        instance.update(
+            validated_data['user'],
+            title=validated_data.get('title', None),
+            keywords=validated_data.get('keywords', None),
+            category_ids=category_ids
+        )
 
-        if 'title' in data:
-            instance.title = data['title']
-
-        if 'categories' in data:
-            log.debug('Categories: %s', data['categories'])
-            try:
-                category_ids = common.ensure_list(
-                    data['categories'], to_int=True)
-            except ValueError:
-                raise serializers.ValidationError({'categories': ['List of integers required']})
-
-            if models.Categories.objects.filter(
-                pk__in=category_ids).count() != len(category_ids):
-                raise serializers.ValidationError(
-                    {'categories': ['Specified categories doesn\'t exist']})
-
-            question.categories = models.Categories.objects.filter(
-                pk__in=category_ids)
-
-        if 'keywords' in data:
-            instance.keywords = models.Keywords.ensure_exists(data['keywords'])
-
-        if 'answer' in data:
-            try:
-                answer = models.Answers.objects.get(question__pk=instance.id)
-
-                if 'raw' in data['answer']:
-                    answer.raw = data['answer']['raw']
-                    answer.version += 1
-
-                if 'snippet' in data['answer']:
-                    answer.snippet = data['answer']['snippet']
-
-                answer.save()
-            except models.Answers.DoesNotExist:
-                if 'raw' not in data['answer']:
-                    raise serializers.ValidationError({'answer.raw': ['This field is required']})
-
-                answer = models.Answers.create(
-                    raw=data['answer']['raw'], user=user, question=instance,
-                    snippet=data['answer'].get('snippet', None))
-
-            instance.answer = answer
-
-        instance.updated_by = user
-
-        instance.save()
+        if 'answer' in validated_data:
+            if instance.answer_exists:
+                instance.answer.update(
+                    validated_data['answer']['raw'],
+                    validated_data['user']
+                )
+            else:
+                Answer.create(
+                    validated_data['answer']['raw'],
+                    validated_data['user'],
+                    instance
+                )
 
         return instance
 
+    class Meta:
+        model = Question
+        exclude = ('deleted', 'reindex')
+
 
 class CategoryAssumptionsSerializer(serializers.Serializer):
+
     id = serializers.IntegerField()
     name = serializers.CharField()
     score = serializers.FloatField()
 
 
 class UrlParamsSerializer(serializers.Serializer):
+
     shid = serializers.IntegerField()
     qid = serializers.IntegerField()
     token = serializers.CharField()
+    track = serializers.CharField()
 
 
 class SearchHitSerializer(serializers.Serializer):
+
     id = serializers.IntegerField()
     title = serializers.CharField()
-    categories = CategoriesDetailSerializer(many=True, fields=('id', 'name'))
+    categories = CategorySerializer(many=True, fields=('id', 'name'))
     snippet = serializers.CharField()
     score = serializers.FloatField()
     keywords = serializers.SlugRelatedField(
@@ -250,6 +264,7 @@ class SearchHitSerializer(serializers.Serializer):
 
 
 class SearchSerializer(serializers.Serializer):
+
     query = serializers.CharField()
     total = serializers.IntegerField()
     hits = SearchHitSerializer(many=True)

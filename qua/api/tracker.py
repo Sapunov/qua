@@ -3,7 +3,7 @@ import logging
 from django.utils import timezone
 
 from qua import utils
-from qua.api.models import SearchHistory, Questions
+from qua.api.models import SearchHistory, Question
 from qua.api.exceptions import ExitDecoratorError
 
 
@@ -37,7 +37,7 @@ def search_tracker(params):
     history_record = get_object(SearchHistory, shid)
 
     if history_record.clicked_at is None:
-        question = get_object(Questions, qid)
+        question = get_object(Question, qid)
 
         history_record.question = question
         history_record.clicked_at = timezone.now()
