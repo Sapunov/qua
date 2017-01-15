@@ -25,7 +25,7 @@
     <div class="form-keywords">
       <div class="form-keywords-control">
         <input class="input-st" type="text" placeholder="Ключевое словое" #inpKeyword>
-        <button class="button-blue" type="button" (click)="addKeyword(inpKeyword.value)">Добавить</button>
+        <button class="button-blue" type="button" (click)="addKeyword(inpKeyword.value); inpKeyword.value = ''">Добавить</button>
       </div>
       <div class="form-keywords-list keywords">
         <span class="form-keywords-keyword keywords-keyword" *ngFor="let keyword of question.keywords; let i = index">{{ keyword }}

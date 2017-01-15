@@ -19,10 +19,12 @@ import { SearchResultComponent }   from './search-result/search-result.component
 import { SearchQuestionComponent } from './search-question/search-question.component';
 
 import { AuthService }             from './auth.service';
+import { ErrorService }            from './error.service';
 import { SearchService }           from './search.service';
 import { QuestionService }         from './question.service';
 import { CategoryService }         from './category.service';
 import { SearchCategoryComponent } from './search-category/search-category.component';
+
 
 
 @NgModule({
@@ -47,6 +49,7 @@ import { SearchCategoryComponent } from './search-category/search-category.compo
   ],
   providers: [
     AuthService,
+    ErrorService,
     SearchService,
     CategoryService,
     QuestionService,
