@@ -1,5 +1,5 @@
 <div class=" app-block search-add">
-  <h1 class="search-add-title">Здесь Вы можете задать любой вопрос. А если вы не имбицил, то можно еще и ответить сразу.</h1>
+  <h1 class="search-add-title">Добавить вопрос</h1>
   <form class="search-add-form" (ngSubmit)="onSubmit()" #addForm="ngForm">
     <input
       name="title"
@@ -32,6 +32,6 @@
       </div>
     </div>
     <app-markdown class="form-textarea" #md [raw]="answer.raw"></app-markdown>
-    <button class="button-blue form-submit" type="submit" [disabled]="!addForm.valid">Отправить</button>
+    <button class="button-blue form-submit" type="submit" [disabled]="!addForm.valid">Сохранить</button>
   </form>
 </div>

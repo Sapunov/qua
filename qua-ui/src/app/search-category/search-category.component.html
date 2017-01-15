@@ -1,6 +1,6 @@
 <div class="app-block search-category">
   <header class="search-category-header">
-    <h1>Добавьте категории, чтобы было удобнее искать!</h1>
+    <h1>Добавить категории</h1>
   </header>
   <form class="search-category-form" (ngSubmit)="add(inpCat.value)" #addForm="ngForm">
     <input class="input-st" type="text" placeholder="Имя категории" #inpCat required>
@@ -33,7 +33,7 @@
           <span><b>{{ category.updated_by.last_name }}</b></span>
         </div>
         <div class="info-text">
-          <span>{{ category.updated_at | date:'short' }}</span>
+          <span>{{ category.updated_at | date:'dd.MM.yyyy HH:mm' }}</span>
         </div>
       </div>
     </div>

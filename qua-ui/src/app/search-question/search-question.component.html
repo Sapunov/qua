@@ -23,24 +23,24 @@
       </div>
       <div class="info-text">
         <i class="fa fa-clock-o"></i>
-        <span>{{ question.created_at | date:'short' }}</span>
+        <span>{{ question.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
       </div>
     </div>
   </header>
   <div class="search-question-answer">
     <div class="answer answer-noanswer" *ngIf="!raw">
-      <span>Ответа на вопрос еще нету! Но ты можешь ответить сам:)</span>
-      <button class="button-blue" (click)="reply()">Ответить</button>
+      <span>Да данный вопрос еще нет ответа. Если знаете ответ, добавьте его.</span>
+      <button class="button-blue" (click)="reply()">Добавить ответ</button>
     </div>
     <div class="answer answer-text" *ngIf="raw" [innerHTML]="question.answer.html"></div>
     <div class="answer answer-info info" *ngIf="raw">
       <div class="info-text">
         <span>Ответил:</span>
-        <span><b>{{ question.updated_by.first_name }}</b></span>
-        <span><b>{{ question.updated_by.last_name }}</b></span>
+        <span><b>{{ question.answer.updated_by.first_name }}</b></span>
+        <span><b>{{ question.answer.updated_by.last_name }}</b></span>
       </div>
       <div class="info-text">
-        <span>{{ question.updated_at | date:'short' }}</span>
+        <span>{{ question.answer.updated_at | date:'dd.MM.yyyy HH:mm' }}</span>
       </div>
     </div>
   </div>

@@ -1,12 +1,12 @@
 <div class="search-result" *ngIf="result">
   <div class="app-block search-result-empty" *ngIf="!result.query">
     <h1 class="empty-title">
-      Начните поиск, введя любую фразу или слово в поисковую строку!
+      Начните вводить вопрос
     </h1>
   </div>
   <div class="app-block search-result-empty" *ngIf="!result.total && result.query">
-    <h1 class="empty-title">Чувак такого ответа на вопроса нету, добавь блять!</h1>
-    <button class="button-blue empty-button" (click)="addQuestion(result.query)">Добавить</button>
+    <h1 class="empty-title">Еще никто не задавался подобным вопросом. Будьте первым!</h1>
+    <button class="button-blue empty-button" (click)="addQuestion(result.query)">Добавить вопрос</button>
   </div>
   <div class="app-block search-result-hit" *ngFor="let hit of hits">
     <header>
@@ -22,7 +22,7 @@
       </a>
     </header>
     <div class="hit-snippet">
-      <span class="hit-snippet-text">{{ hit.snippet }}</span>
+      <span class="hit-snippet-text" [innerHTML]="hit.snippet"></span>
     </div>
   </div>
 </div>
