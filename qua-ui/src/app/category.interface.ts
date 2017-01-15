@@ -6,10 +6,10 @@ export interface ICat {
 }
 
 export interface ICategory {
-  created_at: string;
-  created_by: IUser;
+  created_at?: string;
+  created_by?: IUser;
   id: number;
   name: string;
-  updated_at: string;
-  updated_by: IUser;
+  updated_at?: string;
+  updated_by?: IUser;
 }

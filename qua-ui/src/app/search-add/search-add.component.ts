@@ -5,8 +5,10 @@ import { ActivatedRoute, Params, Router, NavigationExtras } from '@angular/route
 import { MarkdownComponent } from '../markdown/markdown.component';
 
 import { QuestionService } from '../question.service';
+import { CategoryService } from '../category.service';
 
-import { IQuestion, INewQuestion } from '../question.interface';
+import { IQuestion, INewQuestion, ICategories } from '../question.interface';
+import { ICategory } from '../category.interface';
 
 @Component({
   selector: 'app-search-add',
@@ -17,13 +19,15 @@ export class SearchAddComponent implements OnInit, OnDestroy {
   @ViewChild(MarkdownComponent) private mde: MarkdownComponent;
 
   question: INewQuestion | IQuestion;
+  allCategories: ICategories[];
   isReply: boolean = false;
   sfHide: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private questionService: QuestionService
+    private questionService: QuestionService,
+    private categoryService: CategoryService
   ) {  }
 
   onSubmit(question: string): void {
@@ -38,6 +42,7 @@ export class SearchAddComponent implements OnInit, OnDestroy {
   edit(id: number, title: string, raw: string) {
     let data: INewQuestion = {
       title,
+      categories: this.question.categories,
       keywords: this.question.keywords,
       answer: {
         raw
@@ -52,6 +57,7 @@ export class SearchAddComponent implements OnInit, OnDestroy {
   add(title: string, raw: string) {
     let data: INewQuestion = {
       title,
+      categories: this.question.categories,
       keywords: this.question.keywords,
       answer: {
         raw
@@ -63,10 +69,32 @@ export class SearchAddComponent implements OnInit, OnDestroy {
       });
   }
 
+  getCategories() {
+    this.categoryService.getCategories()
+      .then((categories: ICategory[]) => {
+        this.allCategories = categories;
+      });
+  }
+
+  addCategory(index: number) {
+    this.question.categories.push({
+      id: this.allCategories[index].id,
+      name: this.allCategories[index].name
+    });
+  }
+
+  delCategory(index: number) {
+    this.question.categories.splice(index, 1);
+  }
+
   addKeyword(keyword: string) {
     if (keyword) {
       this.question.keywords.push(keyword);
     }
+  }
+
+  delKeyword(index: number) {
+    this.question.keywords.splice(index, 1);
   }
 
   ngOnInit() {
@@ -87,6 +115,7 @@ export class SearchAddComponent implements OnInit, OnDestroy {
         keywords: []
       } as INewQuestion;
     }
+    this.getCategories();
   }
 
   ngOnDestroy() {

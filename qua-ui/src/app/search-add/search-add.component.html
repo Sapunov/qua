@@ -10,13 +10,26 @@
       [value]="question.title || ''"
       #inpQuestion
       required />
+    <div class="form-categories">
+      <div class="form-categories-control">
+        <select class="input-st" #inpCategory>
+          <option value="{{i}}" *ngFor="let category of allCategories; let i = index">{{category.name}}</option>
+        </select>
+        <button class="button-blue" type="button" (click)="addCategory(inpCategory.value)">Добавить</button>
+      </div>
+      <div class="form-categories-list categories-list">
+        <span class="form-categories-category categories-list-category" *ngFor="let category of question.categories; let i = index">{{ category.name }}
+          <i class="fa fa-times" (click)="delCategory(i)"></i></span>
+      </div>
+    </div>
     <div class="form-keywords">
       <div class="form-keywords-control">
         <input class="input-st" type="text" placeholder="Ключевое словое" #inpKeyword>
         <button class="button-blue" type="button" (click)="addKeyword(inpKeyword.value)">Добавить</button>
       </div>
       <div class="form-keywords-list keywords">
-        <span class="keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
+        <span class="form-keywords-keyword keywords-keyword" *ngFor="let keyword of question.keywords; let i = index">{{ keyword }}
+          <i class="fa fa-times" (click)="delKeyword(i)"></i></span>
       </div>
     </div>
     <app-markdown class="form-textarea" #md [raw]="question.answer.raw"></app-markdown>

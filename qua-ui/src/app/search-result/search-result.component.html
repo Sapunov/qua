@@ -13,7 +13,11 @@
       <a class="hit-header" (click)="getQuestion(hit.url_params, hit.id)">
         <span class="hit-header-title">{{ hit.title }}</span>
         <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
-          <span class="keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
+          <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
+        </div>
+        <div *ngIf="hit.categories.length" class="hit-header-categories categories-list">
+          <span class="categories-list-title">Категории:</span>
+          <span class="categories-list-category" *ngFor="let category of hit.categories">{{ category.name }}</span>
         </div>
       </a>
     </header>

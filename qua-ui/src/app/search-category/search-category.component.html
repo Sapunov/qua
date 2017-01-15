@@ -7,7 +7,7 @@
     <button class="button-blue" type="submit">Добавить</button>
   </form>
 </div>
-<div class="categories" *ngIf="categories">
+<div class="categories-block" *ngIf="categories">
     <div class="app-block category" *ngFor="let category of categories">
       <div class="category-control">
         <button class="control-delete" (click)="delete(category.id)">
