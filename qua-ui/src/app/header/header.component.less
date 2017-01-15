@@ -3,9 +3,8 @@
 @indent-text: 5px;
 
 .search-header {
-  position: relative;
   background-color: @main-color;
-  padding: 0 @indent - 5px;
+  padding: 0 @indent;
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flex;
@@ -13,6 +12,17 @@
   display: flex;
   justify-content: center;
   height: 60px;
+
+  &-wrap {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    flex-flow: row nowrap;
+    justify-content: space-between;
+    width: @width-content;
+  }
 
   &-brand {
     padding: @indent - 6 0;
@@ -41,10 +51,7 @@
     display: -o-flex;
     display: flex;
     flex-flow: row nowrap;
-    margin-right: @indent - 5px;
     height: 100%;
-    position: absolute;
-    right: 0;
     .control-wrap {
       padding-left: @indent - 7px;
       padding-right: @indent - 7px;
@@ -69,7 +76,7 @@
   }
 }
 
-@media (max-width: @width-content) {
+@media (max-width: @width-content-media) {
   .control-btn-text {
     display: none;
   }
