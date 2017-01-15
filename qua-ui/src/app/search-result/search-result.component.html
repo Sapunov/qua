@@ -12,7 +12,7 @@
     <header>
       <a class="hit-header" (click)="getQuestion(hit.url_params, hit.id)">
         <span class="hit-header-title">{{ hit.title }}</span>
-        <div *ngIf="hit.keywords.length" class="hit-header-keywords">
+        <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
           <span class="keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
         </div>
       </a>

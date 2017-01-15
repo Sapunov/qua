@@ -8,6 +8,7 @@ import { IResponse } from './response.interface';
 
 @Injectable()
 export class QuestionService {
+  public question: IQuestion | INewQuestion;
   private headers = new Headers({
     'Content-type': 'application/json',
     Authorization: `JWT ${localStorage.getItem('token')}`

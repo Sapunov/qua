@@ -6,10 +6,9 @@
   </div>
   <header class="search-question-header">
     <div class="header-title">
-      <img src="" alt="">
       <h1>{{ question.title }}</h1>
     </div>
-    <div *ngIf="question.keywords.length" class="header-keywords">
+    <div *ngIf="question.keywords.length" class="header-keywords keywords">
       <span class="keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
     </div>
     <div class="header-info info">

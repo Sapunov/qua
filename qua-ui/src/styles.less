@@ -31,11 +31,25 @@ h2 {
   color: @text-color-bl;
 }
 
+.keywords {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  flex-flow: row wrap;
+}
+
 .keyword {
+  margin-top: @indent - 10px;
   border-radius: @border-radius;
   padding: 4px;
   color: @text-color-2;
   background-color: @keyword-color;
+
+  &:not(:last-child) {
+    margin-right: @indent - 10px;;
+  }
 }
 
 .button-blue {

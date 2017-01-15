@@ -4,6 +4,7 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Location } from '@angular/common';
 import { Router, NavigationExtras } from '@angular/router';
 
+import { QuestionService } from '../question.service';
 import { SearchService } from '../search.service';
 import { IHits, ISearchResult } from '../search-hits.interface';
 
@@ -21,16 +22,16 @@ export class SearchResultComponent implements OnInit {
     private search: SearchService,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location
+    private location: Location,
+    private questionService: QuestionService
   ) { }
 
   addQuestion(question: string): void {
-    let params: NavigationExtras = {
-      queryParams: {
-        title: question
-      }
+    this.questionService.question = {
+      title: question,
+      reply: false
     };
-    this.router.navigate(['add'], params);
+    this.router.navigate(['add']);
   }
 
   getQuestion(data: any, id: number): void {

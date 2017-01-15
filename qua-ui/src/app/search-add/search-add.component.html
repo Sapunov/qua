@@ -1,4 +1,4 @@
-<div class=" app-block search-add" *ngIf="question">
+<div class=" app-block search-add">
   <h1 class="search-add-title">Здесь Вы можете задать любой вопрос. А если вы не имбицил, то можно еще и ответить сразу.</h1>
   <form class="search-add-form" (ngSubmit)="onSubmit(inpQuestion.value)" #addForm="ngForm">
     <input
@@ -10,8 +10,16 @@
       [value]="question.title || ''"
       #inpQuestion
       required />
-    <app-markdown class="form-textarea" #md [raw]="question.answer"></app-markdown>
-    <!--<textarea name="answer" class="form-textarea" type="text" placeholder="Ответ на вопрос" ngModel></textarea>-->
+    <div class="form-keywords">
+      <div class="form-keywords-control">
+        <input class="input-st" type="text" placeholder="Ключевое словое" #inpKeyword>
+        <button class="button-blue" type="button" (click)="addKeyword(inpKeyword.value)">Добавить</button>
+      </div>
+      <div class="form-keywords-list keywords">
+        <span class="keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
+      </div>
+    </div>
+    <app-markdown class="form-textarea" #md [raw]="question.answer.raw"></app-markdown>
     <button class="button-blue form-submit" type="submit" [disabled]="!addForm.valid">Отправить</button>
   </form>
 </div>

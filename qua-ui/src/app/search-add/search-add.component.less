@@ -18,17 +18,31 @@
   }
 }
 
-.form-textarea {
-  flex: 0 100%;
-}
+.form {
 
-.form-input {
-  flex: 0 100%;
-  padding-right: 50px;
-  resize: none;
-  margin-bottom: @indent;
-}
+  &-textarea {
+    margin-top: @indent;
+    flex: 0 100%;
+  }
+  &-input {
+    flex: 0 100%;
+    padding-right: 50px;
+    resize: none;
+    margin-bottom: @indent;
+  }
+  &-keywords {
+    &-control {
+      display: -webkit-flex;
+      display: -moz-flex;
+      display: -ms-flex;
+      display: -o-flex;
+      display: flex;
+      flex-flow: row wrap;
 
-.form-submit {
-
+      > input {
+        margin-right: @indent;
+        margin-bottom: 0;
+      }
+    }
+  }
 }

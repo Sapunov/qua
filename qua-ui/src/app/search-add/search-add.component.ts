@@ -1,5 +1,5 @@
 import 'rxjs/add/operator/switchMap';
-import { Component, OnInit, ViewChild  } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild  } from '@angular/core';
 import { ActivatedRoute, Params, Router, NavigationExtras } from '@angular/router';
 
 import { MarkdownComponent } from '../markdown/markdown.component';
@@ -13,18 +13,18 @@ import { IQuestion, INewQuestion } from '../question.interface';
   templateUrl: './search-add.component.html',
   styleUrls: ['./search-add.component.less']
 })
-export class SearchAddComponent implements OnInit {
+export class SearchAddComponent implements OnInit, OnDestroy {
   @ViewChild(MarkdownComponent) private mde: MarkdownComponent;
 
+  question: INewQuestion | IQuestion;
   isReply: boolean = false;
-  question: INewQuestion;
   sfHide: boolean = true;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService
-  ) { }
+  ) {  }
 
   onSubmit(question: string): void {
     let raw: string = this.mde.getValue();
@@ -36,8 +36,9 @@ export class SearchAddComponent implements OnInit {
   }
 
   edit(id: number, title: string, raw: string) {
-    let data = {
+    let data: INewQuestion = {
       title,
+      keywords: this.question.keywords,
       answer: {
         raw
       }
@@ -49,24 +50,46 @@ export class SearchAddComponent implements OnInit {
   }
 
   add(title: string, raw: string) {
-    let data = {
+    let data: INewQuestion = {
       title,
+      keywords: this.question.keywords,
       answer: {
         raw
       }
     };
     this.questionService.addQuestion(data)
-      .then((newQue: IQuestion) => {
-        this.router.navigate([`questions/${newQue.id}`]);
+      .then((que: IQuestion) => {
+        this.router.navigate([`questions/${que.id}`]);
       });
   }
 
+  addKeyword(keyword: string) {
+    if (keyword) {
+      this.question.keywords.push(keyword);
+    }
+  }
+
   ngOnInit() {
-    this.route.queryParams.subscribe((params: INewQuestion) => {
-      if (params.reply) {
-        this.isReply = true;
-      }
-      this.question = params;
-    });
+    let question: IQuestion | INewQuestion = this.questionService.question;
+    if (question) {
+      question.keywords = question.keywords || [];
+      question.categories = question.categories || [];
+      question.answer = question.answer ? question.answer : { raw: '' };
+      this.isReply = question.reply;
+      this.question = question;
+    } else {
+      this.question = {
+        title: '',
+        answer: {
+          raw: ''
+        },
+        categories: [],
+        keywords: []
+      } as INewQuestion;
+    }
+  }
+
+  ngOnDestroy() {
+    this.questionService.question = null;
   }
 }

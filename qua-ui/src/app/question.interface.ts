@@ -25,7 +25,7 @@ export interface IAnswer {
 
 export interface ICategories {
   id: number;
-  name: string;
+  name?: string;
 }
 
 export interface IQuestion {
@@ -38,16 +38,15 @@ export interface IQuestion {
   title: string;
   updated_at: string;
   updated_by: IUser;
+  reply?: boolean;
 }
 
 export interface INewQuestion {
-  reply?: boolean;
   answer?: {
     raw?: string;
   };
-  categories?: {
-    id: number;
-  };
+  categories?: ICategories[];
   keywords?: string[];
   title: string;
+  reply?: boolean;
 }
