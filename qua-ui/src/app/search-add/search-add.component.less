@@ -57,23 +57,21 @@
   &-keywords-keyword,
   &-categories-category {
     @ind: 4px;
-    position: relative;
     border-radius: @border-radius;
     padding: @ind;
-    padding-right: @ind*4+8;
+    padding-left: @ind*2;
+    color: lighten(@text-color-bl, 10%);
+    background-color: @bg-color;
 
     > i {
-      border-radius: @border-radius;
-      background-color: darken(@bg-color, 10%);
       cursor: pointer;
-      position: absolute;
-      padding: @ind + 1px;
-      right: 0;
-      top: 0;
+      padding: @ind;
+      padding-left: @ind;
     }
   }
 
-  &-keywords-keyword > i {
-      background-color: darken(@keyword-color, 5%);
+  &-keywords-keyword {
+    color: @color-keyword-text;
+    background-color: @color-keyword-bg;
   }
 }
