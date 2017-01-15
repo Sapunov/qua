@@ -1,5 +1,5 @@
 import logging
-import markdown
+import mistune
 
 from django.db import models
 from django.contrib.auth.models import User
@@ -188,7 +188,7 @@ class Answer(Base):
 
             self.save()
 
-            cache.set(self.name, markdown.markdown(self.raw), constants.MONTH)
+            cache.set(self.name, mistune.markdown(self.raw), constants.MONTH)
 
     @property
     def name(self):
@@ -202,6 +202,6 @@ class Answer(Base):
             log.debug('Regenerating markdown. Raw: %s', self.raw)
 
             html = cache.get_or_set(
-                self.name, markdown.markdown(self.raw), constants.MONTH)
+                self.name, mistune.markdown(self.raw), constants.MONTH)
 
         return html

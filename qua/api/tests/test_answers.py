@@ -35,7 +35,7 @@ class AnswerTest(BaseQuaTestCase):
 
         answer = resp.data['response']['answer']
 
-        self.assertEqual(answer['html'], '<p>test_raw_to_question_1</p>')
+        self.assertEqual(answer['html'], '<p>test_raw_to_question_1</p>\n')
 
     def test_update_html(self):
         resp_one = self.client.post(
