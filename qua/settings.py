@@ -130,6 +130,16 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'qua.api.response.custom_jwt_response_payload_handler',
 }
 
+REDIS_DB = 0
+
+REDIS_URL = "redis://localhost:6379/{}".format(REDIS_DB)
+BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
+CELERY_SEND_EVENTS = True
+CELERY_ACCEPT_CONTENT = ["json"]
+CELERY_TASK_SERIALIZER = "json"
+CELERY_RESULT_SERIALIZER = "json"
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,
@@ -172,7 +182,17 @@ LOGGING = {
             "handlers": ['requests'],
             "level": "INFO",
             "propagate": False
-        }
+        },
+        "celery": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True
+        },
+        "celery.task": {
+            "handlers": ["console"],
+            "level": "DEBUG",
+            "propagate": True
+        },
     },
 }
 
