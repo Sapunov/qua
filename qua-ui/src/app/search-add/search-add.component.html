@@ -1,14 +1,13 @@
 <div class=" app-block search-add">
   <h1 class="search-add-title">Здесь Вы можете задать любой вопрос. А если вы не имбицил, то можно еще и ответить сразу.</h1>
-  <form class="search-add-form" (ngSubmit)="onSubmit(inpQuestion.value)" #addForm="ngForm">
+  <form class="search-add-form" (ngSubmit)="onSubmit()" #addForm="ngForm">
     <input
       name="title"
       maxlength="300"
       class="input-st form-input"
       type="text"
       placeholder="Текст вопроса"
-      [value]="question.title || ''"
-      #inpQuestion
+      [(ngModel)] = "title"
       required />
     <div class="form-categories">
       <div class="form-categories-control">
@@ -18,21 +17,21 @@
         <button class="button-blue" type="button" (click)="addCategory(inpCategory.value)">Добавить</button>
       </div>
       <div class="form-categories-list categories-list">
-        <span class="form-categories-category categories-list-category" *ngFor="let category of question.categories; let i = index">{{ category.name }}
+        <span class="form-categories-category categories-list-category" *ngFor="let category of categories; let i = index">{{ category.name }}
           <i class="fa fa-times" (click)="delCategory(i)"></i></span>
       </div>
     </div>
     <div class="form-keywords">
-      <div class="form-keywords-control">
-        <input class="input-st" type="text" placeholder="Ключевое словое" #inpKeyword>
-        <button class="button-blue" type="button" (click)="addKeyword(inpKeyword.value); inpKeyword.value = ''">Добавить</button>
-      </div>
+      <form class="form-keywords-control" (ngSubmit)="addKeyword(); keywordForm.reset()" #keywordForm>
+        <input name="keyword" class="input-st" type="text" placeholder="Ключевое словое" [(ngModel)]="keyword" required>
+        <button class="button-blue" type="submit">Добавить</button>
+      </form>
       <div class="form-keywords-list keywords">
-        <span class="form-keywords-keyword keywords-keyword" *ngFor="let keyword of question.keywords; let i = index">{{ keyword }}
+        <span class="form-keywords-keyword keywords-keyword" *ngFor="let keyword of keywords; let i = index">{{ keyword }}
           <i class="fa fa-times" (click)="delKeyword(i)"></i></span>
       </div>
     </div>
-    <app-markdown class="form-textarea" #md [raw]="question.answer.raw"></app-markdown>
+    <app-markdown class="form-textarea" #md [raw]="answer.raw"></app-markdown>
     <button class="button-blue form-submit" type="submit" [disabled]="!addForm.valid">Отправить</button>
   </form>
 </div>

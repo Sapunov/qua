@@ -29,7 +29,8 @@ export class SearchResultComponent implements OnInit {
   addQuestion(question: string): void {
     this.questionService.question = {
       title: question,
-      reply: false
+      reply: false,
+      new: true
     };
     this.router.navigate(['add']);
   }

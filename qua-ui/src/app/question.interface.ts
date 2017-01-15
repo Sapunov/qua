@@ -45,8 +45,9 @@ export interface INewQuestion {
   answer?: {
     raw?: string;
   };
-  categories?: any;
+  categories?: ICategories[];
   keywords?: string[];
   title: string;
   reply?: boolean;
+  new?: boolean;
 }

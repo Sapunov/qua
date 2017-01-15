@@ -7,7 +7,7 @@ import { MarkdownComponent } from '../markdown/markdown.component';
 import { QuestionService } from '../question.service';
 import { CategoryService } from '../category.service';
 
-import { IQuestion, INewQuestion, ICategories } from '../question.interface';
+import { IQuestion, INewQuestion, ICategories, IAnswer } from '../question.interface';
 import { ICategory } from '../category.interface';
 
 @Component({
@@ -18,10 +18,17 @@ import { ICategory } from '../category.interface';
 export class SearchAddComponent implements OnInit, OnDestroy {
   @ViewChild(MarkdownComponent) private mde: MarkdownComponent;
 
-  question: INewQuestion | IQuestion;
+  question: IQuestion | INewQuestion;
   allCategories: ICategories[];
   isReply: boolean = false;
   sfHide: boolean = true;
+  title: string = '';
+  keywords: string[] = [];
+  keyword: string;
+  categories: ICategories[] = [];
+  answer: any = {
+    raw: ''
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -30,39 +37,39 @@ export class SearchAddComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService
   ) {  }
 
-  onSubmit(question: string): void {
-    let raw: string = this.mde.getValue();
+  onSubmit(): void {
+    this.answer = { raw: this.mde.getValue() };
     if (this.isReply) {
-      this.edit(this.question['id'], question, raw);
+      this.edit(this.question['id']);
     } else {
-      this.add(question, raw);
+      this.add();
     }
   }
 
-  edit(id: number, title: string, raw: string) {
+  edit(id: number) {
     let data: INewQuestion = {
-      title,
-      categories: this.question.categories,
-      keywords: this.question.keywords,
-      answer: {
-        raw
-      }
+      title: this.title,
+      categories: this.categories,
+      keywords: this.keywords
     };
+    if (this.answer.raw) {
+      data.answer = this.answer;
+    }
     this.questionService.editQuestion(id, data)
       .then((que: IQuestion) => {
         this.router.navigate([`questions/${que.id}`]);
       });
   }
 
-  add(title: string, raw: string) {
+  add() {
     let data: INewQuestion = {
-      title,
-      categories: this.question.categories,
-      keywords: this.question.keywords,
-      answer: {
-        raw
-      }
+      title: this.title,
+      categories: this.categories,
+      keywords: this.keywords,
     };
+    if (this.answer.raw) {
+      data.answer = this.answer;
+    }
     this.questionService.addQuestion(data)
       .then((que: IQuestion) => {
         this.router.navigate([`questions/${que.id}`]);
@@ -77,43 +84,38 @@ export class SearchAddComponent implements OnInit, OnDestroy {
   }
 
   addCategory(index: number) {
-    this.question.categories.push({
+    this.categories.push({
       id: this.allCategories[index].id,
       name: this.allCategories[index].name
     });
   }
 
   delCategory(index: number) {
-    this.question.categories.splice(index, 1);
+    this.categories.splice(index, 1);
   }
 
-  addKeyword(keyword: string) {
-    if (keyword) {
-      this.question.keywords.push(keyword);
+  addKeyword() {
+    console.log(this.keyword);
+    if (this.keyword) {
+      this.keywords.push(this.keyword);
     }
   }
 
   delKeyword(index: number) {
-    this.question.keywords.splice(index, 1);
+    this.keywords.splice(index, 1);
   }
 
   ngOnInit() {
-    let question: IQuestion | INewQuestion = this.questionService.question;
-    if (question) {
-      question.keywords = question.keywords || [];
-      question.categories = question.categories || [];
-      question.answer = question.answer ? question.answer : { raw: '' };
+    let question = this.questionService.question;
+    if (question && !question['new']) {
+      this.title = question.title || this.title;
+      this.keywords = question.keywords.slice() || this.keywords;
+      this.categories = question.categories.slice() || this.categories;
+      this.answer = question.answer ? Object.assign(question.answer) : this.answer;
       this.isReply = question.reply;
       this.question = question;
-    } else {
-      this.question = {
-        title: '',
-        answer: {
-          raw: ''
-        },
-        categories: [],
-        keywords: []
-      } as INewQuestion;
+    } else if (question) {
+      this.title = question.title || this.title;
     }
     this.getCategories();
   }
