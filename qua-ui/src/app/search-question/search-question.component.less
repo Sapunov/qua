@@ -56,17 +56,14 @@
     color: @text-color;
 
     > h1 {
-      font-size: 1.1rem;
+      font-size: 1.2rem;
+      font-weight: normal;
       margin: 0;
     }
   }
 
   &-keywords {
-    flex-flow: row wrap;
-
-    .keyword:not(:last-child) {
-      margin-right: @indent-text;
-    }
+    margin-top: @indent - 5px;
   }
 
   &-info {
@@ -93,9 +90,6 @@
       margin-bottom: @indent;
     }
   }
-  .info-text:last-child {
-    margin-top: @indent-text;
-  }
 }
 
 .info {
@@ -106,12 +100,8 @@
   display: flex;
   flex-flow: row wrap;
   border-top: @border;
+  color: @color-meta;
   &-text {
-    margin-right: @indent;
-
-    > span:nth-child(2) {
-        // font-weight: bold;
-        text-decoration: underline;
-    }
+    margin-right: @indent-text;
   }
 }

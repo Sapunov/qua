@@ -6,22 +6,23 @@
   </div>
   <header class="search-question-header">
     <div class="header-title">
-      <img src="" alt="">
       <h1>{{ question.title }}</h1>
     </div>
-    <div *ngIf="question.keywords.length" class="header-keywords">
-      <span class="keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
+    <div *ngIf="question.keywords.length" class="header-keywords keywords">
+      <span class="keywords-keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
+    </div>
+    <div *ngIf="question.categories.length" class="categories-list">
+      <span class="categories-list-title">Категории:</span>
+      <span class="categories-list-category" *ngFor="let category of question.categories">{{ category.name }}</span>
     </div>
     <div class="header-info info">
       <div class="info-text">
         <i class="fa fa-user"></i>
-        <span>Задал:</span>
         <span>{{ question.created_by.first_name }}</span>
         <span>{{ question.created_by.last_name }}</span>
       </div>
       <div class="info-text">
         <i class="fa fa-clock-o"></i>
-        <span>Дата:</span>
         <span>{{ question.created_at | date:'short' }}</span>
       </div>
     </div>
@@ -33,31 +34,13 @@
     </div>
     <div class="answer answer-text" *ngIf="raw" [innerHTML]="question.answer.html"></div>
     <div class="answer answer-info info" *ngIf="raw">
-      <div>
-        <div class="info-text">
-          <i class="fa fa-user"></i>
-          <span>Ответил:</span>
-          <span>{{ question.answer.created_by.first_name }}</span>
-          <span>{{ question.answer.created_by.last_name }}</span>
-        </div>
-        <div class="info-text">
-          <i class="fa fa-user"></i>
-          <span>Изменил:</span>
-          <span>{{ question.updated_by.first_name }}</span>
-          <span>{{ question.updated_by.last_name }}</span>
-        </div>
+      <div class="info-text">
+        <span>Ответил:</span>
+        <span><b>{{ question.updated_by.first_name }}</b></span>
+        <span><b>{{ question.updated_by.last_name }}</b></span>
       </div>
-      <div>
-        <div class="info-text">
-          <i class="fa fa-clock-o"></i>
-          <span>Дата:</span>
-          <span>{{ question.answer.created_at | date:'short' }}</span>
-        </div>
-        <div class="info-text">
-          <i class="fa fa-clock-o"></i>
-          <span>Дата изменения:</span>
-          <span>{{ question.updated_at | date:'short' }}</span>
-        </div>
+      <div class="info-text">
+        <span>{{ question.updated_at | date:'short' }}</span>
       </div>
     </div>
   </div>

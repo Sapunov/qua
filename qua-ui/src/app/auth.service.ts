@@ -5,7 +5,7 @@ import { CanActivate, Router } from '@angular/router';
 
 import { IResponse } from './response.interface';
 
-import { environment } from '../environments/environment';
+import { URLS } from '../environments/const';
 
 @Injectable()
 export class AuthService implements CanActivate {
@@ -40,19 +40,18 @@ export class AuthService implements CanActivate {
     let options = new RequestOptions({
       headers: headers
     });
-    return this.http.post(environment.urls.auth, JSON.stringify(data), options)
+    return this.http.post(URLS.auth, JSON.stringify(data), options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
       })
       .then((response: IResponse) => {
-        // if (!response.ok) {
-        //   throw response.error;
-        // }
-        console.error('ПЕРЕД ТЕМ КАК ОТДАТЬ БИЛД, ИСПРАВЬ АВТОРИЗАЦИЮ!');
-        this.token = response['token'];
+        if (!response.ok) {
+          throw response.error;
+        }
+        this.token = response.response.token;
         this.isAuth = true;
-        localStorage.setItem('token', response['token']);
+        localStorage.setItem('token', response.response.token);
         return true;
       })
       .catch(this.handleError);

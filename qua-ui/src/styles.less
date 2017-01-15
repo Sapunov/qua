@@ -31,11 +31,48 @@ h2 {
   color: @text-color-bl;
 }
 
-.keyword {
-  border-radius: @border-radius;
-  padding: 4px;
-  color: @text-color-2;
-  background-color: @keyword-color;
+.categories-list {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  flex-flow: row wrap;
+
+  &-category:not(:last-child):after {
+    content: ',';
+  }
+  &-category,
+  &-title {
+    margin-top: @indent - 10px;
+    margin-right: @indent - 10px;
+  }
+
+  &-title {
+    padding-left: 0;
+  }
+}
+
+
+.keywords {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  flex-flow: row wrap;
+
+  &-keyword {
+    margin-top: @indent - 10px;
+    border-radius: 20px;
+    padding: 6px 8px;
+    background-color: #faf3d8;
+    color: #817945;
+
+    &:not(:last-child) {
+      margin-right: @indent - 10px;;
+    }
+  }
 }
 
 .button-blue {
@@ -59,6 +96,7 @@ h2 {
   border: @border;
   border-radius: @border-radius;
   outline: none;
+  background-color: @bg-color-2;
 }
 
 .app-block {

@@ -12,25 +12,17 @@
     <header>
       <a class="hit-header" (click)="getQuestion(hit.url_params, hit.id)">
         <span class="hit-header-title">{{ hit.title }}</span>
-        <div *ngIf="hit.keywords.length" class="hit-header-keywords">
-          <span class="keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
+        <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
+          <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
+        </div>
+        <div *ngIf="hit.categories.length" class="hit-header-categories categories-list">
+          <span class="categories-list-title">Категории:</span>
+          <span class="categories-list-category" *ngFor="let category of hit.categories">{{ category.name }}</span>
         </div>
       </a>
     </header>
     <div class="hit-snippet">
       <span class="hit-snippet-text">{{ hit.snippet }}</span>
-    </div>
-    <div class="hit-info">
-      <div class="hit-info-creator">
-        <i class="fa fa-user"></i>
-        <span>Создал:</span>
-        <span><u>Олег Озерицкий</u></span>
-      </div>
-      <div class="hit-info-data">
-        <i class="fa fa-clock-o"></i>
-        <span>Дата:</span>
-        <span>1/9/2017, 11:37 PM</span>
-      </div>
     </div>
   </div>
 </div>

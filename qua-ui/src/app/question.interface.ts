@@ -1,3 +1,5 @@
+import { ICat } from './category.interface';
+
 export interface IUser {
   first_name: string;
   id: number;
@@ -18,17 +20,18 @@ export interface IAnswer {
       last_name: string;
       username: string;
   };
-  version: 2;
+  version: number;
 }
 
 export interface ICategories {
   id: number;
-  name: string;
+  name?: string;
 }
 
 export interface IQuestion {
-  answer: IAnswer;
-  categories: ICategories[];
+  answer?: IAnswer;
+  answer_exists?: boolean;
+  categories: ICat[];
   created_at: string;
   created_by: IUser;
   id: number;
@@ -36,15 +39,16 @@ export interface IQuestion {
   title: string;
   updated_at: string;
   updated_by: IUser;
+  reply?: boolean;
 }
 
 export interface INewQuestion {
-  reply?: boolean;
   answer?: {
     raw?: string;
-    snippet?: string;
   };
-  categories?: number[];
+  categories?: ICategories[];
   keywords?: string[];
   title: string;
+  reply?: boolean;
+  new?: boolean;
 }

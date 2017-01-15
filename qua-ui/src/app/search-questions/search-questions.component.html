@@ -1,0 +1,30 @@
+<div class="search-questions" *ngIf="questions">
+  <div class="app-block search-questions-list" *ngFor="let question of questions">
+    <header>
+      <a class="question-header" (click)="getQuestion(question.id)">
+        <span class="question-header-badge" data-answer-exists="yes" *ngIf="question.answer_exists">Есть ответ</span>
+        <span class="question-header-badge" data-answer-exists="no" *ngIf="!question.answer_exists">Нету ответа</span>
+        <span class="question-header-title">{{ question.title }}</span>
+        <div *ngIf="question.keywords.length" class="question-header-keywords keywords">
+          <span class="keywords-keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
+        </div>
+        <div *ngIf="question.categories.length" class="question-header-categories categories-list">
+          <span class="categories-list-title">Категории:</span>
+          <span class="categories-list-category" *ngFor="let category of question.categories">{{ category.name }}</span>
+        </div>
+      </a>
+    </header>
+    <div class="question-info">
+      <div class="question-info-creator">
+        <i class="fa fa-user"></i>
+        <span>{{question.created_by.first_name}}</span>
+        <span>{{question.created_by.last_name}}</span>
+      </div>
+      <div class="question-info-data">
+        <i class="fa fa-clock-o"></i>
+        <span>{{question.created_at | date:'short'}}</span>
+      </div>
+    </div>
+  </div>
+</div>
+

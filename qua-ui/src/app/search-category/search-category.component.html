@@ -7,7 +7,7 @@
     <button class="button-blue" type="submit">Добавить</button>
   </form>
 </div>
-<div class="categories" *ngIf="categories">
+<div class="categories-block" *ngIf="categories">
     <div class="app-block category" *ngFor="let category of categories">
       <div class="category-control">
         <button class="control-delete" (click)="delete(category.id)">
@@ -26,32 +26,14 @@
           </button>
         </div>
       </div>
-      <div class="category-info">
-        <div class="category-info-users">
-          <div class="info-text">
-            <i class="fa fa-user"></i>
-            <span>Создал:</span>
-            <span>{{ category.created_by.first_name }}</span>
-            <span>{{ category.created_by.last_name }}</span>
-          </div>
-          <div class="info-text">
-            <i class="fa fa-user"></i>
-            <span>Изменил:</span>
-            <span>{{ category.updated_by.first_name }}</span>
-            <span>{{ category.updated_by.last_name }}</span>
-          </div>
+      <div class="category-info info">
+        <div class="info-text">
+          <span>Добавил:</span>
+          <span><b>{{ category.updated_by.first_name }}</b></span>
+          <span><b>{{ category.updated_by.last_name }}</b></span>
         </div>
-        <div class="category-info-data">
-          <div class="info-text">
-            <i class="fa fa-clock-o"></i>
-            <span>Дата:</span>
-            <span>{{ category.created_at | date:'short' }}</span>
-          </div>
-          <div class="info-text">
-            <i class="fa fa-clock-o"></i>
-            <span>Дата изменения:</span>
-            <span>{{ category.updated_at | date:'short' }}</span>
-          </div>
+        <div class="info-text">
+          <span>{{ category.updated_at | date:'short' }}</span>
         </div>
       </div>
     </div>

@@ -5,7 +5,7 @@ import { ActivatedRoute, Params, Router, NavigationExtras } from '@angular/route
 import { Location } from '@angular/common';
 
 import { QuestionService } from '../question.service';
-import { IQuestion } from '../question.interface';
+import { IQuestion, INewQuestion } from '../question.interface';
 
 @Component({
   selector: 'app-search-question',
@@ -24,31 +24,14 @@ export class SearchQuestionComponent implements OnInit {
   ) { }
 
   edit() {
-    let params: NavigationExtras = {
-      skipLocationChange: true,
-      queryParams: {
-        title: this.question.title,
-        answer: this.question.answer.raw,
-        keywords: this.question.keywords,
-        categories: this.question.categories,
-        id: this.question.id,
-        reply: true
-      }
-    };
-    this.router.navigate(['add'], params);
+    this.question.reply = true;
+    this.questionService.question = this.question;
+    this.router.navigate(['add']);
   }
   reply() {
-    let params: NavigationExtras = {
-      skipLocationChange: true,
-      queryParams: {
-        title: this.question.title,
-        keywords: this.question.keywords,
-        categories: this.question.categories,
-        id: this.question.id,
-        reply: true
-      }
-    };
-    this.router.navigate(['add'], params);
+    this.question.reply = true;
+    this.questionService.question = this.question;
+    this.router.navigate(['add']);
   }
 
   ngOnInit() {

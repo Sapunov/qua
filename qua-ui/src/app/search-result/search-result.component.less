@@ -26,50 +26,15 @@
   &-title {
     font-size: 1.1rem;
     color: @text-color;
-
   }
 
   &:hover &-title {
     text-decoration: underline;
   }
-
-  &-keywords {
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flex;
-    display: -o-flex;
-    display: flex;
-    flex: row wrap;
-    margin-top: @indent-text;
-  }
-
-  .keyword:not(:last-child) {
-    margin-right: @indent-text;
-  }
 }
 
 .hit-snippet {
   padding: @indent;
-}
-
-.hit-info {
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  display: -o-flex;
-  display: flex;
-  flex-flow: row nowrap;
-  padding-left: @indent;
-  padding-right: @indent;
-  padding-bottom: @indent;
-
-  &-creator {
-    margin-right: @indent;
-  }
-
-  &-data {
-
-  }
 }
 
 .empty {

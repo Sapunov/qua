@@ -1,6 +1,6 @@
 import { Injectable }    from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
-import { environment } from '../environments/environment';
+import { URLS } from '../environments/const';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -25,7 +25,7 @@ export class CategoryService {
       headers: this.headers,
       withCredentials: true
     });
-    return this.http.post(`${environment.urls.category}`, JSON.stringify(data), options)
+    return this.http.post(`${URLS.category}`, JSON.stringify(data), options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
@@ -44,7 +44,7 @@ export class CategoryService {
       headers: this.headers,
       withCredentials: true
     });
-    return this.http.get(`${environment.urls.category}`, options)
+    return this.http.get(`${URLS.category}`, options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
@@ -66,7 +66,7 @@ export class CategoryService {
       headers: this.headers,
       withCredentials: true
     });
-    return this.http.put(`${environment.urls.category}/${id}`, JSON.stringify(data), options)
+    return this.http.put(`${URLS.category}/${id}`, JSON.stringify(data), options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
@@ -86,7 +86,7 @@ export class CategoryService {
       headers: this.headers,
       withCredentials: true
     });
-    return this.http.delete(`${environment.urls.category}/${id}`, options)
+    return this.http.delete(`${URLS.category}/${id}`, options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;

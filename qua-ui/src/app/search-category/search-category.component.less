@@ -1,5 +1,7 @@
 @import '../../styles/variables.less';
 
+@indent-text: 5px;
+
 .search-category {
   flex-flow: column nowrap;
 
@@ -35,8 +37,14 @@
 }
 
 .category {
+  padding: 0;
   position: relative;
   flex-flow: column nowrap;
+
+  &-title,
+  &-info {
+    padding: @indent;
+  }
 
   &-title {
 
@@ -66,52 +74,45 @@
     }
   }
 
-  &-info {
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flex;
-    display: -o-flex;
-    display: flex;
-    flex-flow: row wrap;
-    margin-top: @indent;
+  &-control {
+    right: 0;
+    top: 0;
+    position: absolute;
+    overflow: hidden;
 
-    &-data {
-      margin-left: @indent;
-    }
-  }
+    .control-delete {
+      transform: translate(59px);
+      padding: 17px 10px;
+      cursor: pointer;
+      font-size: 1.1rem;
+      background-color: transparent;
+      transition: transform .5s ease;
 
+      &:after {
+        margin-left: 5px;
+        font-size: 0.8rem;
+        content: 'Удалить';
+      }
 
-    &-control {
-      right: 0;
-      top: 0;
-      position: absolute;
-      overflow: hidden;
-
-      .control-delete {
-        transform: translate(59px);
-        padding: 17px 10px;
-        cursor: pointer;
-        font-size: 1.1rem;
-        background-color: transparent;
-        transition: transform .5s ease;
-
-        &:after {
-          margin-left: 5px;
-          font-size: 0.8rem;
-          content: 'Удалить';
-        }
-
-        &:hover {
-          transform: translate(0);
-          color: @text-color;
-        }
+      &:hover {
+        transform: translate(0);
+        color: @text-color;
       }
     }
+  }
 }
 
-.info-text {
-  > span:nth-child(2) {
-    text-decoration: underline;
+.info {
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flex;
+  display: -o-flex;
+  display: flex;
+  flex-flow: row wrap;
+  border-top: @border;
+  color: @color-meta;
+  &-text {
+    margin-right: @indent-text;
   }
 }
 
