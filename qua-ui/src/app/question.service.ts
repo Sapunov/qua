@@ -78,6 +78,25 @@ export class QuestionService {
       .catch(this.handleError);
   }
 
+  getQuestions(): Promise<IQuestion[]> {
+    let options = new RequestOptions({
+      headers: this.headers,
+      withCredentials: true,
+    });
+    return this.http.get(`${URLS.question}`, options)
+      .toPromise()
+      .then((response: any) => {
+          return response.json() as IResponse;
+      })
+      .then((response: IResponse) => {
+        if (!response.ok) {
+          throw response.error;
+        }
+        return response.response as IQuestion[];
+      })
+      .catch(this.handleError);
+  }
+
   private handleError(error: any): Promise<any> {
     console.error('An error occurred', error); // for demo purposes only
     return Promise.reject(error.message || error);

@@ -1,11 +1,12 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
+import { SearchQuestionsComponent } from './search-questions/search-questions.component';
+import { SearchCategoryComponent } from './search-category/search-category.component';
 import { SearchResultComponent } from './search-result/search-result.component';
 import { SearchQuestionComponent } from './search-question/search-question.component';
 import { SearchAddComponent } from './search-add/search-add.component';
 import { AuthComponent } from './auth/auth.component';
-import { SearchCategoryComponent } from './search-category/search-category.component';
 
 import { AuthService } from './auth.service';
 
@@ -19,6 +20,11 @@ const routes: Routes = [
     path: 'search',
     component:
     SearchResultComponent,
+    canActivate: [AuthService]
+  },
+  {
+    path: 'questions',
+    component: SearchQuestionsComponent,
     canActivate: [AuthService]
   },
   {

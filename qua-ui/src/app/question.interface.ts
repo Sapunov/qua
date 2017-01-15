@@ -29,7 +29,8 @@ export interface ICategories {
 }
 
 export interface IQuestion {
-  answer: IAnswer;
+  answer?: IAnswer;
+  answer_exists?: boolean;
   categories: ICat[];
   created_at: string;
   created_by: IUser;
