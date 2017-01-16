@@ -140,6 +140,12 @@ CELERY_ACCEPT_CONTENT = ["json"]
 CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
+
+SEARCH_INDEX_DB = os.path.join(DATA, 'search_index')
+SEARCH_LANGUAGES = ['russian', 'english']
+SEARCH_RESULTS_MAX = 100
+
+
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": True,

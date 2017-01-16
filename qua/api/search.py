@@ -4,6 +4,7 @@ from django.urls import reverse
 
 from qua.api.models import Question, SearchHistory
 from qua import utils
+from qua.api.utils import search as search_util
 
 
 log = logging.getLogger('qua.' + __name__)
@@ -62,7 +63,9 @@ def make_assumptions(query):
 
 
 class SearchResults:
-    def __init__(self, query, queryset=None, search_history_id=None):
+    def __init__(
+        self, query, queryset=None, search_history_id=None, engine_answer=None
+    ):
         self.query = query
         self.total = 0
 
@@ -75,8 +78,16 @@ class SearchResults:
         if self.total > 0:
             for result in queryset:
                 self.hits.append(
-                    SearchHit(result.id, result.title, result.categories,
-                        search_history_id, result.keywords))
+                    SearchHit(
+                        result.id,
+                        result.title,
+                        result.categories,
+                        search_history_id,
+                        keywords=result.keywords,
+                        score=engine_answer[result.id]['score'],
+                        snippet=engine_answer[result.id]['text'][:140]
+                    )
+                )
         else:
             self.category_assumptions = make_assumptions(query)
 
@@ -93,7 +104,14 @@ def search(query, user, category=None):
     if query == '':
         return SearchResults(query)
 
-    results = Question.objects.filter(title__contains=query, deleted=False)
+    search_results = search_util.search(query)
+
+    log.debug('Rearch results: %s' % search_results)
+
+    results = Question.objects.filter(
+        pk__in=search_results['hits'].keys(),
+        deleted=False
+    )
 
     if category is not None:
         results.filter(categories__id=category)
@@ -101,4 +119,4 @@ def search(query, user, category=None):
     history_record = SearchHistory.objects.create(
         query=query, user=user, results=results.count())
 
-    return SearchResults(query, results, history_record.id)
+    return SearchResults(query, results, history_record.id, search_results['hits'])

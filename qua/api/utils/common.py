@@ -1,5 +1,6 @@
 import re
 import hashlib
+from bs4 import BeautifulSoup
 
 
 def word_normalize(phrase):
@@ -37,3 +38,25 @@ def remove_empty_values(data):
 def h6(string):
     byte_string = bytes(string, "utf-8")
     return hashlib.sha256(byte_string).hexdigest()[:6]
+
+
+def get_text_from_html(html):
+
+    internal_tags = ['style', 'script', '[document]', 'head', 'title']
+    bs_instance = BeautifulSoup(html, 'lxml')
+
+    def _visible(element):
+        if element.parent.name in internal_tags:
+            return False
+        elif re.match('<!--.*-->', str(element)):
+            return False
+        return True
+
+    texts = bs_instance.findAll(text=True)
+
+    visible_texts = filter(_visible, texts)
+
+    text = ' '.join([elem.strip('\n') for elem in visible_texts])
+    text = text.replace('  ', ' ')
+
+    return text.strip()

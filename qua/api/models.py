@@ -4,8 +4,6 @@ import mistune
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.cache import cache
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from rest_framework import exceptions
 
 from qua.api.utils import common
@@ -79,7 +77,6 @@ class Question(Base):
     categories = models.ManyToManyField(Category)
     keywords = models.ManyToManyField(Keyword)
     deleted = models.BooleanField(default=False)
-    reindex = models.BooleanField(default=True)
     # answer field in Answer
 
     def __str__(self):

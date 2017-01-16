@@ -6,6 +6,7 @@ from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from qua.api.models import Category, Question, Keyword, Answer
+from qua.api import tasks
 
 
 log = logging.getLogger('qua.' + __name__)
@@ -157,7 +158,7 @@ class QuestionListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Question
-        exclude = ('deleted', 'reindex')
+        exclude = ('deleted',)
 
 
 class QuestionSerializer(serializers.ModelSerializer):
@@ -200,6 +201,8 @@ class QuestionSerializer(serializers.ModelSerializer):
                 question
             )
 
+        tasks.index_question.delay(question.id)
+
         return question
 
     def update(self, instance, validated_data):
@@ -228,11 +231,13 @@ class QuestionSerializer(serializers.ModelSerializer):
                     instance
                 )
 
+        tasks.index_question.delay(instance.id)
+
         return instance
 
     class Meta:
         model = Question
-        exclude = ('deleted', 'reindex')
+        exclude = ('deleted',)
 
 
 class CategoryAssumptionsSerializer(serializers.Serializer):
