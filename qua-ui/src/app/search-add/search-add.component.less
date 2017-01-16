@@ -4,39 +4,20 @@
   flex-flow: column wrap;
 
   &-title {
+    margin: 0;
     font-size: 1.2rem;
     font-weight: normal;
-  }
-
-  &-form {
-    display: -webkit-flex;
-    display: -moz-flex;
-    display: -ms-flex;
-    display: -o-flex;
-    display: flex;
-    flex-flow: row wrap;
   }
 }
 
 .form {
-  &-categories,
-  &-keywords,
-  &-textarea {
-    margin-top: @indent;
-  }
-
-  &-textarea {
-    flex: 0 100%;
-  }
   &-input {
     margin-bottom: 0;
-    flex: 0 100%;
     padding-right: 50px;
     resize: none;
   }
   &-categories,
   &-keywords {
-    flex: 0 100%;
     &-control {
       display: -webkit-flex;
       display: -moz-flex;
@@ -62,6 +43,10 @@
     padding-left: @ind*2;
     color: lighten(@text-color-bl, 10%);
     background-color: @bg-color;
+
+    &:after {
+      content: ''
+    }
 
     > i {
       cursor: pointer;
