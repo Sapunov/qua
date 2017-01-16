@@ -2,8 +2,14 @@
   <header class="search-category-header">
     <h1 class="search-category-header-text">Добавить категории</h1>
   </header>
-  <form class="search-category-form" (ngSubmit)="add(inpCat.value)" #addForm="ngForm">
-    <input class="search-category-form-inp input-st" type="text" placeholder="Имя категории" #inpCat required>
+  <form class="search-category-form" (ngSubmit)="add(addForm.value.category); addForm.resetForm()" #addForm="ngForm">
+    <input
+      class="search-category-form-inp input-st"
+      type="text"
+      name="category"
+      placeholder="Имя категории"
+      required
+      ngModel>
     <button class="search-category-form-btn button-blue" type="submit">Добавить</button>
   </form>
 </div>

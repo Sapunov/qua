@@ -72,7 +72,6 @@ export class CategoryService {
         return response.json() as IResponse;
       })
       .then((response: IResponse) => {
-        console.log(response);
         if (!response.ok) {
           throw response;
         }
@@ -92,7 +91,6 @@ export class CategoryService {
         return response.json() as IResponse;
       })
       .then((response: IResponse) => {
-        console.log(response);
         if (!response.ok) {
           throw response;
         }
