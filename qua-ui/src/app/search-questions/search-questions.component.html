@@ -14,13 +14,13 @@
         </div>
       </a>
     </header>
-    <div class="question-info">
-      <div class="question-info-creator">
+    <div class="question-info info">
+      <div class="question-info-creator info-text">
         <i class="fa fa-user"></i>
         <span>{{question.created_by.first_name}}</span>
         <span>{{question.created_by.last_name}}</span>
       </div>
-      <div class="question-info-data">
+      <div class="question-info-data info-text">
         <i class="fa fa-clock-o"></i>
         <span>{{question.created_at | date:'dd.MM.yyyy HH:mm'}}</span>
       </div>

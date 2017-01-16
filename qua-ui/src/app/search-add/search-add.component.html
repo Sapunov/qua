@@ -4,24 +4,24 @@
     <input
       name="title"
       maxlength="300"
-      class="input-st form-input"
+      class="app-block-elem input-st form-input"
       type="text"
       placeholder="Текст вопроса"
       [(ngModel)] = "title"
       required />
-    <div class="form-categories">
+    <div class="app-block-elem form-categories">
       <div class="form-categories-control">
         <select class="input-st" #inpCategory>
           <option value="{{i}}" *ngFor="let category of allCategories; let i = index">{{category.name}}</option>
         </select>
         <button class="button-blue" type="button" (click)="addCategory(inpCategory.value)">Добавить</button>
       </div>
-      <div class="form-categories-list categories-list">
-        <span class="form-categories-category categories-list-category" *ngFor="let category of categories; let i = index">{{ category.name }}
+      <div class="categories-list form-categories-list ">
+        <span class="categories-list-category form-categories-category" *ngFor="let category of categories; let i = index">{{ category.name }}
           <i class="fa fa-times" (click)="delCategory(i)"></i></span>
       </div>
     </div>
-    <div class="form-keywords">
+    <div class="app-block-elem form-keywords">
       <form class="form-keywords-control" (ngSubmit)="addKeyword(); keywordForm.reset()" #keywordForm>
         <input name="keyword" class="input-st" type="text" placeholder="Ключевое словое" [(ngModel)]="keyword" required>
         <button class="button-blue" type="submit">Добавить</button>
@@ -31,7 +31,7 @@
           <i class="fa fa-times" (click)="delKeyword(i)"></i></span>
       </div>
     </div>
-    <app-markdown class="form-textarea" #md [raw]="answer.raw"></app-markdown>
+    <app-markdown class="app-block-elem form-textarea" #md [raw]="answer.raw"></app-markdown>
     <button class="button-blue form-submit" type="submit" [disabled]="!addForm.valid">Сохранить</button>
   </form>
 </div>
