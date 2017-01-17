@@ -15,6 +15,9 @@
       type="password"
       placeholder="Пароль"
       required>
-    <button class="button-blue auth-button" type="submit">Войти</button>
+    <div class="auth-control">
+      <button class="button-blue auth-button" type="submit" [disabled]="loading">Войти</button>
+      <i *ngIf="loading" class="fa fa-refresh loader"></i>
+    </div>
   </div>
 </form>

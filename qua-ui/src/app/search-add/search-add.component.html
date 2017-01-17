@@ -1,6 +1,6 @@
 <div class=" app-block search-add">
   <h1 class="search-add-title">Добавить вопрос</h1>
-  <form class="search-add-form" (ngSubmit)="onSubmit(addForm)" #addForm="ngForm">
+  <form class="search-add-form form" (ngSubmit)="onSubmit(addForm)" #addForm="ngForm">
     <input
       #inputTitle
       name="title"
@@ -34,6 +34,9 @@
       </div>
     </div>
     <app-markdown class="app-block-elem form-textarea" #md [raw]="answer.raw"></app-markdown>
-    <button class="button-blue form-submit" type="submit">Сохранить</button>
+    <div class="form-control">
+      <button class="button-blue form-control-submit" type="submit" [disabled]="loading">Сохранить</button>
+      <i *ngIf="loading" class="fa fa-refresh loader"></i>
+    </div>
   </form>
 </div>

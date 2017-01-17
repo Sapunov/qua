@@ -5,6 +5,7 @@ import { FormGroup } from '@angular/forms';
 
 import { MarkdownComponent } from '../markdown/markdown.component';
 
+import { ErrorService } from '../services/error.service';
 import { QuestionService } from '../services/question.service';
 // import { CategoryService } from '../category.service';
 
@@ -20,6 +21,8 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MarkdownComponent) private mde: MarkdownComponent;
   @ViewChild('inputTitle') private inputTitle: ElementRef;
 
+  loading: boolean = false;
+
   question: IQuestion | INewQuestion;
   // allCategories: ICategories[];
   isReply: boolean = false;
@@ -33,6 +36,7 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   };
 
   constructor(
+    private errorService: ErrorService,
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService,
@@ -63,7 +67,8 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     this.questionService.editQuestion(id, data)
       .then((que: IQuestion) => {
         this.router.navigate([`questions/${que.id}`]);
-      });
+      })
+      .catch(err => this.errorService.viewError(err));
   }
 
   add() {
@@ -72,12 +77,17 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
       categories: this.categories,
       keywords: this.keywords,
     };
+    this.loading = true;
     if (this.answer.raw) {
       data.answer = this.answer;
     }
     this.questionService.addQuestion(data)
       .then((que: IQuestion) => {
         this.router.navigate([`questions/${que.id}`]);
+      })
+      .catch(err => this.errorService.viewError(err))
+      .then(() => {
+        this.loading = false;
       });
   }
 
