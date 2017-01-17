@@ -1,6 +1,3 @@
-// import { InMemoryWebApiModule }    from 'angular-in-memory-web-api';
-// import { InMemoryDataService }     from './in-memory-data.service';
-
 import { BrowserModule }            from '@angular/platform-browser';
 import { NgModule }                 from '@angular/core';
 import { FormsModule }              from '@angular/forms';
@@ -10,6 +7,7 @@ import { AppRoutingModule }         from './app-routing.module';
 
 import { AppComponent }             from './app.component';
 import { AuthComponent }            from './auth/auth.component';
+import { ErrorComponent }           from './error/error.component';
 import { HeaderComponent }          from './header/header.component';
 import { FooterComponent }          from './footer/footer.component';
 import { SearchComponent }          from './search/search.component';
@@ -40,14 +38,14 @@ import { CategoryService }          from './services/category.service';
     AuthComponent,
     FooterComponent,
     // SearchCategoryComponent,
-    SearchQuestionsComponent
+    SearchQuestionsComponent,
+    ErrorComponent
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
     AppRoutingModule
-    // InMemoryWebApiModule.forRoot(InMemoryDataService)
   ],
   providers: [
     AuthService,

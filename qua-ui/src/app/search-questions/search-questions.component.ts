@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { QuestionService } from '../services/question.service';
+import { ErrorService } from '../services/error.service';
 import { IQuestion } from '../interfaces/question.interface';
 
 @Component({
@@ -13,6 +14,7 @@ export class SearchQuestionsComponent implements OnInit {
   questions: IQuestion[] = [];
 
   constructor(
+    private errorService: ErrorService,
     private questionService: QuestionService,
     private router: Router
   ) { }
@@ -26,6 +28,7 @@ export class SearchQuestionsComponent implements OnInit {
       .then((questions: IQuestion[]) => {
         this.questions = questions;
       })
+      .catch(err => this.errorService.viewError(err));
   }
 
 }

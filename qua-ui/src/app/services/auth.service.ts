@@ -3,6 +3,8 @@ import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions } from '@angular/http';
 import { CanActivate, Router } from '@angular/router';
 
+import { ErrorService } from '../services/error.service';
+
 import { IResponse } from '../interfaces/response.interface';
 
 import { URLS } from '../../environments/const';
@@ -18,7 +20,8 @@ export class AuthService implements CanActivate {
 
   constructor(
     private http: Http,
-    private router: Router) { }
+    private router: Router,
+    private errorService: ErrorService) { }
 
   canActivate() {
     this.isAuth = this.checkAuth();
@@ -68,8 +71,7 @@ export class AuthService implements CanActivate {
     return isAuth;
   }
 
-  private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error); // for demo purposes only
-    return Promise.reject(error.message || error);
+  private handleError = (error) => {
+    return this.errorService.handleError(error);
   }
 }

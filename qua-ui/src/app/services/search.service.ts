@@ -4,6 +4,8 @@ import { URLS } from '../../environments/const';
 
 import 'rxjs/add/operator/toPromise';
 
+import { ErrorService } from './error.service';
+
 import { ISearchResult } from '../interfaces/search-hits.interface';
 import { IResponse } from '../interfaces/response.interface';
 
@@ -15,7 +17,9 @@ export class SearchService {
     Authorization: `JWT ${localStorage.getItem('token')}`
   });
 
-  constructor(private http: Http) { }
+  constructor(
+    private errorService: ErrorService,
+    private http: Http) { }
 
   goSearch(query: string): Promise<ISearchResult> {
     let options = new RequestOptions({
@@ -32,15 +36,14 @@ export class SearchService {
       })
       .then((response: IResponse) => {
         if (!response.ok) {
-          throw response;
+          throw response.error;
         }
         return response.response;
       })
       .catch(this.handleError);
   }
 
-  private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error); // for demo purposes only
-    return Promise.reject(error.message || error);
+  private handleError = (error) => {
+    this.errorService.handleError(error);
   }
 }
