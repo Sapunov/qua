@@ -17,7 +17,7 @@ import { MarkdownComponent }        from './markdown/markdown.component';
 import { SearchAddComponent }       from './search-add/search-add.component';
 import { SearchResultComponent }    from './search-result/search-result.component';
 import { SearchQuestionComponent }  from './search-question/search-question.component';
-import { SearchCategoryComponent }  from './search-category/search-category.component';
+// import { SearchCategoryComponent }  from './search-category/search-category.component';
 import { SearchQuestionsComponent } from './search-questions/search-questions.component';
 
 import { AuthService }              from './auth.service';
@@ -39,7 +39,7 @@ import { CategoryService }          from './category.service';
     MarkdownComponent,
     AuthComponent,
     FooterComponent,
-    SearchCategoryComponent,
+    // SearchCategoryComponent,
     SearchQuestionsComponent
   ],
   imports: [

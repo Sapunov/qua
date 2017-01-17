@@ -6,7 +6,7 @@ import { FormGroup } from '@angular/forms';
 import { MarkdownComponent } from '../markdown/markdown.component';
 
 import { QuestionService } from '../question.service';
-import { CategoryService } from '../category.service';
+// import { CategoryService } from '../category.service';
 
 import { IQuestion, INewQuestion, ICategories, IAnswer } from '../question.interface';
 import { ICategory } from '../category.interface';
@@ -21,7 +21,7 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('inputTitle') private inputTitle: ElementRef;
 
   question: IQuestion | INewQuestion;
-  allCategories: ICategories[];
+  // allCategories: ICategories[];
   isReply: boolean = false;
   sfHide: boolean = true;
   title: string = '';
@@ -36,7 +36,7 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService,
-    private categoryService: CategoryService
+    // private categoryService: CategoryService
   ) {  }
 
   onSubmit(form: FormGroup): void {
@@ -81,23 +81,23 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  getCategories() {
-    this.categoryService.getCategories()
-      .then((categories: ICategory[]) => {
-        this.allCategories = categories;
-      });
-  }
+  // getCategories() {
+  //   this.categoryService.getCategories()
+  //     .then((categories: ICategory[]) => {
+  //       this.allCategories = categories;
+  //     });
+  // }
 
-  addCategory(index: number) {
-    this.categories.push({
-      id: this.allCategories[index].id,
-      name: this.allCategories[index].name
-    });
-  }
+  // addCategory(index: number) {
+  //   this.categories.push({
+  //     id: this.allCategories[index].id,
+  //     name: this.allCategories[index].name
+  //   });
+  // }
 
-  delCategory(index: number) {
-    this.categories.splice(index, 1);
-  }
+  // delCategory(index: number) {
+  //   this.categories.splice(index, 1);
+  // }
 
   addKeyword(form: FormGroup) {
     if (this.keyword && form.valid) {
@@ -121,7 +121,7 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     } else if (question) {
       this.title = question.title || this.title;
     }
-    this.getCategories();
+    // this.getCategories();
   }
 
   ngAfterViewInit() {

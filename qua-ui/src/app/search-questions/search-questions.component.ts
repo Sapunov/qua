@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router'
+import { Router } from '@angular/router';
 
 import { QuestionService } from '../question.service';
 import { IQuestion } from '../question.interface';

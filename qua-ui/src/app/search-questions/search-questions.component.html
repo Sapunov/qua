@@ -8,10 +8,10 @@
         <div *ngIf="question.keywords.length" class="question-header-keywords keywords">
           <span class="keywords-keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
         </div>
-        <div *ngIf="question.categories.length" class="question-header-categories categories-list">
+        <!--<div *ngIf="question.categories.length" class="question-header-categories categories-list">
           <span class="categories-list-title">Категории:</span>
           <span class="categories-list-category" *ngFor="let category of question.categories">{{ category.name }}</span>
-        </div>
+        </div>-->
       </a>
     </header>
     <div class="question-info info">
