@@ -4,6 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router, NavigationExtras } from '@angular/router';
 import { Location } from '@angular/common';
 
+import { ErrorService } from '../services/error.service';
 import { QuestionService } from '../services/question.service';
 import { IQuestion, INewQuestion } from '../interfaces/question.interface';
 
@@ -14,9 +15,11 @@ import { IQuestion, INewQuestion } from '../interfaces/question.interface';
 })
 export class SearchQuestionComponent implements OnInit {
   question: IQuestion;
+  loading: boolean = false;
   raw: string;
 
   constructor(
+    private errorService: ErrorService,
     private route: ActivatedRoute,
     private router: Router,
     private Location: Location,
@@ -33,6 +36,28 @@ export class SearchQuestionComponent implements OnInit {
     this.questionService.question = this.question;
     this.router.navigate(['add']);
   }
+  delete() {
+    let id = this.question.id;
+    if (this.loading) {
+      return;
+    }
+    if (id) {
+      this.loading = true;
+      this.questionService.deleteQuestion(id)
+        .then(() => {
+          this.router.navigate(['questions']);
+        })
+        .catch(err => this.errorService.viewError(err))
+        .then(() => {
+          this.loading = false;
+        });
+    } else {
+      this.errorService.viewError({
+        error_code: 100,
+        error_msg: `Question id is ${id}`
+      });
+    }
+  }
 
   ngOnInit() {
     let allParams: any = {};
@@ -43,12 +68,15 @@ export class SearchQuestionComponent implements OnInit {
       })
       .switchMap((params: Params) => {
         allParams.queryParams = params;
-        return this.questionService.getQuestion(allParams);
+        return this.questionService.getQuestion(allParams)
+          .catch(err => this.errorService.viewError(err));
       })
       .subscribe((result: IQuestion) => {
-        this.question = result;
-        this.raw = result.answer ? result.answer.raw : '';
-        return result;
+        if (result) {
+          this.question = result;
+          this.raw = result.answer ? result.answer.raw : '';
+          return result;
+        }
       });
   }
 }
