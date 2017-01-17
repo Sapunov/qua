@@ -5,11 +5,11 @@ import { FormGroup } from '@angular/forms';
 
 import { MarkdownComponent } from '../markdown/markdown.component';
 
-import { QuestionService } from '../question.service';
+import { QuestionService } from '../services/question.service';
 // import { CategoryService } from '../category.service';
 
-import { IQuestion, INewQuestion, ICategories, IAnswer } from '../question.interface';
-import { ICategory } from '../category.interface';
+import { IQuestion, INewQuestion, ICategories, IAnswer } from '../interfaces/question.interface';
+import { ICategory } from '../interfaces/category.interface';
 
 @Component({
   selector: 'app-search-add',

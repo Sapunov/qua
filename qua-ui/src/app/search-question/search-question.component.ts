@@ -4,8 +4,8 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router, NavigationExtras } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { QuestionService } from '../question.service';
-import { IQuestion, INewQuestion } from '../question.interface';
+import { QuestionService } from '../services/question.service';
+import { IQuestion, INewQuestion } from '../interfaces/question.interface';
 
 @Component({
   selector: 'app-search-question',

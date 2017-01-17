@@ -1,10 +1,10 @@
 import 'rxjs/add/operator/toPromise';
 import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
-import { URLS } from '../environments/const';
+import { URLS } from '../../environments/const';
 
-import { INewQuestion, IQuestion } from './question.interface';
-import { IResponse } from './response.interface';
+import { INewQuestion, IQuestion } from '../interfaces/question.interface';
+import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class QuestionService {

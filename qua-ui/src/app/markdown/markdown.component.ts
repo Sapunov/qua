@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, Input } from '@angular/core';
 
-import { QuestionService } from '../question.service';
+import { QuestionService } from '../services/question.service';
 
 const SimpleMDE: any = require('simplemde');
 

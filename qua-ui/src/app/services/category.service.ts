@@ -1,11 +1,11 @@
 import { Injectable }    from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
-import { URLS } from '../environments/const';
+import { URLS } from '../../environments/const';
 
 import 'rxjs/add/operator/toPromise';
 
-import { ICategory } from './category.interface';
-import { IResponse } from './response.interface';
+import { ICategory } from '../interfaces/category.interface';
+import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class CategoryService {

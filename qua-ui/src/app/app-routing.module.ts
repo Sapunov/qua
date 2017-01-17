@@ -8,7 +8,7 @@ import { SearchQuestionComponent } from './search-question/search-question.compo
 import { SearchAddComponent } from './search-add/search-add.component';
 import { AuthComponent } from './auth/auth.component';
 
-import { AuthService } from './auth.service';
+import { AuthService } from './services/auth.service';
 
 const routes: Routes = [
   {

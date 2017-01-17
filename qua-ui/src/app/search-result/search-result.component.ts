@@ -4,9 +4,9 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Location } from '@angular/common';
 import { Router, NavigationExtras } from '@angular/router';
 
-import { QuestionService } from '../question.service';
-import { SearchService } from '../search.service';
-import { IHits, ISearchResult } from '../search-hits.interface';
+import { QuestionService } from '../services/question.service';
+import { SearchService } from '../services/search.service';
+import { IHits, ISearchResult } from '../interfaces/search-hits.interface';
 
 @Component({
   selector: 'app-search-result',

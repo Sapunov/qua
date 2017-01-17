@@ -20,11 +20,11 @@ import { SearchQuestionComponent }  from './search-question/search-question.comp
 // import { SearchCategoryComponent }  from './search-category/search-category.component';
 import { SearchQuestionsComponent } from './search-questions/search-questions.component';
 
-import { AuthService }              from './auth.service';
-import { ErrorService }             from './error.service';
-import { SearchService }            from './search.service';
-import { QuestionService }          from './question.service';
-import { CategoryService }          from './category.service';
+import { AuthService }              from './services/auth.service';
+import { ErrorService }             from './services/error.service';
+import { SearchService }            from './services/search.service';
+import { QuestionService }          from './services/question.service';
+import { CategoryService }          from './services/category.service';
 
 
 

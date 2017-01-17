@@ -3,9 +3,9 @@ import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions } from '@angular/http';
 import { CanActivate, Router } from '@angular/router';
 
-import { IResponse } from './response.interface';
+import { IResponse } from '../interfaces/response.interface';
 
-import { URLS } from '../environments/const';
+import { URLS } from '../../environments/const';
 
 @Injectable()
 export class AuthService implements CanActivate {
