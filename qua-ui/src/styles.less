@@ -86,11 +86,16 @@ h2 {
   color: @text-color-2;
   cursor: pointer;
   border-radius: @border-radius;
+  transition: background-color .5s ease;
 
   &:active {
     padding-top: 8px;
     padding-bottom: 6px;
     background-color: lighten(@main-color, 5%);
+  }
+
+  &:focus {
+    background-color: lighten(@main-color, 10%);
   }
 }
 
@@ -102,7 +107,25 @@ h2 {
   border-radius: @border-radius;
   outline: none;
   background-color: @bg-color-2;
+  transition: border-color .2s ease;
+
+  &:focus {
+    border-color: lighten(@main-color, 20%);
+
+    &.ng-invalid {
+      border-color: lighten(@color-red, 20%);
+    }
+  }
+
+  &.ng-invalid.ng-touched {
+    border-color: lighten(@color-red, 20%);
+  }
+
+  &.ng-valid.ng-dirty {
+    border-color: lighten(@color-green, 20%);
+  }
 }
+
 
 .app-block {
   margin-top: @indent;

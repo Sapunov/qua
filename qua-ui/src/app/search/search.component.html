@@ -1,10 +1,12 @@
 <form *ngIf="!sfHide" class="search-field" (ngSubmit)="getResults(query)" #searchForm="ngForm">
   <i class="fa fa-search search-field-icon"></i>
   <input
+    #inputSearch
     name="searchField"
     class="search-field-input"
     type="text"
     placeholder="Поиск"
     [(ngModel)] = "query"
-    (keyup)="keyup($event)" />
+    (keyup)="keyup($event)"
+    autofocus/>
 </form>

@@ -1,14 +1,16 @@
 <div class=" app-block search-add">
   <h1 class="search-add-title">Добавить вопрос</h1>
-  <form class="search-add-form" (ngSubmit)="onSubmit()" #addForm="ngForm">
+  <form class="search-add-form" (ngSubmit)="onSubmit(addForm)" #addForm="ngForm">
     <input
+      #inputTitle
       name="title"
       maxlength="300"
       class="app-block-elem input-st form-input"
       type="text"
       placeholder="Текст вопроса"
       [(ngModel)] = "title"
-      required />
+      required
+      autofocus/>
     <div class="app-block-elem form-categories">
       <div class="form-categories-control">
         <select class="input-st" #inpCategory>
@@ -22,7 +24,7 @@
       </div>
     </div>
     <div class="app-block-elem form-keywords">
-      <form class="form-keywords-control" (ngSubmit)="addKeyword(); keywordForm.reset()" #keywordForm>
+      <form class="form-keywords-control" (ngSubmit)="addKeyword(keywordForm); keywordForm.reset()" #keywordForm="ngForm">
         <input name="keyword" class="input-st" type="text" placeholder="Ключевое словое" [(ngModel)]="keyword" required>
         <button class="button-blue" type="submit">Добавить</button>
       </form>
@@ -32,6 +34,6 @@
       </div>
     </div>
     <app-markdown class="app-block-elem form-textarea" #md [raw]="answer.raw"></app-markdown>
-    <button class="button-blue form-submit" type="submit" [disabled]="!addForm.valid">Сохранить</button>
+    <button class="button-blue form-submit" type="submit">Сохранить</button>
   </form>
 </div>

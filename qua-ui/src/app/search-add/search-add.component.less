@@ -31,6 +31,10 @@
         flex: 1 auto;
         margin-right: @indent;
         margin-bottom: 0;
+
+        &:not(:focus).ng-invalid {
+          border: @border;
+        }
       }
     }
   }

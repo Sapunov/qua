@@ -1,6 +1,7 @@
 import 'rxjs/add/operator/switchMap';
-import { Component, OnInit, OnDestroy, ViewChild  } from '@angular/core';
+import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Params, Router, NavigationExtras } from '@angular/router';
+import { FormGroup } from '@angular/forms';
 
 import { MarkdownComponent } from '../markdown/markdown.component';
 
@@ -15,8 +16,9 @@ import { ICategory } from '../category.interface';
   templateUrl: './search-add.component.html',
   styleUrls: ['./search-add.component.less']
 })
-export class SearchAddComponent implements OnInit, OnDestroy {
+export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MarkdownComponent) private mde: MarkdownComponent;
+  @ViewChild('inputTitle') private inputTitle: ElementRef;
 
   question: IQuestion | INewQuestion;
   allCategories: ICategories[];
@@ -37,7 +39,10 @@ export class SearchAddComponent implements OnInit, OnDestroy {
     private categoryService: CategoryService
   ) {  }
 
-  onSubmit(): void {
+  onSubmit(form: FormGroup): void {
+    if (form.invalid) {
+      return;
+    }
     this.answer = { raw: this.mde.getValue() };
     if (this.isReply) {
       this.edit(this.question['id']);
@@ -94,9 +99,8 @@ export class SearchAddComponent implements OnInit, OnDestroy {
     this.categories.splice(index, 1);
   }
 
-  addKeyword() {
-    console.log(this.keyword);
-    if (this.keyword) {
+  addKeyword(form: FormGroup) {
+    if (this.keyword && form.valid) {
       this.keywords.push(this.keyword);
     }
   }
@@ -118,6 +122,10 @@ export class SearchAddComponent implements OnInit, OnDestroy {
       this.title = question.title || this.title;
     }
     this.getCategories();
+  }
+
+  ngAfterViewInit() {
+    this.inputTitle.nativeElement.focus();
   }
 
   ngOnDestroy() {
