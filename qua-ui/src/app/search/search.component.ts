@@ -30,6 +30,9 @@ export class SearchComponent implements OnInit {
   }
 
   keyup(event: KeyboardEvent) {
+    if (this.query.length < 2) {
+      return;
+    }
     if (event.code === 'Enter' || event.key === 'Enter' || event.which === 13) {
       clearTimeout(this.timer);
       return;
