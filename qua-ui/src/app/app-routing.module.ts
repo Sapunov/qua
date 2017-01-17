@@ -2,7 +2,7 @@ import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
 import { SearchQuestionsComponent } from './search-questions/search-questions.component';
-import { SearchCategoryComponent } from './search-category/search-category.component';
+// import { SearchCategoryComponent } from './search-category/search-category.component';
 import { SearchResultComponent } from './search-result/search-result.component';
 import { SearchQuestionComponent } from './search-question/search-question.component';
 import { SearchAddComponent } from './search-add/search-add.component';
@@ -18,8 +18,7 @@ const routes: Routes = [
   },
   {
     path: 'search',
-    component:
-    SearchResultComponent,
+    component: SearchResultComponent,
     canActivate: [AuthService]
   },
   {
@@ -32,11 +31,11 @@ const routes: Routes = [
     component: SearchQuestionComponent,
     canActivate: [AuthService]
   },
-  {
-    path: 'category',
-    component: SearchCategoryComponent,
-    canActivate: [AuthService]
-  },
+  // {
+  //   path: 'category',
+  //   component: SearchCategoryComponent,
+  //   canActivate: [AuthService]
+  // },
   {
     path: 'add',
     component: SearchAddComponent,
@@ -45,7 +44,12 @@ const routes: Routes = [
   {
     path: 'auth',
     component: AuthComponent
-  }
+  },
+  {
+    path: '**',
+    redirectTo: '/search',
+    pathMatch: 'full'
+  },
 ];
 @NgModule({
   imports: [ RouterModule.forRoot(routes) ],
