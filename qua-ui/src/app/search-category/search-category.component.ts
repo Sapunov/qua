@@ -1,8 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { CategoryService } from '../category.service';
-import { ICategory } from '../category.interface';
+import { CategoryService } from '../services/category.service';
+import { ICategory } from '../interfaces/category.interface';
 
 @Component({
   selector: 'app-search-category',

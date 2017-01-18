@@ -3,9 +3,14 @@
 @import '../node_modules/normalize.css/normalize.css';
 @import './styles/font-awesome.less';
 @import './styles/variables.less';
+@import './styles/answer-style.less';
 
 
 /* Global */
+
+* {
+  box-sizing: border-box;
+}
 
 html,
 body,
@@ -76,40 +81,129 @@ h2 {
 }
 
 .button-blue {
+  height: @control-elem-height;
   padding: 7px 16px;
   background-color: @main-color;
   color: @text-color-2;
   cursor: pointer;
   border-radius: @border-radius;
+  transition: background-color .5s ease;
 
   &:active {
     padding-top: 8px;
     padding-bottom: 6px;
     background-color: lighten(@main-color, 5%);
   }
+
+  &:focus {
+    background-color: lighten(@main-color, 10%);
+  }
+
+  &[disabled] {
+    background-color: lighten(@main-color, 25%);
+  }
 }
 
 .input-st {
+  height: @control-elem-height;
   font-size: 1.05rem;
   margin-bottom: @indent;
   padding: 6px 12px;
   border: @border;
   border-radius: @border-radius;
   outline: none;
+  box-shadow: none;
   background-color: @bg-color-2;
+  transition: border-color .2s ease;
+
+  &:focus {
+    border-color: lighten(@main-color, 20%);
+
+    &.ng-invalid {
+      border-color: lighten(@color-red, 20%);
+    }
+  }
+
+  &.ng-invalid.ng-touched {
+    border-color: lighten(@color-red, 20%);
+  }
+
+  &.ng-valid.ng-dirty {
+    border-color: lighten(@color-green, 20%);
+  }
 }
+
 
 .app-block {
   margin-top: @indent;
   padding: @indent;
   background-color: @bg-color-2;
   border-radius: @border-radius;
+  display: block;
+  box-shadow: @box-shadow-2;
+
+  &-elem {
+    margin-top: @indent;
+    width: 100%;
+  }
+}
+
+
+.info {
   display: -webkit-flex;
   display: -moz-flex;
   display: -ms-flex;
   display: -o-flex;
   display: flex;
-  box-shadow: @box-shadow-2;
+  flex-flow: row wrap;
+  color: @color-meta;
+  &-text {
+    margin-right: @indent-text;
+  }
+}
+
+.control {
+  right: 0;
+  top: 0;
+  position: absolute;
+  overflow: hidden;
+
+  &-block {
+    display: block;
+    color: @color-meta;
+    transform: translate(101px);
+    padding: 17px 10px 0;
+    cursor: pointer;
+    font-size: 1.1rem;
+    background-color: transparent;
+    transition: transform .5s ease;
+
+    &:after {
+      margin-left: 5px;
+      font-size: 0.8rem;
+    }
+
+    &:hover {
+      transform: translate(0);
+      color: @text-color;
+    }
+  }
+}
+
+@keyframes loader-animate {
+  from {
+    transform: rotate(0deg)
+  }
+
+  to {
+    transform: rotate(360deg)
+  }
+}
+
+.loader {
+  font-size: 1.2rem;
+  color: @main-color;
+  animation: loader-animate 1s infinite linear;
 }
 
 app-search,
@@ -117,10 +211,12 @@ app-search-add,
 app-search-question,
 app-search-result,
 app-search-category,
+app-searhc-questions,
 app-markdown,
 app-header,
 app-footer,
 app-auth,
-app-root {
+app-root,
+app-error {
   display: block;
 }

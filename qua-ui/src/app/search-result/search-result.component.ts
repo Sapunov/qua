@@ -4,9 +4,10 @@ import { ActivatedRoute, Params } from '@angular/router';
 import { Location } from '@angular/common';
 import { Router, NavigationExtras } from '@angular/router';
 
-import { QuestionService } from '../question.service';
-import { SearchService } from '../search.service';
-import { IHits, ISearchResult } from '../search-hits.interface';
+import { QuestionService } from '../services/question.service';
+import { SearchService } from '../services/search.service';
+import { ErrorService } from '../services/error.service';
+import { IHits, ISearchResult } from '../interfaces/search-hits.interface';
 
 @Component({
   selector: 'app-search-result',
@@ -19,6 +20,7 @@ export class SearchResultComponent implements OnInit {
   total: number = 0;
 
   constructor(
+    private errorService: ErrorService,
     private search: SearchService,
     private route: ActivatedRoute,
     private router: Router,
@@ -45,11 +47,14 @@ export class SearchResultComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams
       .switchMap((params: Params) => {
-        return this.search.goSearch(params['query'] || '');
+        return this.search.goSearch(params['query'] || '')
+          .catch(err => this.errorService.viewError(err));
       })
-      .subscribe(result => {
-        this.hits = result.hits;
-        return this.result = result;
+      .subscribe((result: ISearchResult) => {
+        if (result) {
+          this.hits = result.hits;
+          return this.result = result;
+        }
       });
   }
 }
