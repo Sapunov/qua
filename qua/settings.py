@@ -174,7 +174,13 @@ LOGGING = {
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-        'file': {
+        'qua': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'qua.log'),
+            'formatter': 'verbose'
+        },
+        'django': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'django.log'),
@@ -183,13 +189,13 @@ LOGGING = {
         'requests': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'requests.log'),
+            'filename': os.path.join(LOGS_DIR, 'qua_api_requests.log'),
             'formatter': 'simple'
         },
     },
     'loggers': {
         'qua': {
-            'handlers': ['file'],
+            'handlers': ['qua'],
             'level': 'DEBUG',
             'propagate': True
         },
@@ -209,7 +215,7 @@ LOGGING = {
             'propagate': True
         },
         'django': {
-            'handlers': ['file'],
+            'handlers': ['django'],
             'level': 'DEBUG',
             'propagate': True
         },

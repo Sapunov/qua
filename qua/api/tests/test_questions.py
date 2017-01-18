@@ -229,9 +229,11 @@ class QuestionTest(BaseQuaTestCase):
         })
         resp = self.client.put('/api/questions/3', data, content_type='application/json')
 
-        self.assertEqual(resp.status_code, 400)
+        self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(resp.data['error']['error_msg']['answer']['raw'][0], 'This field may not be blank.')
+        answer = resp.data['response']['answer']
+
+        self.assertIsNone(answer)
 
     def test_update_answer_same(self):
         client = self.create_authorized_client('test2', 'test2')

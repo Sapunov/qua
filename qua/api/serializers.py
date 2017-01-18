@@ -98,6 +98,8 @@ class UserSerializer(DynamicFieldsModelSerializer):
 
 
 class AnswerSerializer(DynamicFieldsModelSerializer):
+
+    raw = serializers.CharField(allow_blank=True)
     html = serializers.CharField(required=False)
     created_by = UserSerializer(read_only=True)
     updated_by = UserSerializer(read_only=True)
@@ -140,7 +142,7 @@ class QuestionSerializer(serializers.ModelSerializer):
             keywords=validated_data.get('keywords', None)
         )
 
-        if 'answer' in validated_data:
+        if 'answer' in validated_data and validated_data['answer'] != '':
             Answer.create(
                 validated_data['answer']['raw'],
                 validated_data['user'],
@@ -161,17 +163,26 @@ class QuestionSerializer(serializers.ModelSerializer):
 
         if 'answer' in validated_data:
             if instance.answer_exists:
-                instance.answer.update(
-                    validated_data['answer']['raw'],
-                    validated_data['user']
-                )
+                if validated_data['answer']['raw'] == '':
+                    instance.answer.delete()
+                    instance.answer = None
+                else:
+                    log.debug('Trying to update %s', instance.answer.name)
+
+                    instance.answer.update(
+                        validated_data['answer']['raw'],
+                        validated_data['user']
+                    )
             else:
+                log.debug('Creating new answer for %s', instance)
+
                 Answer.create(
                     validated_data['answer']['raw'],
                     validated_data['user'],
                     instance
                 )
 
+        instance.save()
         tasks.index_question.delay(instance.id)
 
         return instance

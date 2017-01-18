@@ -44,6 +44,6 @@ class QuestionView(APIView):
 
     def delete(self, request, question_id, format=None):
         question = Question.get(pk=question_id)
-        question.archive()
+        question.archive(user=request.user)
 
         return QuaApiResponse()
