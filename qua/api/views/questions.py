@@ -14,7 +14,7 @@ log = logging.getLogger('qua.' + __name__)
 
 class QuestionListView(APIView):
     def get(self, request, format=None):
-        questions = Question.get(category=request.query_params.get('category', None))
+        questions = Question.get()
         serializer = serialize(QuestionListSerializer, questions, many=True)
 
         return QuaApiResponse(serializer.data)

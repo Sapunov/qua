@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
-from qua.api.models import Category, Question, Keyword, Answer
+from qua.api.models import Question, Keyword, Answer
 from qua.api import tasks
 
 
@@ -97,44 +97,6 @@ class UserSerializer(DynamicFieldsModelSerializer):
         fields = ('id', 'username', 'first_name', 'last_name')
 
 
-class CategoryListSerializer(serializers.ModelSerializer):
-    created_by = UserSerializer(read_only=True)
-    updated_by = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-
-class CategorySerializer(DynamicFieldsModelSerializer):
-
-    id = serializers.IntegerField(required=False)
-    name = serializers.CharField(max_length=50, required=False)
-    created_by = UserSerializer(read_only=True)
-    updated_by = UserSerializer(read_only=True)
-
-    def create(self, validated_data):
-        if 'name' not in validated_data:
-            raise ValidationError({'name': ['This field is required.']})
-
-        return Category.create(validated_data['name'], validated_data['user'])
-
-    def update(self, instance, validated_data):
-        if 'name' not in validated_data:
-            raise ValidationError({'name': ['This field is required.']})
-
-        instance.name = validated_data['name']
-        instance.updated_by = validated_data['user']
-
-        instance.save()
-
-        return instance
-
-    class Meta:
-        model = Category
-        fields = '__all__'
-
-
 class AnswerSerializer(DynamicFieldsModelSerializer):
     html = serializers.CharField(required=False)
     created_by = UserSerializer(read_only=True)
@@ -147,7 +109,6 @@ class AnswerSerializer(DynamicFieldsModelSerializer):
 
 class QuestionListSerializer(serializers.ModelSerializer):
 
-    categories = CategorySerializer(many=True, fields=('id', 'name'))
     keywords = serializers.SlugRelatedField(
         many=True, read_only=True, slug_field='text')
 
@@ -164,15 +125,6 @@ class QuestionListSerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
 
     title = serializers.CharField(max_length=300, required=False)
-    categories = CategorySerializer(
-        many=True,
-        fields=('id', 'name'),
-        validators=[PrimaryKeyExistsValidator(
-            queryset=Category.objects.all(),
-            message='Category with primary key {primary_key} does not exist'
-        )],
-        required=False
-    )
     keywords = AutoUpdatePrimaryKeyRelatedField(model=Keyword, many=True, required=False)
     answer = AnswerSerializer(required=False)
     created_by = UserSerializer(read_only=True)
@@ -182,16 +134,10 @@ class QuestionSerializer(serializers.ModelSerializer):
         if 'title' not in validated_data:
             raise ValidationError({'title': ['This field is required.']})
 
-        if 'categories' in validated_data:
-            category_ids = [cat['id'] for cat in validated_data['categories']]
-        else:
-            category_ids = None
-
         question = Question.create(
             validated_data['title'],
             validated_data['user'],
-            keywords=validated_data.get('keywords', None),
-            category_ids=category_ids
+            keywords=validated_data.get('keywords', None)
         )
 
         if 'answer' in validated_data:
@@ -206,16 +152,11 @@ class QuestionSerializer(serializers.ModelSerializer):
         return question
 
     def update(self, instance, validated_data):
-        if 'categories' in validated_data:
-            category_ids = [cat['id'] for cat in validated_data['categories']]
-        else:
-            category_ids = None
 
         instance.update(
             validated_data['user'],
             title=validated_data.get('title', None),
-            keywords=validated_data.get('keywords', None),
-            category_ids=category_ids
+            keywords=validated_data.get('keywords', None)
         )
 
         if 'answer' in validated_data:
@@ -259,7 +200,6 @@ class SearchHitSerializer(serializers.Serializer):
 
     id = serializers.IntegerField()
     title = serializers.CharField()
-    categories = CategorySerializer(many=True, fields=('id', 'name'))
     snippet = serializers.CharField()
     score = serializers.FloatField()
     keywords = serializers.SlugRelatedField(

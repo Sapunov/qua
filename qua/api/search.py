@@ -33,12 +33,11 @@ class UrlParams:
 
 
 class SearchHit:
-    def __init__(self, id, title, categories, search_history_id,
+    def __init__(self, id, title, search_history_id,
         keywords=None, snippet=None, score=1.0, image=None
     ):
         self.id = id
         self.title = title
-        self.categories = categories
         self.snippet = snippet or self.title
         self.keywords = keywords
         self.score = score
@@ -81,7 +80,6 @@ class SearchResults:
                     SearchHit(
                         result.id,
                         result.title,
-                        result.categories,
                         search_history_id,
                         keywords=result.keywords,
                         score=engine_answer[result.id]['score'],
@@ -101,7 +99,7 @@ class SearchResults:
         return self.__str__()
 
 
-def search(query, user, category=None):
+def search(query, user):
 
     log.debug('Search for: %s', query)
 
@@ -116,9 +114,6 @@ def search(query, user, category=None):
         pk__in=search_results['hits'].keys(),
         deleted=False
     )
-
-    if category is not None:
-        results.filter(categories__id=category)
 
     history_record = SearchHistory.objects.create(
         query=query, user=user, results=results.count())

@@ -8,7 +8,7 @@ from qua.api.tests.common import BaseQuaTestCase
 @tag('auth', 'ready')
 class AuthTest(BaseQuaTestCase):
     def test_auth_failed_when_no_credentials(self):
-        resp = self.client.get('/api/categories')
+        resp = self.client.get('/api/questions')
 
         self.assertEquals(resp.status_code, 401)
         self.assertEquals(resp.data['error']['error_msg'],
@@ -37,7 +37,7 @@ class AuthTest(BaseQuaTestCase):
 
         c = Client(HTTP_AUTHORIZATION='JWT ' + token)
 
-        resp = c.get('/api/categories')
+        resp = c.get('/api/questions')
 
         self.assertEqual(resp.status_code, 401)
         self.assertEqual(resp.data['error']['error_msg'], 'User account is disabled.')

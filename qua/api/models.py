@@ -23,28 +23,6 @@ class Base(models.Model):
         abstract = True
 
 
-class Category(Base):
-    name = models.CharField(max_length=50)
-
-    def __str__(self):
-        return '<Category: ({0}) {1}>'.format(self.id, self.name)
-
-    @classmethod
-    def create(cls, name, user):
-        return cls.objects.create(name=name, created_by=user, updated_by=user)
-
-    @classmethod
-    def exists(cls, category):
-        """Check whether category(s) exists
-
-        :category: list of primary keys
-        """
-        if isinstance(category, list):
-            return cls.objects.filter(pk__in=category).count() == len(category)
-        else:
-            return cls.objects.filter(pk=category).exists()
-
-
 class Keyword(models.Model):
     text = models.CharField(max_length=50, primary_key=True)
 
@@ -74,7 +52,6 @@ class Keyword(models.Model):
 
 class Question(Base):
     title = models.CharField(max_length=300)
-    categories = models.ManyToManyField(Category)
     keywords = models.ManyToManyField(Keyword)
     deleted = models.BooleanField(default=False)
     # answer field in Answer
@@ -83,7 +60,7 @@ class Question(Base):
         return '<Question: ({0}) {1:.30}>'.format(self.id, self.title)
 
     @classmethod
-    def get(cls, pk=None, category=None, **kwargs):
+    def get(cls, pk=None, **kwargs):
         if pk is not None:
             try:
                 return cls.objects.get(pk=pk, deleted=False, **kwargs)
@@ -92,26 +69,20 @@ class Question(Base):
 
         results = cls.objects.filter(deleted=False, **kwargs)
 
-        if category is not None:
-            results = results.filter(categories=category)
-
         return results
 
     @classmethod
-    def create(cls, title, user, keywords=None, category_ids=None):
+    def create(cls, title, user, keywords=None):
         question = cls.objects.create(title=title, created_by=user, updated_by=user)
 
         if keywords is not None:
             question.keywords = keywords
 
-        if category_ids is not None:
-            question.categories = Category.objects.filter(pk__in=category_ids)
-
         question.save()
 
         return question
 
-    def update(self, user, title=None, keywords=None, category_ids=None):
+    def update(self, user, title=None, keywords=None):
         updates = 0
 
         if title is not None:
@@ -120,10 +91,6 @@ class Question(Base):
 
         if keywords is not None:
             self.keywords = keywords
-            updates += 1
-
-        if category_ids is not None:
-            self.categories = Category.objects.filter(pk__in=category_ids)
             updates += 1
 
         if updates > 0:

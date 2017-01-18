@@ -1,13 +1,12 @@
 from django.contrib import admin
 
-from .models import Category, Answer, Question, Keyword, SearchHistory
+from .models import Answer, Question, Keyword, SearchHistory
 
 
 class AddIdField(admin.ModelAdmin):
     readonly_fields = ('id',)
 
 
-admin.site.register(Category, AddIdField)
 admin.site.register(Answer, AddIdField)
 admin.site.register(Keyword)
 

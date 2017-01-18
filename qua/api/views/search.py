@@ -19,16 +19,8 @@ class SearchView(APIView):
         if 'query' not in params:
             raise exceptions.ValidationError({'query': ['This field required']})
 
-        if 'category' in params:
-            try:
-                category = int(params['category'])
-            except ValueError:
-                raise exceptions.ValidationError({'category': ['One integer required']})
-        else:
-            category = None
-
         results = search(
-            params['query'], user=request.user, category=category)
+            params['query'], user=request.user)
         serializer = SearchSerializer(results)
 
         return QuaApiResponse(serializer.data)

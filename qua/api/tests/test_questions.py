@@ -4,7 +4,7 @@ from django.test import tag
 from django.contrib.auth.models import User
 
 from qua.api.tests.common import BaseQuaTestCase
-from qua.api.models import Question, Category
+from qua.api.models import Question
 
 
 @tag('questions', 'ready')
@@ -18,13 +18,9 @@ class QuestionTest(BaseQuaTestCase):
         Question.create('test_question_1', self.user)
         Question.create('test_question_2', self.user)
 
-        Category.create('test_category_1', self.user)
-        Category.create('test_category_2', self.user)
-
         data = json.dumps({
             'title': 'Full question',
             'keywords': ['hello', 'bro'],
-            'categories': [{'id': 1}, {'id': 2}],
             'answer': {'raw': 'Hello bro!'}
         })
         self.client.post('/api/questions', data, content_type='application/json')
@@ -40,12 +36,11 @@ class QuestionTest(BaseQuaTestCase):
 
         first = response[0]
 
-        self.assertEqual(len(first.keys()), 9)
+        self.assertEqual(len(first.keys()), 8)
 
         self.assertIn('id', first)
         self.assertIn('title', first)
         self.assertIn('answer_exists', first)
-        self.assertIn('categories', first)
         self.assertIn('keywords', first)
         self.assertIn('created_at', first)
         self.assertIn('updated_at', first)
@@ -59,12 +54,11 @@ class QuestionTest(BaseQuaTestCase):
 
         response = resp.data['response']
 
-        self.assertEqual(len(response.keys()), 9)
+        self.assertEqual(len(response.keys()), 8)
 
         self.assertIn('id', response)
         self.assertIn('title', response)
         self.assertIn('answer', response)
-        self.assertIn('categories', response)
         self.assertIn('keywords', response)
         self.assertIn('created_at', response)
         self.assertIn('updated_at', response)
@@ -75,7 +69,6 @@ class QuestionTest(BaseQuaTestCase):
         data = json.dumps({
             'title': 'test_question',
             'keywords': ['one', 'two', 'three'],
-            'categories': [{'id': 1}, {'id': 2}],
             'answer': {'raw': 'test_answer'}
         })
         resp = self.client.post('/api/questions', data, content_type='application/json')
@@ -84,11 +77,10 @@ class QuestionTest(BaseQuaTestCase):
 
         response = resp.data['response']
 
-        self.assertEqual(len(response.keys()), 9)
+        self.assertEqual(len(response.keys()), 8)
         self.assertIn('id', response)
         self.assertIn('title', response)
         self.assertIn('answer', response)
-        self.assertIn('categories', response)
         self.assertIn('keywords', response)
         self.assertIn('created_at', response)
         self.assertIn('updated_at', response)
@@ -110,7 +102,6 @@ class QuestionTest(BaseQuaTestCase):
         data = json.dumps({
             'title': 'test_question',
             'keywords': ['one', 'two', 'three'],
-            'categories': [{'id': 1}, {'id': 2}],
             'answer': {'raw': 'test_answer'}
         })
         resp = self.client.put('/api/questions/1', data, content_type='application/json')
@@ -119,11 +110,10 @@ class QuestionTest(BaseQuaTestCase):
 
         response = resp.data['response']
 
-        self.assertEqual(len(response.keys()), 9)
+        self.assertEqual(len(response.keys()), 8)
         self.assertIn('id', response)
         self.assertIn('title', response)
         self.assertIn('answer', response)
-        self.assertIn('categories', response)
         self.assertIn('keywords', response)
         self.assertIn('created_at', response)
         self.assertIn('updated_at', response)
@@ -165,46 +155,6 @@ class QuestionTest(BaseQuaTestCase):
 
         self.assertEqual(len(response['keywords']), 3)
         self.assertEqual(response['answer'], None)
-        self.assertEqual(response['categories'], [])
-
-    def test_create_with_category(self):
-        data = json.dumps({
-            'title': 'test_question',
-            'categories': [{'id': 1}, {'id': 2}]
-        })
-        resp = self.client.post('/api/questions', data, content_type='application/json')
-
-        self.assertEqual(resp.status_code, 200)
-
-        response = resp.data['response']
-
-        self.assertEqual(len(response['categories']), 2)
-        self.assertEqual(response['answer'], None)
-        self.assertEqual(response['keywords'], [])
-
-    def test_create_with_not_integer_category(self):
-        data = json.dumps({
-            'title': 'test_question',
-            'categories': [{'id': 'test'}, {'id': 2}]
-        })
-        resp = self.client.post('/api/questions', data, content_type='application/json')
-
-        self.assertEqual(resp.status_code, 400)
-
-        error_msg = {"categories": [{"id": ["A valid integer is required."]}]}
-        self.assertEqual(resp.data['error']['error_msg'], error_msg)
-
-    def test_create_with_non_existent_category(self):
-        data = json.dumps({
-            'title': 'test_question',
-            'categories': [{'id': 40}]
-        })
-        resp = self.client.post('/api/questions', data, content_type='application/json')
-
-        self.assertEqual(resp.status_code, 400)
-
-        error_msg = {"categories": [{"non_field_errors": ["Category with primary key 40 does not exist"]}]}
-        self.assertEqual(resp.data['error']['error_msg'], error_msg)
 
     def test_create_with_answer(self):
         data = json.dumps({
@@ -219,26 +169,13 @@ class QuestionTest(BaseQuaTestCase):
 
         self.assertEqual(len(response['answer'].keys()), 7)
         self.assertEqual(response['keywords'], [])
-        self.assertEqual(response['categories'], [])
-
-    def test_update_categories(self):
-        data = json.dumps({
-            'categories': [{'id': 1}, {'id': 2}],
-        })
-        resp = self.client.put('/api/questions/1', data, content_type='application/json')
-
-        self.assertEqual(resp.status_code, 200)
-
-        response = resp.data['response']
-
-        self.assertEqual(len(response['categories']), 2)
 
     def test_update_empty(self):
         resp = self.client.put('/api/questions/1', '{}', content_type='application/json')
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(len(resp.data['response'].keys()), 9)
+        self.assertEqual(len(resp.data['response'].keys()), 8)
 
     def test_update_keywords(self):
         first_keywords = ['one', 'two']
