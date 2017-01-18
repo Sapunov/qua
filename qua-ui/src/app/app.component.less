@@ -8,6 +8,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
+  position: relative;
 }
 
 .wrapper-resize {
@@ -23,4 +24,11 @@
 
 .app-footer {
   flex: 0 0 auto;
+}
+
+.app-error {
+  z-index: 999999999999;
+  position: absolute;
+  bottom: @indent*2;
+  right: @indent;
 }

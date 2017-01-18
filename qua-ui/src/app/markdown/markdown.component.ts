@@ -1,6 +1,6 @@
 import { Component, OnInit, AfterViewInit, ElementRef, ViewChild, Input } from '@angular/core';
 
-import { QuestionService } from '../question.service';
+import { QuestionService } from '../services/question.service';
 
 const SimpleMDE: any = require('simplemde');
 
@@ -28,7 +28,9 @@ export class MarkdownComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.mde = new SimpleMDE({
       element: this.elementRef.nativeElement.value,
-      showIcons: ['code', 'table']
+      showIcons: ['code', 'table'],
+      autoDownloadFontAwesome: false,
+      spellChecker: false
     });
   }
 

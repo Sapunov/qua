@@ -1,20 +1,23 @@
 <div class="app-block search-question" *ngIf="question">
-  <div class="search-question-control">
-    <button class="control-edit" (click)="edit()">
+  <div class="search-question-control control">
+    <button class="control-block control-edit" (click)="edit()">
       <i class="fa fa-pencil" aria-hidden="true"></i>
+    </button>
+    <button class="control-block control-delete" (click)="delete()">
+      <i class="fa fa-trash-o" aria-hidden="true"></i>
     </button>
   </div>
   <header class="search-question-header">
     <div class="header-title">
-      <h1>{{ question.title }}</h1>
+      <h1 class="header-title-text">{{ question.title }}</h1>
     </div>
     <div *ngIf="question.keywords.length" class="header-keywords keywords">
       <span class="keywords-keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
     </div>
-    <div *ngIf="question.categories.length" class="categories-list">
+    <!--<div *ngIf="question.categories.length" class="categories-list">
       <span class="categories-list-title">Категории:</span>
       <span class="categories-list-category" *ngFor="let category of question.categories">{{ category.name }}</span>
-    </div>
+    </div>-->
     <div class="header-info info">
       <div class="info-text">
         <i class="fa fa-user"></i>
@@ -28,12 +31,12 @@
     </div>
   </header>
   <div class="search-question-answer">
-    <div class="answer answer-noanswer" *ngIf="!raw">
+    <div class="answer-noanswer" *ngIf="!raw">
       <span>Да данный вопрос еще нет ответа. Если знаете ответ, добавьте его.</span>
       <button class="button-blue" (click)="reply()">Добавить ответ</button>
     </div>
-    <div class="answer answer-text" *ngIf="raw" [innerHTML]="question.answer.html"></div>
-    <div class="answer answer-info info" *ngIf="raw">
+    <div class="answer-text answer-style" *ngIf="raw" [innerHTML]="question.answer.html"></div>
+    <div class="answer-info info" *ngIf="raw">
       <div class="info-text">
         <span>Ответил:</span>
         <span><b>{{ question.answer.updated_by.first_name }}</b></span>

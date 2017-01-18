@@ -1,10 +1,12 @@
 import 'rxjs/add/operator/toPromise';
 import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
-import { URLS } from '../environments/const';
+import { URLS } from '../../environments/const';
 
-import { INewQuestion, IQuestion } from './question.interface';
-import { IResponse } from './response.interface';
+import { ErrorService } from './error.service';
+
+import { INewQuestion, IQuestion } from '../interfaces/question.interface';
+import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class QuestionService {
@@ -14,7 +16,9 @@ export class QuestionService {
     Authorization: `JWT ${localStorage.getItem('token')}`
   });
 
-  constructor(private http: Http) { }
+  constructor(
+    private errorService: ErrorService,
+    private http: Http) { }
 
   editQuestion(id: number, data: INewQuestion): Promise<IQuestion> {
     let options = new RequestOptions({
@@ -40,6 +44,25 @@ export class QuestionService {
       withCredentials: true
     });
     return this.http.post(URLS.question, JSON.stringify(data), options)
+      .toPromise()
+      .then((response: any) => {
+        return response.json() as IResponse;
+      })
+      .then((response: IResponse) => {
+        if (!response.ok) {
+          throw response.error;
+        }
+        return response.response;
+      })
+      .catch(this.handleError);
+  }
+
+  deleteQuestion(id: number): Promise<boolean> {
+    let options = new RequestOptions({
+      headers: this.headers,
+      withCredentials: true
+    });
+    return this.http.delete(`${URLS.question}/${id}`, options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
@@ -92,13 +115,12 @@ export class QuestionService {
         if (!response.ok) {
           throw response.error;
         }
-        return response.response as IQuestion[];
+        return response.response;
       })
       .catch(this.handleError);
   }
 
-  private handleError(error: any): Promise<any> {
-    console.error('An error occurred', error); // for demo purposes only
-    return Promise.reject(error.message || error);
+  private handleError = (error) => {
+    return this.errorService.handleError(error);
   }
 }

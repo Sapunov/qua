@@ -3,10 +3,8 @@
 @indent-text: 5px;
 
 .search-category {
-  flex-flow: column nowrap;
-
   &-header {
-    > h1 {
+    &-text {
       font-size: 1.2rem;
       font-weight: normal;
       margin: 0;
@@ -22,12 +20,12 @@
     flex-flow: row wrap;
     margin-top: @indent;
 
-    > input {
+    &-inp {
       flex: 2 1 auto;
       margin-bottom: 0;
     }
 
-    > button {
+    &-btn {
       line-height: 1;
       margin-left: @indent;
     }
@@ -37,7 +35,6 @@
 .category {
   padding: 0;
   position: relative;
-  flex-flow: column nowrap;
 
   &-title,
   &-info {
@@ -45,8 +42,8 @@
   }
 
   &-title {
-
-    > span {
+    border-bottom: @border-bt;
+    &-text {
       font-size: 1.1rem;
     }
   }
@@ -72,45 +69,15 @@
     }
   }
 
-  &-control {
-    right: 0;
-    top: 0;
-    position: absolute;
-    overflow: hidden;
+  .control-block {
+    transform: translate(58px);
 
-    .control-delete {
-      transform: translate(59px);
-      padding: 17px 10px;
-      cursor: pointer;
-      font-size: 1.1rem;
-      background-color: transparent;
-      transition: transform .5s ease;
-
-      &:after {
-        margin-left: 5px;
-        font-size: 0.8rem;
-        content: 'Удалить';
-      }
-
-      &:hover {
-        transform: translate(0);
-        color: @text-color;
-      }
+    &:hover {
+      transform: translate(0);
     }
   }
-}
-
-.info {
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  display: -o-flex;
-  display: flex;
-  flex-flow: row wrap;
-  border-top: @border;
-  color: @color-meta;
-  &-text {
-    margin-right: @indent-text;
+  .control-delete:after {
+      content: 'Удалить';
   }
 }
 

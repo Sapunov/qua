@@ -1,7 +1,8 @@
 import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { AuthService } from '../auth.service';
+import { AuthService } from '../services/auth.service';
+import { ErrorService } from '../services/error.service';
 
 @Component({
   selector: 'app-auth',
@@ -11,15 +12,22 @@ import { AuthService } from '../auth.service';
 export class AuthComponent implements OnInit {
   username: string;
   password: string;
+  loading: boolean = false;
 
   constructor(
+    private errorService: ErrorService,
     private authService: AuthService,
     private router: Router) { }
 
   onSubmit() {
+    this.loading = true;
     this.authService.auth(this.username, this.password)
       .then(res => {
         this.router.navigate(['/']);
+      })
+      .catch(err => this.errorService.viewError(err))
+      .then(() => {
+        this.loading = false;
       });
   }
   ngOnInit() {

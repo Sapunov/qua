@@ -1,4 +1,4 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/router';
 
 @Component({
@@ -7,6 +7,7 @@ import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/route
   styleUrls: ['./search.component.less']
 })
 export class SearchComponent implements OnInit {
+  @ViewChild('inputSearch') private inputSearch: ElementRef;
   @Input() sfHide: boolean;
   timer: number;
   query: string;
@@ -29,6 +30,9 @@ export class SearchComponent implements OnInit {
   }
 
   keyup(event: KeyboardEvent) {
+    if (this.query.length < 2) {
+      return;
+    }
     if (event.code === 'Enter' || event.key === 'Enter' || event.which === 13) {
       clearTimeout(this.timer);
       return;

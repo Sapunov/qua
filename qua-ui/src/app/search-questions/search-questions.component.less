@@ -1,22 +1,14 @@
 @import '../../styles/variables.less';
 
-@indent-text: 5px;
-
 .search-questions {
   &-list {
     padding: 0;
-    flex-flow: column wrap;
   }
 }
 
 .question-header {
+  display: block;
   position: relative;
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  display: -o-flex;
-  display: flex;
-  flex-flow: row wrap;
   cursor: pointer;
   padding: @indent;
   border-bottom: @border-bt;
@@ -36,32 +28,17 @@
     background-color: lighten(@color-red, 20%)
   }
   &-title {
+    display: block;
     font-size: 1.1rem;
     color: @text-color;
-    padding-right: 100px;
+    margin-right: 75px;
   }
 
   &:hover &-title {
     text-decoration: underline;
   }
-
-  &-categories,
-  &-keywords {
-    flex: 1 100%;
-  }
 }
 
 .question-info {
-  display: -webkit-flex;
-  display: -moz-flex;
-  display: -ms-flex;
-  display: -o-flex;
-  display: flex;
-  flex-flow: row nowrap;
   padding: @indent;
-  color: @color-meta;
-
-  &-creator {
-    margin-right: @indent;
-  }
 }
