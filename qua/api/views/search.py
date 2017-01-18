@@ -12,6 +12,7 @@ log = logging.getLogger('qua.' + __name__)
 
 
 class SearchView(APIView):
+
     def get(self, request, format=None):
         params = request.query_params
 

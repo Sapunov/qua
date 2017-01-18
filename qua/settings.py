@@ -13,7 +13,7 @@ VAR_LOG = os.path.join(VAR, 'log')
 LOGS_DIR = os.path.join(VAR_LOG, PROGRAM_NAME)
 DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
 
-STATIC = os.path.join(ROOT, "static")
+STATIC = os.path.join(ROOT, 'static')
 
 SECRET_KEY = '7dz6*-2e%4mi1gsh)9ko9)0ocv@cb8z_cfjuez0(^8aa3+1+d-'
 
@@ -26,8 +26,8 @@ STATICFILES_DIRS = (
 )
 
 STATICFILES_FINDERS = (
-    "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
 STATIC_ROOT = os.path.join(DATA_DIR, 'static')
@@ -98,13 +98,13 @@ if DEBUG:
     }
 else:
     DATABASES = {
-        "default": {
-            "ENGINE":   "django.db.backends.postgresql_psycopg2",
-            "NAME":     "qua",
-            "USER":     "qua_user",
-            "PASSWORD": "18pic81j67j4wDz",
-            "HOST":     "localhost",
-            "PORT":     "5432",
+        'default': {
+            'ENGINE':   'django.db.backends.postgresql_psycopg2',
+            'NAME':     'qua',
+            'USER':     'qua_user',
+            'PASSWORD': '18pic81j67j4wDz',
+            'HOST':     'localhost',
+            'PORT':     '5432',
         },
     }
 
@@ -141,13 +141,13 @@ JWT_AUTH = {
 
 REDIS_DB = 0
 
-REDIS_URL = "redis://localhost:6379/{}".format(REDIS_DB)
+REDIS_URL = 'redis://localhost:6379/{}'.format(REDIS_DB)
 BROKER_URL = REDIS_URL
 CELERY_RESULT_BACKEND = REDIS_URL
 CELERY_SEND_EVENTS = True
-CELERY_ACCEPT_CONTENT = ["json"]
-CELERY_TASK_SERIALIZER = "json"
-CELERY_RESULT_SERIALIZER = "json"
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 
 SEARCH_INDEX_DB = os.path.join(DATA_DIR, 'search_index')
@@ -156,57 +156,62 @@ SEARCH_RESULTS_MAX = 100
 
 
 LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": True,
-    "formatters": {
-        "verbose": {
-            "format": "%(asctime)s %(filename)s:"
-                      "%(funcName)s:%(lineno)s "
-                      "%(levelname)s: %(message)s"
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(filename)s:'
+                      '%(funcName)s:%(lineno)s '
+                      '%(levelname)s: %(message)s'
         },
-        "simple": {
-            "format": "%(asctime)s %(message)s"
-        },
-    },
-    "handlers": {
-        "console": {
-            "level": "INFO",
-            "class": "logging.StreamHandler",
-            "formatter": "simple"
-        },
-        "file": {
-            "level": "DEBUG",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(LOGS_DIR, "django.log"),
-            "formatter": "verbose"
-        },
-        "requests": {
-            "level": "INFO",
-            "class": "logging.FileHandler",
-            "filename": os.path.join(LOGS_DIR, "requests.log"),
-            "formatter": "simple"
+        'simple': {
+            'format': '%(asctime)s %(message)s'
         },
     },
-    "loggers": {
-        "qua": {
-            "handlers": ["file"],
-            "level": "DEBUG",
-            "propagate": True
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
         },
-        "qua.requests": {
-            "handlers": ['requests'],
-            "level": "INFO",
-            "propagate": False
+        'file': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'django.log'),
+            'formatter': 'verbose'
         },
-        "celery": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": True
+        'requests': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(LOGS_DIR, 'requests.log'),
+            'formatter': 'simple'
         },
-        "celery.task": {
-            "handlers": ["console"],
-            "level": "DEBUG",
-            "propagate": True
+    },
+    'loggers': {
+        'qua': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'qua.requests': {
+            'handlers': ['requests'],
+            'level': 'INFO',
+            'propagate': False
+        },
+        'celery': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'celery.task': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'django': {
+            'handlers': ['file'],
+            'level': 'DEBUG',
+            'propagate': True
         },
     },
 }

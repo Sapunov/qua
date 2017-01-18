@@ -142,6 +142,9 @@ class Question(Base):
     def answer_exists(self):
         return hasattr(self, 'answer')
 
+    class Meta:
+        ordering = ('answer', 'id')
+
 
 class SearchHistory(models.Model):
     query = models.TextField()

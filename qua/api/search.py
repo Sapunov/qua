@@ -88,6 +88,9 @@ class SearchResults:
                         snippet=engine_answer[result.id]['text'][:140]
                     )
                 )
+
+            self.hits.sort(key=lambda x: x.score, reverse=True)
+
         else:
             self.category_assumptions = make_assumptions(query)
 
@@ -99,6 +102,7 @@ class SearchResults:
 
 
 def search(query, user, category=None):
+
     log.debug('Search for: %s', query)
 
     if query == '':
