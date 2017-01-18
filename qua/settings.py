@@ -1,10 +1,19 @@
 import os
 import datetime
 
+PROGRAM_NAME = 'qua'
+
+# /var/www/qua on production environment
 ROOT = os.path.abspath(os.path.dirname(__file__))
+
+VAR = '/var'
+VAR_LIB = os.path.join(VAR, 'lib')
+VAR_LOG = os.path.join(VAR, 'log')
+
+LOGS_DIR = os.path.join(VAR_LOG, PROGRAM_NAME)
+DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
+
 STATIC = os.path.join(ROOT, "static")
-DATA = os.path.join(ROOT, "data")
-LOGS_DIR = os.path.join(ROOT, "logs")
 
 SECRET_KEY = '7dz6*-2e%4mi1gsh)9ko9)0ocv@cb8z_cfjuez0(^8aa3+1+d-'
 
@@ -21,7 +30,7 @@ STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
 )
 
-STATIC_ROOT = os.path.join(DATA, 'static')
+STATIC_ROOT = os.path.join(DATA_DIR, 'static')
 
 INSTALLED_APPS = [
     'qua.api',
@@ -84,7 +93,7 @@ if DEBUG:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(DATA, 'database.sqlite3'),
+            'NAME': os.path.join(DATA_DIR, 'database.sqlite3'),
         }
     }
 else:
@@ -141,7 +150,7 @@ CELERY_TASK_SERIALIZER = "json"
 CELERY_RESULT_SERIALIZER = "json"
 
 
-SEARCH_INDEX_DB = os.path.join(DATA, 'search_index')
+SEARCH_INDEX_DB = os.path.join(DATA_DIR, 'search_index')
 SEARCH_LANGUAGES = ['russian', 'english']
 SEARCH_RESULTS_MAX = 100
 
@@ -205,7 +214,7 @@ LOGGING = {
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(DATA, 'cache'),
+        'LOCATION': os.path.join(DATA_DIR, 'cache'),
     }
 }
 
