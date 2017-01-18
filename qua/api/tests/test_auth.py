@@ -41,3 +41,31 @@ class AuthTest(BaseQuaTestCase):
 
         self.assertEqual(resp.status_code, 401)
         self.assertEqual(resp.data['error']['error_msg'], 'User account is disabled.')
+
+    def test_token_verification_works(self):
+        resp = self.auth()
+        token = resp.data['response']['token']
+
+        client = Client()
+
+        verify_resp = client.post('/api/token-verify', {'token': token})
+
+        self.assertEqual(verify_resp.status_code, 200)
+
+        verify_response = verify_resp.data['response']
+
+        self.assertEqual(verify_response['token'], token)
+
+    def test_token_verification_fail(self):
+        resp = self.auth()
+        token = resp.data['response']['token']
+
+        client = Client()
+
+        verify_resp = client.post('/api/token-verify', {'token': token + '#'})
+
+        self.assertEqual(verify_resp.status_code, 400)
+
+        verify_error_msg = verify_resp.data['error']['error_msg']
+
+        self.assertEqual(verify_error_msg, 'Error decoding signature.')

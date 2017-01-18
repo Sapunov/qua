@@ -1,7 +1,7 @@
 from django.conf.urls import url
 
 from qua.api import views
-from qua.api.views import obtain_jwt_token
+from qua.api.views import obtain_jwt_token, verify_jwt_token
 
 
 urlpatterns = [
@@ -13,4 +13,5 @@ urlpatterns = [
     # url(r'^categories/search$', views.CategoriesSearchView.as_view()),
     # url(r'^keywords/search$', views.KeywordsSearchView.as_view()),
     url(r'^auth$', obtain_jwt_token),
+    url(r'^token-verify$', verify_jwt_token),
 ]
