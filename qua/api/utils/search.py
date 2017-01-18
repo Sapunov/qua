@@ -39,12 +39,12 @@ def get_queryparser(query):
 
     lang = 'en' if is_english(query) else 'ru'
 
-    log.debug('Query language: %s' % lang)
+    log.debug('Query language: %s', lang)
 
     queryparser.set_stemmer(xapian.Stem(lang))
 
-    queryparser.set_stemming_strategy(queryparser.STEM_ALL)
-    queryparser.set_default_op(xapian.Query.OP_OR)
+    queryparser.set_stemming_strategy(queryparser.STEM_SOME)
+    queryparser.set_default_op(xapian.Query.OP_AND)
 
     return queryparser
 

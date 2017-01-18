@@ -21,7 +21,7 @@ def word_delimiter(word, min_length=3):
     word_len = len(word)
 
     if word_len <= min_length:
-        return word
+        return [word]
     else:
         words = []
         for i in range(min_length, word_len + 1):
