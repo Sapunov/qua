@@ -15,14 +15,12 @@ import { MarkdownComponent }        from './markdown/markdown.component';
 import { SearchAddComponent }       from './search-add/search-add.component';
 import { SearchResultComponent }    from './search-result/search-result.component';
 import { SearchQuestionComponent }  from './search-question/search-question.component';
-// import { SearchCategoryComponent }  from './search-category/search-category.component';
 import { SearchQuestionsComponent } from './search-questions/search-questions.component';
 
 import { AuthService }              from './services/auth.service';
 import { ErrorService }             from './services/error.service';
 import { SearchService }            from './services/search.service';
 import { QuestionService }          from './services/question.service';
-import { CategoryService }          from './services/category.service';
 
 
 
@@ -37,7 +35,6 @@ import { CategoryService }          from './services/category.service';
     MarkdownComponent,
     AuthComponent,
     FooterComponent,
-    // SearchCategoryComponent,
     SearchQuestionsComponent,
     ErrorComponent
   ],
@@ -51,7 +48,6 @@ import { CategoryService }          from './services/category.service';
     AuthService,
     ErrorService,
     SearchService,
-    CategoryService,
     QuestionService,
   ],
   bootstrap: [AppComponent]

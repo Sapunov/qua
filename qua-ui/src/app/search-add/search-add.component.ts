@@ -7,10 +7,8 @@ import { MarkdownComponent } from '../markdown/markdown.component';
 
 import { ErrorService } from '../services/error.service';
 import { QuestionService } from '../services/question.service';
-// import { CategoryService } from '../category.service';
 
-import { IQuestion, INewQuestion, ICategories, IAnswer } from '../interfaces/question.interface';
-import { ICategory } from '../interfaces/category.interface';
+import { IQuestion, INewQuestion, IAnswer } from '../interfaces/question.interface';
 
 @Component({
   selector: 'app-search-add',
@@ -24,13 +22,11 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   loading: boolean = false;
 
   question: IQuestion | INewQuestion;
-  // allCategories: ICategories[];
   isReply: boolean = false;
   sfHide: boolean = true;
   title: string = '';
   keywords: string[] = [];
   keyword: string;
-  categories: ICategories[] = [];
   answer: any = {
     raw: ''
   };
@@ -40,7 +36,6 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService,
-    // private categoryService: CategoryService
   ) {  }
 
   onSubmit(form: FormGroup): void {
@@ -58,12 +53,9 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   edit(id: number) {
     let data: INewQuestion = {
       title: this.title,
-      categories: this.categories,
-      keywords: this.keywords
+      keywords: this.keywords,
+      answer: this.answer
     };
-    if (this.answer.raw) {
-      data.answer = this.answer;
-    }
     this.questionService.editQuestion(id, data)
       .then((que: IQuestion) => {
         this.router.navigate([`questions/${que.id}`]);
@@ -74,7 +66,6 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   add() {
     let data: INewQuestion = {
       title: this.title,
-      categories: this.categories,
       keywords: this.keywords,
     };
     this.loading = true;
@@ -91,24 +82,6 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  // getCategories() {
-  //   this.categoryService.getCategories()
-  //     .then((categories: ICategory[]) => {
-  //       this.allCategories = categories;
-  //     });
-  // }
-
-  // addCategory(index: number) {
-  //   this.categories.push({
-  //     id: this.allCategories[index].id,
-  //     name: this.allCategories[index].name
-  //   });
-  // }
-
-  // delCategory(index: number) {
-  //   this.categories.splice(index, 1);
-  // }
-
   addKeyword(form: FormGroup) {
     if (this.keyword && form.valid) {
       this.keywords.push(this.keyword);
@@ -124,14 +97,12 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     if (question && !question['new']) {
       this.title = question.title || this.title;
       this.keywords = question.keywords.slice() || this.keywords;
-      this.categories = question.categories.slice() || this.categories;
-      this.answer = question.answer ? Object.assign(question.answer) : this.answer;
+      this.answer = question.answer ? Object.assign({}, question.answer) : this.answer;
       this.isReply = question.reply;
       this.question = question;
     } else if (question) {
       this.title = question.title || this.title;
     }
-    // this.getCategories();
   }
 
   ngAfterViewInit() {
