@@ -53,8 +53,7 @@ export class SearchQuestionComponent implements OnInit {
         });
     } else {
       this.errorService.viewError({
-        error_code: 100,
-        error_msg: `Question id is ${id}`
+        error_msg: `Question ${id} is not found`
       });
     }
   }

@@ -22,6 +22,13 @@ export class SearchService {
     private http: Http) { }
 
   goSearch(query: string): Promise<ISearchResult> {
+    if (query.length < 2) {
+      return Promise.resolve({
+        query,
+        total: 0,
+        hits: []
+      } as ISearchResult);
+    }
     let options = new RequestOptions({
       headers: this.headers,
       withCredentials: true
@@ -44,6 +51,6 @@ export class SearchService {
   }
 
   private handleError = (error) => {
-    this.errorService.handleError(error);
+    return this.errorService.handleError(error);
   }
 }

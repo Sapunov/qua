@@ -22,5 +22,5 @@ export interface ISearchResult {
   query: string;
   hits: IHits[];
   total: number;
-  category_assumptions: ICategoryAssumptions[];
+  category_assumptions?: ICategoryAssumptions[];
 };
