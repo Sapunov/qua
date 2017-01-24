@@ -6,16 +6,16 @@ import { RouterModule }             from '@angular/router';
 import { AppRoutingModule }         from './app-routing.module';
 
 import { AppComponent }             from './app.component';
-import { AuthComponent }            from './auth/auth.component';
-import { ErrorComponent }           from './error/error.component';
-import { HeaderComponent }          from './header/header.component';
-import { FooterComponent }          from './footer/footer.component';
-import { SearchComponent }          from './search/search.component';
-import { MarkdownComponent }        from './markdown/markdown.component';
-import { SearchAddComponent }       from './search-add/search-add.component';
-import { SearchResultComponent }    from './search-result/search-result.component';
-import { SearchQuestionComponent }  from './search-question/search-question.component';
-import { SearchQuestionsComponent } from './search-questions/search-questions.component';
+import { AuthComponent }            from './components/auth/auth.component';
+import { ErrorComponent }           from './components/error/error.component';
+import { HeaderComponent }          from './components/header/header.component';
+import { FooterComponent }          from './components/footer/footer.component';
+import { SearchComponent }          from './components/search/search.component';
+import { MarkdownComponent }        from './components/markdown/markdown.component';
+import { SearchAddComponent }       from './components/search-add/search-add.component';
+import { SearchResultComponent }    from './components/search-result/search-result.component';
+import { SearchQuestionComponent }  from './components/search-question/search-question.component';
+import { SearchQuestionsComponent } from './components/search-questions/search-questions.component';
 
 import { AuthService }              from './services/auth.service';
 import { ErrorService }             from './services/error.service';

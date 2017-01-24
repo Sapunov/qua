@@ -5,10 +5,10 @@ import { FormGroup } from '@angular/forms';
 
 import { MarkdownComponent } from '../markdown/markdown.component';
 
-import { ErrorService } from '../services/error.service';
-import { QuestionService } from '../services/question.service';
+import { ErrorService } from '../../services/error.service';
+import { QuestionService } from '../../services/question.service';
 
-import { IQuestion, INewQuestion, IAnswer } from '../interfaces/question.interface';
+import { IQuestion, INewQuestion, IAnswer } from '../../interfaces/question.interface';
 
 @Component({
   selector: 'app-search-add',

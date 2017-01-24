@@ -1,8 +1,8 @@
 import { Subscription }   from 'rxjs/Subscription';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { ErrorService } from '../services/error.service';
-import { IError } from '../interfaces/error.interface';
+import { ErrorService } from '../../services/error.service';
+import { IError } from '../../interfaces/error.interface';
 
 
 @Component({

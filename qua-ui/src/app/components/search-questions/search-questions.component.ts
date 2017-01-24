@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 
-import { QuestionService } from '../services/question.service';
-import { ErrorService } from '../services/error.service';
-import { IQuestion } from '../interfaces/question.interface';
+import { QuestionService } from '../../services/question.service';
+import { ErrorService } from '../../services/error.service';
+import { IQuestion } from '../../interfaces/question.interface';
 
 @Component({
   selector: 'app-search-questions',

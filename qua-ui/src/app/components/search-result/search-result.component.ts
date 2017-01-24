@@ -3,10 +3,10 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Router, NavigationExtras } from '@angular/router';
 
-import { QuestionService } from '../services/question.service';
-import { SearchService } from '../services/search.service';
-import { ErrorService } from '../services/error.service';
-import { IHits, ISearchResult } from '../interfaces/search-hits.interface';
+import { QuestionService } from '../../services/question.service';
+import { SearchService } from '../../services/search.service';
+import { ErrorService } from '../../services/error.service';
+import { IHits, ISearchResult } from '../../interfaces/search-hits.interface';
 
 @Component({
   selector: 'app-search-result',

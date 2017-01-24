@@ -1,11 +1,11 @@
 import { NgModule }             from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 
-import { SearchQuestionsComponent } from './search-questions/search-questions.component';
-import { SearchResultComponent } from './search-result/search-result.component';
-import { SearchQuestionComponent } from './search-question/search-question.component';
-import { SearchAddComponent } from './search-add/search-add.component';
-import { AuthComponent } from './auth/auth.component';
+import { SearchQuestionsComponent } from './components/search-questions/search-questions.component';
+import { SearchResultComponent } from './components/search-result/search-result.component';
+import { SearchQuestionComponent } from './components/search-question/search-question.component';
+import { SearchAddComponent } from './components/search-add/search-add.component';
+import { AuthComponent } from './components/auth/auth.component';
 
 import { AuthService } from './services/auth.service';
 

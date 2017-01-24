@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/router';
 
-import { MIN_CHARS_FOR_SEARCH } from '../../environments/const';
+import { MIN_CHARS_FOR_SEARCH } from '../../../environments/const';
 
 @Component({
   selector: 'app-search',
