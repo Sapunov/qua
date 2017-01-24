@@ -1,5 +1,3 @@
-import { ICat } from './category.interface';
-
 export interface IUser {
   first_name: string;
   id: number;
@@ -23,15 +21,9 @@ export interface IAnswer {
   version: number;
 }
 
-export interface ICategories {
-  id: number;
-  name?: string;
-}
-
 export interface IQuestion {
   answer?: IAnswer;
   answer_exists?: boolean;
-  categories: ICat[];
   created_at: string;
   created_by: IUser;
   id: number;
@@ -46,7 +38,6 @@ export interface INewQuestion {
   answer?: {
     raw?: string;
   };
-  categories?: ICategories[];
   keywords?: string[];
   title: string;
   reply?: boolean;

@@ -13,14 +13,22 @@ export class ErrorService {
   constructor() { }
 
   viewError(err: IError) {
+    console.dir(err);
     console.error(err);
     this.error.next(err);
   }
 
   handleError(response: any) {
-    let res = response.json() as IResponse;
-    if (!res.ok) {
-      return Promise.reject(res.error);
+    let error;
+    if (response.status !== 500) {
+      let res = response.json() as IResponse;
+      if (!res.ok) {
+        error = res.error;
+      }
+    } else {
+      error = new Error('Extenral error');
+      error.response = response;
     }
+    return Promise.reject(error);
   }
 }

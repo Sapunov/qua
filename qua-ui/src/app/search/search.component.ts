@@ -9,8 +9,8 @@ import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/route
 export class SearchComponent implements OnInit {
   @ViewChild('inputSearch') private inputSearch: ElementRef;
   @Input() sfHide: boolean;
+  query: string = '';
   timer: number;
-  query: string;
 
   constructor(
     private router: Router,
@@ -47,7 +47,7 @@ export class SearchComponent implements OnInit {
 
   ngOnInit() {
     this.route.queryParams.subscribe((param: Params) => {
-      this.query = param['query'];
+      this.query = param['query'] || '';
     });
   }
 }

@@ -14,10 +14,6 @@
     <div *ngIf="question.keywords.length" class="header-keywords keywords">
       <span class="keywords-keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
     </div>
-    <!--<div *ngIf="question.categories.length" class="categories-list">
-      <span class="categories-list-title">Категории:</span>
-      <span class="categories-list-category" *ngFor="let category of question.categories">{{ category.name }}</span>
-    </div>-->
     <div class="header-info info">
       <div class="info-text">
         <i class="fa fa-user"></i>

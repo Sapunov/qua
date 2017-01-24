@@ -1,5 +1,3 @@
-import { ICat } from './category.interface';
-
 export interface IHits {
   id: number;
   title: string;
@@ -7,7 +5,6 @@ export interface IHits {
   image: string;
   score: number;
   keywords: string[];
-  categories: ICat[];
   url_params: {
     qid: number;
     shid: number;
@@ -25,5 +22,5 @@ export interface ISearchResult {
   query: string;
   hits: IHits[];
   total: number;
-  category_assumptions: ICategoryAssumptions[];
+  category_assumptions?: ICategoryAssumptions[];
 };
