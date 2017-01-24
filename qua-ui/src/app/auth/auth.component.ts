@@ -10,14 +10,18 @@ import { ErrorService } from '../services/error.service';
   styleUrls: ['./auth.component.less']
 })
 export class AuthComponent implements OnInit {
+  sfHide: boolean;
   username: string;
   password: string;
-  loading: boolean = false;
+  loading: boolean;
 
   constructor(
     private errorService: ErrorService,
     private authService: AuthService,
-    private router: Router) { }
+    private router: Router) {
+    this.sfHide = true;
+    this.loading = false;
+    }
 
   onSubmit() {
     this.loading = true;

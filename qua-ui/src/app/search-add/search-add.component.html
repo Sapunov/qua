@@ -12,13 +12,13 @@
       required
       autofocus/>
     <div class="app-block-elem form-keywords">
-      <form class="form-keywords-control" (ngSubmit)="addKeyword(keywordForm); keywordForm.reset()" #keywordForm="ngForm">
+      <form class="form-keywords-control" (ngSubmit)="addKeyword(); keywordForm.reset()" #keywordForm="ngForm">
         <input name="keyword" class="input-st" type="text" placeholder="Ключевое словое" [(ngModel)]="keyword" required>
         <button class="button-blue" type="submit">Добавить</button>
       </form>
       <div class="form-keywords-list keywords">
-        <span class="form-keywords-keyword keywords-keyword" *ngFor="let keyword of keywords; let i = index">{{ keyword }}
-          <i class="fa fa-times" (click)="delKeyword(i)"></i></span>
+        <span class="form-keywords-keyword keywords-keyword" *ngFor="let kw of keywords">{{ kw }}
+          <i class="fa fa-times" (click)="delKeyword(kw)"></i></span>
       </div>
     </div>
     <app-markdown class="app-block-elem form-textarea" #md [raw]="answer.raw"></app-markdown>

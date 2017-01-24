@@ -4,3 +4,5 @@ export const URLS = {
   category: '/api/categories',
   auth: '/api/auth',
 }
+
+export const MIN_CHARS_FOR_SEARCH = 2;

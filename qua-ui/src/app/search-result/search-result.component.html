@@ -10,7 +10,7 @@
   </div>
   <div class="app-block search-result-hit" *ngFor="let hit of hits">
     <header>
-      <a class="hit-header" (click)="getQuestion(hit.url_params, hit.id)">
+      <a class="hit-header" (click)="getQuestion(hit)">
         <span class="hit-header-title">{{ hit.title }}</span>
         <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
           <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>

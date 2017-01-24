@@ -21,57 +21,59 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
 
   loading: boolean = false;
 
-  question: IQuestion | INewQuestion;
-  isReply: boolean = false;
-  sfHide: boolean = true;
-  title: string = '';
-  keywords: string[] = [];
+  sfHide: boolean;
+  isEdit: boolean;
+  question: IQuestion;
+  title: string;
+  keywords: string[];
   keyword: string;
-  answer: any = {
-    raw: ''
-  };
+  answer: any;
 
   constructor(
     private errorService: ErrorService,
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService,
-  ) {  }
+  ) {
+    this.sfHide = true;
+    this.isEdit = false;
+    this.title = '';
+    this.keywords = [];
+    this.answer = {
+      raw: ''
+    };
+  }
 
   onSubmit(form: FormGroup): void {
     if (form.invalid) {
       return;
     }
-    this.answer = { raw: this.mde.getValue() };
-    if (this.isReply) {
-      this.edit(this.question['id']);
-    } else {
-      this.add();
-    }
-  }
-
-  edit(id: number) {
     let data: INewQuestion = {
       title: this.title,
       keywords: this.keywords,
-      answer: this.answer
+      answer: { raw: this.mde.getValue() }
     };
+    if (this.isEdit) {
+      this.edit(this.question.id, data);
+    } else {
+      this.add(data);
+    }
+  }
+
+  edit(id: number, data: INewQuestion) {
+    this.loading = true;
     this.questionService.editQuestion(id, data)
       .then((que: IQuestion) => {
         this.router.navigate([`questions/${que.id}`]);
       })
-      .catch(err => this.errorService.viewError(err));
+      .catch(err => this.errorService.viewError(err))
+      .then(() => {
+        this.loading = false;
+      });
   }
 
-  add() {
-    let data: INewQuestion = {
-      title: this.title,
-      keywords: this.keywords,
-    };
+  add(data: INewQuestion) {
     this.loading = true;
-    if (this.answer.raw) {
-      data.answer = this.answer;
-    }
     this.questionService.addQuestion(data)
       .then((que: IQuestion) => {
         this.router.navigate([`questions/${que.id}`]);
@@ -82,26 +84,28 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
       });
   }
 
-  addKeyword(form: FormGroup) {
-    if (this.keyword && form.valid) {
+  addKeyword() {
+    let checkKeywords = this.keywords.indexOf(this.keyword);
+    if (this.keyword && checkKeywords) {
       this.keywords.push(this.keyword);
     }
   }
 
-  delKeyword(index: number) {
-    this.keywords.splice(index, 1);
+  delKeyword(keyword: string) {
+    let index = this.keywords.indexOf(keyword);
+    if (index !== -1) {
+      this.keywords.splice(index, 1);
+    }
   }
 
   ngOnInit() {
     let question = this.questionService.question;
-    if (question && !question['new']) {
+    if (question) {
       this.title = question.title || this.title;
-      this.keywords = question.keywords.slice() || this.keywords;
+      this.keywords = question.keywords ? question.keywords.slice() : this.keywords;
       this.answer = question.answer ? Object.assign({}, question.answer) : this.answer;
-      this.isReply = question.reply;
-      this.question = question;
-    } else if (question) {
-      this.title = question.title || this.title;
+      this.question = question as IQuestion;
+      this.isEdit = this.question.id ? true : false;
     }
   }
 

@@ -15,7 +15,7 @@ import { IQuestion, INewQuestion } from '../interfaces/question.interface';
 })
 export class SearchQuestionComponent implements OnInit {
   question: IQuestion;
-  loading: boolean = false;
+  loading: boolean;
   raw: string;
 
   constructor(
@@ -24,18 +24,15 @@ export class SearchQuestionComponent implements OnInit {
     private router: Router,
     private Location: Location,
     private questionService: QuestionService
-  ) { }
+  ) {
+    this.loading = false;
+  }
 
   edit() {
-    this.question.reply = true;
     this.questionService.question = this.question;
     this.router.navigate(['add']);
   }
-  reply() {
-    this.question.reply = true;
-    this.questionService.question = this.question;
-    this.router.navigate(['add']);
-  }
+
   delete() {
     let id = this.question.id;
     if (this.loading) {

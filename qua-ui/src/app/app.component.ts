@@ -25,10 +25,6 @@ export class AppComponent implements OnInit, OnDestroy {
     }
   }
 
-  onEditQuestion(question: any) {
-    console.log(question);
-  }
-
   ngOnInit() {
     this.sub = this.authService.isAuth$.subscribe((isAuth: boolean) => {
       this.isAuth = isAuth;

@@ -10,77 +10,37 @@ import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class QuestionService {
-  public question: IQuestion | INewQuestion;
-  private headers = new Headers({
-    'Content-type': 'application/json',
-    Authorization: `JWT ${localStorage.getItem('token')}`
-  });
+  public question: INewQuestion;
 
   constructor(
     private errorService: ErrorService,
-    private http: Http) { }
+    private http: Http) {
+      this.question = null;
+    }
 
-  editQuestion(id: number, data: INewQuestion): Promise<IQuestion> {
-    let options = new RequestOptions({
-      headers: this.headers,
-      withCredentials: true
-    });
-    return this.http.put(`${URLS.question}/${id}`, JSON.stringify(data), options)
-      .toPromise()
-      .then((response: any) => {
-        return response.json() as IResponse;
-      })
-      .then((response: IResponse) => {
-        if (!response.ok) {
-          throw response.error;
-        }
-        return response.response;
-      })
-      .catch(this.handleError);
-  }
   addQuestion(data: INewQuestion): Promise<IQuestion> {
-    let options = new RequestOptions({
-      headers: this.headers,
-      withCredentials: true
-    });
+    let options = this.makeOptions();
     return this.http.post(URLS.question, JSON.stringify(data), options)
       .toPromise()
-      .then((response: any) => {
-        return response.json() as IResponse;
-      })
-      .then((response: IResponse) => {
-        if (!response.ok) {
-          throw response.error;
-        }
-        return response.response;
-      })
-      .catch(this.handleError);
+      .then(this.promiseHandler);
+  }
+
+  editQuestion(id: number, data: INewQuestion): Promise<IQuestion> {
+    let options = this.makeOptions();
+    return this.http.put(`${URLS.question}/${id}`, JSON.stringify(data), options)
+      .toPromise()
+      .then(this.promiseHandler);
   }
 
   deleteQuestion(id: number): Promise<boolean> {
-    let options = new RequestOptions({
-      headers: this.headers,
-      withCredentials: true
-    });
+    let options = this.makeOptions();
     return this.http.delete(`${URLS.question}/${id}`, options)
       .toPromise()
-      .then((response: any) => {
-        return response.json() as IResponse;
-      })
-      .then((response: IResponse) => {
-        if (!response.ok) {
-          throw response.error;
-        }
-        return response.response;
-      })
-      .catch(this.handleError);
+      .then(this.promiseHandler);
   }
 
   getQuestion(urlParams): Promise<IQuestion> {
-    let options = new RequestOptions({
-      headers: this.headers,
-      withCredentials: true,
-    });
+    let options = this.makeOptions();
     let keysQueryParam = Object.keys(urlParams.queryParams);
     let queryParams = new URLSearchParams();
     keysQueryParam.forEach((key: string) => {
@@ -89,28 +49,29 @@ export class QuestionService {
     options.search = queryParams;
     return this.http.get(`${URLS.question}/${urlParams.params.id}`, options)
       .toPromise()
-      .then((response: any) => {
-          return response.json() as IResponse;
-      })
-      .then((response: IResponse) => {
-        if (!response.ok) {
-          throw response.error;
-        }
-        return response.response;
-      })
-      .catch(this.handleError);
+      .then(this.promiseHandler);
   }
 
   getQuestions(): Promise<IQuestion[]> {
-    let options = new RequestOptions({
-      headers: this.headers,
-      withCredentials: true,
-    });
+    let options = this.makeOptions();
     return this.http.get(`${URLS.question}`, options)
       .toPromise()
-      .then((response: any) => {
-          return response.json() as IResponse;
-      })
+      .then(this.promiseHandler);
+  }
+
+  private makeOptions() {
+    let headers =  new Headers({
+      'Content-type': 'application/json',
+      Authorization: `JWT ${localStorage.getItem('token')}`
+    });
+    let options = new RequestOptions({
+      headers: headers,
+      withCredentials: true
+    });
+    return options;
+  }
+  private promiseHandler = (res: any): any => {
+    return Promise.resolve(res.json() as IResponse)
       .then((response: IResponse) => {
         if (!response.ok) {
           throw response.error;
@@ -119,7 +80,6 @@ export class QuestionService {
       })
       .catch(this.handleError);
   }
-
   private handleError = (error) => {
     return this.errorService.handleError(error);
   }

@@ -1,5 +1,7 @@
-import { Component, OnInit, Input, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/router';
+
+import { MIN_CHARS_FOR_SEARCH } from '../../environments/const';
 
 @Component({
   selector: 'app-search',
@@ -7,18 +9,19 @@ import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/route
   styleUrls: ['./search.component.less']
 })
 export class SearchComponent implements OnInit {
-  @ViewChild('inputSearch') private inputSearch: ElementRef;
   @Input() sfHide: boolean;
-  query: string = '';
+  query: string;
   timer: number;
 
   constructor(
     private router: Router,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute) {
+    this.query = '';
+    }
 
 
   getResults(query: string) {
-    if (!query) {
+    if (!query || this.query.length < MIN_CHARS_FOR_SEARCH) {
       return;
     }
     let params: NavigationExtras = {
@@ -30,7 +33,7 @@ export class SearchComponent implements OnInit {
   }
 
   keyup(event: KeyboardEvent) {
-    if (this.query.length < 2) {
+    if (this.query.length < MIN_CHARS_FOR_SEARCH) {
       return;
     }
     if (event.code === 'Enter' || event.key === 'Enter' || event.which === 13) {

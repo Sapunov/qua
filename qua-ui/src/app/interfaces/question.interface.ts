@@ -31,7 +31,6 @@ export interface IQuestion {
   title: string;
   updated_at: string;
   updated_by: IUser;
-  reply?: boolean;
 }
 
 export interface INewQuestion {
@@ -40,6 +39,4 @@ export interface INewQuestion {
   };
   keywords?: string[];
   title: string;
-  reply?: boolean;
-  new?: boolean;
 }

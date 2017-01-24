@@ -1,7 +1,6 @@
 import 'rxjs/add/operator/switchMap';
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
-import { Location } from '@angular/common';
 import { Router, NavigationExtras } from '@angular/router';
 
 import { QuestionService } from '../services/question.service';
@@ -17,37 +16,33 @@ import { IHits, ISearchResult } from '../interfaces/search-hits.interface';
 export class SearchResultComponent implements OnInit {
   result: ISearchResult;
   hits: IHits[];
-  total: number = 0;
 
   constructor(
     private errorService: ErrorService,
     private search: SearchService,
     private route: ActivatedRoute,
     private router: Router,
-    private location: Location,
     private questionService: QuestionService
-  ) { }
+  ) {  }
 
-  addQuestion(question: string): void {
+  addQuestion(title: string): void {
     this.questionService.question = {
-      title: question,
-      reply: false,
-      new: true
+      title
     };
     this.router.navigate(['add']);
   }
 
-  getQuestion(data: any, id: number): void {
+  getQuestion(hit: IHits): void {
     let params: NavigationExtras = {
-      queryParams: data
+      queryParams: hit.url_params
     };
-    this.router.navigate([`questions/${id}`], params);
+    this.router.navigate([`questions/${hit.id}`], params);
   }
 
   ngOnInit() {
     this.route.queryParams
       .switchMap((params: Params) => {
-        return this.search.goSearch(params['query'] || '')
+        return this.search.goSearch(params['query'])
           .catch(err => this.errorService.viewError(err));
       })
       .subscribe((result: ISearchResult) => {

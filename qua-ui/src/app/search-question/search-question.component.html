@@ -29,7 +29,7 @@
   <div class="search-question-answer">
     <div class="answer-noanswer" *ngIf="!raw">
       <span>Да данный вопрос еще нет ответа. Если знаете ответ, добавьте его.</span>
-      <button class="button-blue" (click)="reply()">Добавить ответ</button>
+      <button class="button-blue" (click)="edit()">Добавить ответ</button>
     </div>
     <div class="answer-text answer-style" *ngIf="raw" [innerHTML]="question.answer.html"></div>
     <div class="answer-info info" *ngIf="raw">
