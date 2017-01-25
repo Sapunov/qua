@@ -1,6 +1,8 @@
-.answer-style {
-  a,
-  pre {
+@import './variables.less';
+
+.answer-style,
+.editor-preview {
+  a {
     overflow-wrap: break-word;
     word-wrap: break-word;
     white-space: normal;
@@ -8,5 +10,54 @@
 
   p:first-child {
     margin-top: 0;
+  }
+
+  img,
+  blockquote,
+  table,
+  pre,
+  p > code,
+  > code {
+    width: 100%;
+    border-radius: @border-radius;
+    border: @border;
+  }
+
+  blockquote {
+    margin: 0;
+    padding: @indent-text;
+    background-color: @bg-color;
+    font-style: italic;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  table {
+    border-collapse: collapse;
+    margin-bottom: @indent;
+
+    th, td {
+      border-collapse: collapse;
+      border: @border;
+      padding:  @indent-text;
+    }
+  }
+
+  pre {
+    padding: @indent-text;
+    display: block;
+    overflow-x: auto;
+    font-family: consolas, monospace;
+    background-color: @bg-color;
+  }
+  > code,
+  p > code {
+    padding: @indent-text;
+    display: block;
+    overflow-x: auto;
+    font-family: consolas, monospace;
+    background-color: @bg-color;
   }
 }
