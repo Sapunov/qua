@@ -28,9 +28,9 @@ export class MarkdownComponent implements OnInit, AfterViewInit {
   ngAfterViewInit() {
     this.mde = new SimpleMDE({
       element: this.elementRef.nativeElement.value,
-      showIcons: ['code', 'table'],
+      showIcons: ['code', 'table', 'clean-block'],
       autoDownloadFontAwesome: false,
-      spellChecker: false
+      spellChecker: false,
     });
   }
 
