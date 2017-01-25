@@ -35,6 +35,9 @@ export class SearchQuestionComponent implements OnInit {
   }
 
   delete() {
+    if (!confirm('Вы уверены, что хотите удалить этот вопрос?')) {
+      return;
+    }
     let id = this.question.id;
     if (id) {
       this.loading = true;
