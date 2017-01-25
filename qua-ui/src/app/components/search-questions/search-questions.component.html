@@ -1,3 +1,6 @@
+<div *ngIf="loading" class="loader-block">
+  <i class="fa fa-refresh loader"></i>
+</div>
 <div class="search-questions" *ngIf="questions">
   <div class="app-block search-questions-list" *ngFor="let question of questions">
     <header>

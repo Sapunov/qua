@@ -15,13 +15,16 @@ import { IHits, ISearchResult } from '../../interfaces/search-hits.interface';
 export class SearchResultComponent implements OnInit {
   result: ISearchResult;
   hits: IHits[];
+  loading: boolean;
 
   constructor(
     private search: SearchService,
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService
-  ) {  }
+  ) {
+    this.loading = false;
+  }
 
   addQuestion(title: string): void {
     this.questionService.question = {
@@ -40,10 +43,12 @@ export class SearchResultComponent implements OnInit {
   ngOnInit() {
     this.route.queryParams
       .switchMap((params: Params) => {
+        this.loading = true;
         return this.search.goSearch(params['query'])
-          .catch(err => {});
+          .catch(err => null);
       })
       .subscribe((result: ISearchResult) => {
+        this.loading = false;
         if (result) {
           this.hits = result.hits;
           return this.result = result;

@@ -11,23 +11,28 @@ import { IQuestion } from '../../interfaces/question.interface';
 })
 export class SearchQuestionsComponent implements OnInit {
   questions: IQuestion[] = [];
+  loading: boolean;
 
   constructor(
     private questionService: QuestionService,
     private router: Router
-  ) { }
+  ) {
+    this.loading = false;
+  }
 
   getQuestion(id: number) {
     this.router.navigate([`questions/${id}`]);
   }
 
   ngOnInit() {
+    this.loading = true;
     this.questionService.getQuestions()
       .then((questions: IQuestion[]) => {
+        this.loading = false;
         this.questions = questions;
       })
       .catch(err => {
-        // this.loading = false;
+        this.loading = false;
       });
   }
 }

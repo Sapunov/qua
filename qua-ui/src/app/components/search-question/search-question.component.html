@@ -1,3 +1,6 @@
+<div *ngIf="loading" class="loader-block">
+  <i class="fa fa-refresh loader"></i>
+</div>
 <div class="app-block search-question" *ngIf="question">
   <div class="search-question-control control">
     <button class="control-block control-edit" (click)="edit()">

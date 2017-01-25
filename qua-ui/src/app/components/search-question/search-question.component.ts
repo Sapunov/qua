@@ -30,14 +30,12 @@ export class SearchQuestionComponent implements OnInit {
 
   edit() {
     this.questionService.question = this.question;
+    this.loading = true;
     this.router.navigate(['add']);
   }
 
   delete() {
     let id = this.question.id;
-    if (this.loading) {
-      return;
-    }
     if (id) {
       this.loading = true;
       this.questionService.deleteQuestion(id)
@@ -57,6 +55,7 @@ export class SearchQuestionComponent implements OnInit {
 
   ngOnInit() {
     let allParams: any = {};
+    this.loading = true;
     this.route.params
       .switchMap((params: Params) => {
         allParams.params = params;
@@ -68,6 +67,7 @@ export class SearchQuestionComponent implements OnInit {
           .catch(err => null);
       })
       .subscribe((result: IQuestion) => {
+        this.loading = false;
         if (result) {
           this.question = result;
           this.raw = result.answer ? result.answer.raw : '';
