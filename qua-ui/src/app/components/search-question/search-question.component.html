@@ -1,0 +1,49 @@
+<div *ngIf="loading" class="loader-block">
+  <i class="fa fa-refresh loader"></i>
+</div>
+<div class="app-block search-question" *ngIf="question">
+  <div class="search-question-control control">
+    <button class="control-block control-edit" (click)="edit()">
+      <i class="fa fa-pencil" aria-hidden="true"></i>
+    </button>
+    <button class="control-block control-delete" (click)="delete()">
+      <i class="fa fa-trash-o" aria-hidden="true"></i>
+    </button>
+  </div>
+  <header class="search-question-header">
+    <div class="header-title">
+      <h1 class="header-title-text">{{ question.title }}</h1>
+    </div>
+    <div *ngIf="question.keywords.length" class="header-keywords keywords">
+      <span class="keywords-keyword" *ngFor="let keyword of question.keywords">{{ keyword }}</span>
+    </div>
+    <div class="header-info info">
+      <div class="info-text">
+        <i class="fa fa-user"></i>
+        <span>{{ question.created_by.first_name }}</span>
+        <span>{{ question.created_by.last_name }}</span>
+      </div>
+      <div class="info-text">
+        <i class="fa fa-clock-o"></i>
+        <span>{{ question.created_at | date:'dd.MM.yyyy HH:mm' }}</span>
+      </div>
+    </div>
+  </header>
+  <div class="search-question-answer">
+    <div class="answer-noanswer" *ngIf="!raw">
+      <span>Да данный вопрос еще нет ответа. Если знаете ответ, добавьте его.</span>
+      <button class="button-blue" (click)="edit()">Добавить ответ</button>
+    </div>
+    <div class="answer-text answer-style" *ngIf="raw" [innerHTML]="question.answer.html"></div>
+    <div class="answer-info info" *ngIf="raw">
+      <div class="info-text">
+        <span>Ответил:</span>
+        <span><b>{{ question.answer.updated_by.first_name }}</b></span>
+        <span><b>{{ question.answer.updated_by.last_name }}</b></span>
+      </div>
+      <div class="info-text">
+        <span>{{ question.answer.updated_at | date:'dd.MM.yyyy HH:mm' }}</span>
+      </div>
+    </div>
+  </div>
+</div>

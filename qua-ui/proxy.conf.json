@@ -1,7 +1,7 @@
 {
   "/api": {
     "target": {
-      "host": "185.12.29.24",
+      "host": "dev.qua.sapunovnik.ru",
       "protocol": "http",
       "port": 80
     },

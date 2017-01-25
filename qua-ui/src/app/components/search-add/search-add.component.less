@@ -1,0 +1,91 @@
+@import '../../../styles/variables.less';
+
+.search-add {
+  flex-flow: column wrap;
+
+  &-title {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: normal;
+  }
+}
+
+.form {
+  &-input {
+    margin-bottom: 0;
+    padding-right: 50px;
+    resize: none;
+  }
+  &-categories,
+  &-keywords {
+    &-control {
+      display: -webkit-flex;
+      display: -moz-flex;
+      display: -ms-flex;
+      display: -o-flex;
+      display: flex;
+      flex-flow: row wrap;
+
+      .input-st {
+        font-size: 1.05rem;
+        flex: 1 auto;
+        margin-right: @indent;
+        margin-bottom: 0;
+
+        &:not(:focus).ng-invalid {
+          border: @border;
+        }
+      }
+    }
+  }
+
+  &-keywords-keyword,
+  &-categories-category {
+    @ind: 4px;
+    border-radius: @border-radius;
+    padding: @ind;
+    padding-left: @ind*2;
+    color: lighten(@text-color-bl, 10%);
+    background-color: @bg-color;
+
+    &:after {
+      content: ''
+    }
+
+    > i {
+      cursor: pointer;
+      padding: @ind;
+      padding-left: @ind;
+    }
+  }
+
+  &-keywords-keyword {
+    color: @color-keyword-text;
+    background-color: @color-keyword-bg;
+  }
+
+  &-control {
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    align-items: center;
+  }
+
+  .loader {
+    margin-left: @indent;
+  }
+}
+
+
+@media (max-width: @width-content-media) {
+  .form-keywords-control {
+    flex-flow: column nowrap;
+
+    > .input-st {
+      margin-right: 0;
+      margin-bottom: @indent;
+    }
+  }
+}

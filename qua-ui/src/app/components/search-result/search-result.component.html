@@ -1,0 +1,27 @@
+<div class="search-result" *ngIf="result">
+  <div class="app-block search-result-empty" *ngIf="!result.query">
+    <h1 class="empty-title">
+      Начните вводить вопрос
+    </h1>
+  </div>
+  <div class="app-block search-result-empty" *ngIf="!result.total && result.query">
+    <h1 class="empty-title">Еще никто не задавался подобным вопросом. Будьте первым!</h1>
+    <button class="button-blue empty-button" (click)="addQuestion(result.query)">Добавить вопрос</button>
+  </div>
+  <div class="app-block search-result-hit" *ngFor="let hit of hits">
+    <header>
+      <a class="hit-header" (click)="getQuestion(hit)">
+        <span class="hit-header-title">{{ hit.title }}</span>
+        <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
+          <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
+        </div>
+      </a>
+    </header>
+    <div class="hit-snippet">
+      <span class="hit-snippet-text" [innerHTML]="hit.snippet"></span>
+    </div>
+  </div>
+</div>
+<div *ngIf="loading" class="loader-block">
+  <i class="fa fa-refresh loader"></i>
+</div>

@@ -12,6 +12,8 @@ import { URLS } from '../../environments/const';
 @Injectable()
 export class AuthService implements CanActivate {
   private isAuthSource = new Subject<boolean>();
+  private headers: Headers;
+  private options: RequestOptions;
 
   isAuth$ = this.isAuthSource.asObservable();
 
@@ -21,7 +23,14 @@ export class AuthService implements CanActivate {
   constructor(
     private http: Http,
     private router: Router,
-    private errorService: ErrorService) { }
+    private errorService: ErrorService) {
+      this.headers = new Headers({
+        'Content-type': 'application/json'
+      });
+      this.options = new RequestOptions({
+        headers: this.headers
+      });
+    }
 
   canActivate() {
     this.isAuth = this.checkAuth();
@@ -37,13 +46,8 @@ export class AuthService implements CanActivate {
       username,
       password
     };
-    let headers = new Headers({
-      'Content-type': 'application/json'
-    });
-    let options = new RequestOptions({
-      headers: headers
-    });
-    return this.http.post(URLS.auth, JSON.stringify(data), options)
+
+    return this.http.post(URLS.auth, JSON.stringify(data), this.options)
       .toPromise()
       .then((response: any) => {
         return response.json() as IResponse;
@@ -62,6 +66,7 @@ export class AuthService implements CanActivate {
 
   logout(): void {
     localStorage.removeItem('token');
+    this.router.navigate(['/auth']);
   }
 
   checkAuth(): boolean {
