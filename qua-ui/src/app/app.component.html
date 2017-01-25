@@ -1,8 +1,8 @@
 <div class="wrapper">
   <app-header [isAuth]="isAuth"></app-header>
   <div class="wrapper-resize">
-    <div class="app-content">
-      <app-search [sfHide]="sfHide"></app-search>
+    <div class="app-content" >
+      <app-search [sfHide]="sfHide" [focusOnSf]="focusOnSf"></app-search>
       <router-outlet (activate)="onActivate($event)"></router-outlet>
     </div>
   </div>

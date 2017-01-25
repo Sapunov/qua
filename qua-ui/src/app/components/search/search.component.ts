@@ -1,4 +1,6 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
+import { Subscription }   from 'rxjs/Subscription';
+import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/router';
 
 import { MIN_CHARS_FOR_SEARCH } from '../../../environments/const';
@@ -8,8 +10,11 @@ import { MIN_CHARS_FOR_SEARCH } from '../../../environments/const';
   templateUrl: './search.component.html',
   styleUrls: ['./search.component.less']
 })
-export class SearchComponent implements OnInit {
+export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
+  @ViewChild('inputSearch') private searchField: ElementRef;
+  @Input() focusOnSf: Subject<boolean>;
   @Input() sfHide: boolean;
+  subs: Subscription[];
   query: string;
   timer: number;
 
@@ -52,5 +57,16 @@ export class SearchComponent implements OnInit {
     this.route.queryParams.subscribe((param: Params) => {
       this.query = param['query'] || '';
     });
+  }
+
+  ngAfterViewInit() {
+    this.searchField.nativeElement.focus();
+    this.focusOnSf.subscribe((focus: boolean) => {
+      this.searchField.nativeElement.focus();
+    });
+  }
+
+  ngOnDestroy() {
+    this.subs.forEach(sub => sub.unsubscribe());
   }
 }
