@@ -77,3 +77,15 @@
     margin-left: @indent;
   }
 }
+
+
+@media (max-width: @width-content-media) {
+  .form-keywords-control {
+    flex-flow: column nowrap;
+
+    > .input-st {
+      margin-right: 0;
+      margin-bottom: @indent;
+    }
+  }
+}
