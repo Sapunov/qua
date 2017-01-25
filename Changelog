@@ -1,0 +1,34 @@
+Version 1.0.0
+----
+* What's new:
+	* [api] Delete answer on empty PUT - https://trello.com/c/h5iDcw4M
+	* [ui] Add check status 500
+	* [ui] Add delete question - https://trello.com/c/jmjemmeR/53--
+	* [ui] Add loader and disable btn - https://trello.com/c/AHuMslme/47--
+	* [ui] Add npm script 'start with proxy'
+	* [ui] Change dev serve
+
+* Fixes:
+	* [api] Right sorting order in search and questions - https://trello.com/c/srvEq9XA
+	* [ui] Cut title - https://trello.com/c/KENhJJxp/41--
+	* [ui] Error fix if search query chars < 2 - https://trello.com/c/rTgCkt4c/64-2
+	* [ui] Fix answer style
+	* [ui] Fix btn in add component - https://trello.com/c/XnnCdpQi/49--
+	* [ui] Fix resize MDE - https://trello.com/c/X0b6OYYW/57-md
+	* [ui] Fix word wrap (temporally) - https://trello.com/c/qnE52xX6/56--
+	* [ui] One height all btn and inp, add disabled style - https://trello.com/c/nt9ZmVMl/42--
+	* [ui] Refactoring and fix styles - https://trello.com/c/XnnCdpQi/49--
+	* [ui] SpellChecker disable in mde - https://trello.com/c/d35omE8G/48--
+
+* Improvements:
+	* [api] Search query parser policy now AND
+	* [api] Token verification added - https://trello.com/c/EJcPrMBh
+	* [ui] Add cofirm for del question - https://trello.com/c/AotDwItN/75--
+	* [ui] Add error component and add error handler on API
+	* [ui] Add loader - https://trello.com/c/KGzGp6PL/81--
+	* [ui] Add style for answer - https://trello.com/c/qnE52xX6/56--
+	* [ui] Focus on search field - https://trello.com/c/aEBTWSWf/67--
+	* [ui] Form validation - https://trello.com/c/lvk3ixJh/51--
+	* [ui] Handling unknown routes
+	* [ui] Reset form after add category - https://trello.com/c/YB1cHpdX/46--
+	* [ui] Start search with 2 chars - https://trello.com/c/rTgCkt4c/64-2

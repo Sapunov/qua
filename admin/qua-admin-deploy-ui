@@ -1,0 +1,105 @@
+#!/usr/bin/env python3
+
+import os
+import sys
+import re
+import argparse
+import shutil
+import errno
+
+
+MAIN_DIR = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+
+sys.path.append(MAIN_DIR)
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'qua.settings')
+
+from django.conf import settings
+
+
+class QuaError(Exception):
+    pass
+
+
+def delete_files(directory):
+    for the_file in os.listdir(directory):
+        if the_file.startswith('.git'):
+            continue
+
+        file_path = os.path.join(directory, the_file)
+
+        if os.path.isfile(file_path):
+            os.unlink(file_path)
+
+
+def create_dir(dirpath):
+    try:
+        os.mkdir(dirpath)
+    except OSError as e:
+        if e.errno != errno.EEXIST:
+            raise e
+
+
+def replace_static_paths(filename):
+    with open(filename, 'r+') as opened:
+        html = opened.read()
+
+        html = re.sub(r'(href|src)="([a-z]{2,})', r'\1="/static/ui/\2', html)
+        html = re.sub(r'<title>(\w)+</title>', r'<title>QUA</title>', html)
+
+        opened.seek(0)
+        opened.write(html)
+
+
+def copy_template(filename):
+    try:
+        path = settings.TEMPLATES[0]['DIRS'][0]
+    except (KeyError, IndexError):
+        raise QuaError('Templates directory does not exist')
+
+    ui_path = os.path.join(path, 'ui')
+
+    create_dir(ui_path)
+
+    shutil.copyfile(filename, os.path.join(ui_path, 'index.html'))
+    os.remove(filename)
+
+
+def copy_staticfiles(directory):
+    try:
+        path = settings.STATICFILES_DIRS[0]
+    except (KeyError, IndexError):
+        raise QuaError('Staticfiles directory does not exist')
+
+    delete_files(path)
+
+    ui_path = os.path.join(path, 'ui')
+
+    create_dir(ui_path)
+
+    for the_file in os.listdir(directory):
+        file_path = os.path.join(directory, the_file)
+
+        if os.path.isfile(file_path):
+            shutil.copy(file_path, ui_path)
+
+
+def main():
+    parser = argparse.ArgumentParser(description='QUA deploy UI')
+    parser.add_argument(
+        '-s', '--source',
+        required=True,
+        help='Directory with built UI files'
+    )
+
+    args = parser.parse_args()
+
+    index_html = os.path.join(args.source, 'index.html')
+
+    replace_static_paths(index_html)
+
+    copy_template(index_html)
+    copy_staticfiles(args.source)
+
+
+if __name__ == '__main__':
+    main()
