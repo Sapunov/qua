@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Params, Router, NavigationExtras } from '@angular/router';
 import { Location } from '@angular/common';
 
-import { ErrorService } from '../../services/error.service';
+import { ErrorService, QuaError } from '../../services/error.service';
 import { QuestionService } from '../../services/question.service';
 import { IQuestion, INewQuestion } from '../../interfaces/question.interface';
 
@@ -42,16 +42,16 @@ export class SearchQuestionComponent implements OnInit {
       this.loading = true;
       this.questionService.deleteQuestion(id)
         .then(() => {
+          this.loading = false;
           this.router.navigate(['questions']);
         })
-        .catch(err => this.errorService.viewError(err))
-        .then(() => {
+        .catch(err => {
           this.loading = false;
         });
     } else {
-      this.errorService.viewError({
+      this.errorService.viewError(new QuaError({
         error_msg: `Question ${id} is not found`
-      });
+      }));
     }
   }
 
@@ -65,7 +65,7 @@ export class SearchQuestionComponent implements OnInit {
       .switchMap((params: Params) => {
         allParams.queryParams = params;
         return this.questionService.getQuestion(allParams)
-          .catch(err => this.errorService.viewError(err));
+          .catch(err => null);
       })
       .subscribe((result: IQuestion) => {
         if (result) {

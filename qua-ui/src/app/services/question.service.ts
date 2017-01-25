@@ -22,21 +22,24 @@ export class QuestionService {
     let options = this.makeOptions();
     return this.http.post(URLS.question, JSON.stringify(data), options)
       .toPromise()
-      .then(this.promiseHandler);
+      .then(this.promiseHandler)
+      .catch(this.errorHandler);
   }
 
   editQuestion(id: number, data: INewQuestion): Promise<IQuestion> {
     let options = this.makeOptions();
     return this.http.put(`${URLS.question}/${id}`, JSON.stringify(data), options)
       .toPromise()
-      .then(this.promiseHandler);
+      .then(this.promiseHandler)
+      .catch(this.errorHandler);
   }
 
   deleteQuestion(id: number): Promise<boolean> {
     let options = this.makeOptions();
     return this.http.delete(`${URLS.question}/${id}`, options)
       .toPromise()
-      .then(this.promiseHandler);
+      .then(this.promiseHandler)
+      .catch(this.errorHandler);
   }
 
   getQuestion(urlParams): Promise<IQuestion> {
@@ -49,14 +52,16 @@ export class QuestionService {
     options.search = queryParams;
     return this.http.get(`${URLS.question}/${urlParams.params.id}`, options)
       .toPromise()
-      .then(this.promiseHandler);
+      .then(this.promiseHandler)
+      .catch(this.errorHandler);
   }
 
   getQuestions(): Promise<IQuestion[]> {
     let options = this.makeOptions();
     return this.http.get(`${URLS.question}`, options)
       .toPromise()
-      .then(this.promiseHandler);
+      .then(this.promiseHandler)
+      .catch(this.errorHandler);
   }
 
   private makeOptions() {
@@ -71,16 +76,13 @@ export class QuestionService {
     return options;
   }
   private promiseHandler = (res: any): any => {
-    return Promise.resolve(res.json() as IResponse)
-      .then((response: IResponse) => {
-        if (!response.ok) {
-          throw response.error;
-        }
-        return response.response;
-      })
-      .catch(this.handleError);
+    let response = res.json() as IResponse;
+    if (!response.ok) {
+      throw response.error;
+    }
+    return response.response;
   }
-  private handleError = (error) => {
+  private errorHandler = (error) => {
     return this.errorService.handleError(error);
   }
 }

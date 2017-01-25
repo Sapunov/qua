@@ -5,7 +5,6 @@ import { Router, NavigationExtras } from '@angular/router';
 
 import { QuestionService } from '../../services/question.service';
 import { SearchService } from '../../services/search.service';
-import { ErrorService } from '../../services/error.service';
 import { IHits, ISearchResult } from '../../interfaces/search-hits.interface';
 
 @Component({
@@ -18,7 +17,6 @@ export class SearchResultComponent implements OnInit {
   hits: IHits[];
 
   constructor(
-    private errorService: ErrorService,
     private search: SearchService,
     private route: ActivatedRoute,
     private router: Router,
@@ -43,7 +41,7 @@ export class SearchResultComponent implements OnInit {
     this.route.queryParams
       .switchMap((params: Params) => {
         return this.search.goSearch(params['query'])
-          .catch(err => this.errorService.viewError(err));
+          .catch(err => {});
       })
       .subscribe((result: ISearchResult) => {
         if (result) {

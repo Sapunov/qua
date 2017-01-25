@@ -5,7 +5,6 @@ import { FormGroup } from '@angular/forms';
 
 import { MarkdownComponent } from '../markdown/markdown.component';
 
-import { ErrorService } from '../../services/error.service';
 import { QuestionService } from '../../services/question.service';
 
 import { IQuestion, INewQuestion, IAnswer } from '../../interfaces/question.interface';
@@ -30,7 +29,6 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   answer: any;
 
   constructor(
-    private errorService: ErrorService,
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService,
@@ -64,10 +62,10 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loading = true;
     this.questionService.editQuestion(id, data)
       .then((que: IQuestion) => {
+        this.loading = false;
         this.router.navigate([`questions/${que.id}`]);
       })
-      .catch(err => this.errorService.viewError(err))
-      .then(() => {
+      .catch(err => {
         this.loading = false;
       });
   }
@@ -76,10 +74,10 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     this.loading = true;
     this.questionService.addQuestion(data)
       .then((que: IQuestion) => {
+        this.loading = false;
         this.router.navigate([`questions/${que.id}`]);
       })
-      .catch(err => this.errorService.viewError(err))
-      .then(() => {
+      .catch(err => {
         this.loading = false;
       });
   }

@@ -2,7 +2,6 @@ import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
-import { ErrorService } from '../../services/error.service';
 
 @Component({
   selector: 'app-auth',
@@ -16,7 +15,6 @@ export class AuthComponent implements OnInit {
   loading: boolean;
 
   constructor(
-    private errorService: ErrorService,
     private authService: AuthService,
     private router: Router) {
     this.sfHide = true;
@@ -26,11 +24,11 @@ export class AuthComponent implements OnInit {
   onSubmit() {
     this.loading = true;
     this.authService.auth(this.username, this.password)
-      .then(res => {
+      .then(() => {
+        this.loading = false;
         this.router.navigate(['/']);
       })
-      .catch(err => this.errorService.viewError(err))
-      .then(() => {
+      .catch(err => {
         this.loading = false;
       });
   }

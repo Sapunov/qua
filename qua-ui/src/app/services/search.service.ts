@@ -31,7 +31,8 @@ export class SearchService {
     options.search = param;
     return this.http.get(`${URLS.search}`, options)
       .toPromise()
-      .then(this.promiseHandler);
+      .then(this.promiseHandler)
+      .catch(this.errorHandler);
   }
 
   private makeOptions() {
@@ -47,17 +48,14 @@ export class SearchService {
   }
 
   private promiseHandler = (res: any): any => {
-    return Promise.resolve(res.json() as IResponse)
-      .then((response: IResponse) => {
-        if (!response.ok) {
-          throw response.error;
-        }
-        return response.response;
-      })
-      .catch(this.handleError);
+    let response = res.json() as IResponse;
+    if (!response.ok) {
+      throw response.error;
+    }
+    return response.response;
   }
 
-  private handleError = (error) => {
+  private errorHandler = (error) => {
     return this.errorService.handleError(error);
   }
 }

@@ -1,7 +1,7 @@
 import { Subscription }   from 'rxjs/Subscription';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 
-import { ErrorService } from '../../services/error.service';
+import { ErrorService, QuaError } from '../../services/error.service';
 import { IError } from '../../interfaces/error.interface';
 
 
@@ -11,7 +11,7 @@ import { IError } from '../../interfaces/error.interface';
   styleUrls: ['./error.component.less']
 })
 export class ErrorComponent implements OnInit, OnDestroy {
-  errors: IError[] = [];
+  errors: QuaError[] = [];
   sub: Subscription;
 
   constructor(
@@ -19,9 +19,9 @@ export class ErrorComponent implements OnInit, OnDestroy {
   ) { }
 
   ngOnInit() {
-    this.sub = this.errorService.error$.subscribe((err: IError) => {
-      if (typeof err.error_msg !== 'string') {
-        err.error_msg = 'Неизвестная ошибка, смотрите консоль';
+    this.sub = this.errorService.error$.subscribe((err: QuaError) => {
+      if (typeof err.name !== 'string') {
+        err.name = 'Неизвестная ошибка, смотрите консоль';
       }
       this.errors.push(err);
       setTimeout(() => {
