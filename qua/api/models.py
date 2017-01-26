@@ -140,7 +140,7 @@ class Question(Base):
         return hasattr(self, 'answer')
 
     class Meta:
-        ordering = ('answer', 'id')
+        ordering = ('-answer', '-id')
 
 
 class SearchHistory(models.Model):
