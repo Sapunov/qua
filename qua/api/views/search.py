@@ -19,7 +19,14 @@ class SearchView(APIView):
         if 'query' not in params:
             raise exceptions.ValidationError({'query': ['This field required']})
 
-        results = search.basesearch(params['query'], user=request.user)
+        if 'spelling' in params:
+            spelling = (params['spelling'] == 1)
+        else:
+            spelling = True
+
+        results = search.basesearch(
+            params['query'], user=request.user, spelling=spelling
+        )
         serializer = SearchSerializer(results)
 
         return QuaApiResponse(serializer.data)

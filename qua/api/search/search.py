@@ -164,7 +164,7 @@ def _search(query_stack, index):
             }
 
 
-def basesearch(query, user):
+def basesearch(query, user, spelling=True):
 
     log.debug('Search for: %s', query)
 
@@ -173,26 +173,27 @@ def basesearch(query, user):
 
     search_stack = []
 
-    """Keyboards inverted query
-    """
-    keyboard_inverted = search_utils.keyboard_layout_inverse(query)
-    is_keyboard_corrected, keyboard_inverted_corrected = search_utils.spelling_correction(
-        keyboard_inverted, index=settings.SEARCH_INDEX_NAME
-    )
+    if spelling:
+        """Keyboards inverted query
+        """
+        keyboard_inverted = search_utils.keyboard_layout_inverse(query)
+        is_keyboard_corrected, keyboard_inverted_corrected = search_utils.spelling_correction(
+            keyboard_inverted, index=settings.SEARCH_INDEX_NAME
+        )
 
-    if is_keyboard_corrected:
-        search_stack.append(keyboard_inverted_corrected)
+        if is_keyboard_corrected:
+            search_stack.append(keyboard_inverted_corrected)
 
-    search_stack.append(keyboard_inverted)
+        search_stack.append(keyboard_inverted)
 
-    """Query with typos
-    """
-    is_query_corrected, query_corrected = search_utils.spelling_correction(
-        query, index=settings.SEARCH_INDEX_NAME
-    )
+        """Query with typos
+        """
+        is_query_corrected, query_corrected = search_utils.spelling_correction(
+            query, index=settings.SEARCH_INDEX_NAME
+        )
 
-    if is_query_corrected:
-        search_stack.append(query_corrected)
+        if is_query_corrected:
+            search_stack.append(query_corrected)
 
     """Just user query
     """

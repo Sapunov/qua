@@ -33,6 +33,10 @@ class SearchHistoryAdmin(admin.ModelAdmin):
     )
 
 
+class ExternalResourceAdmin(admin.ModelAdmin):
+    pass
+
+
 admin.site.register(SearchHistory, SearchHistoryAdmin)
 
-admin.site.register(ExternalResource)
+admin.site.register(ExternalResource, ExternalResourceAdmin)
