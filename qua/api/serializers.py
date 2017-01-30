@@ -192,13 +192,6 @@ class QuestionSerializer(serializers.ModelSerializer):
         exclude = ('deleted',)
 
 
-class CategoryAssumptionsSerializer(serializers.Serializer):
-
-    id = serializers.IntegerField()
-    name = serializers.CharField()
-    score = serializers.FloatField()
-
-
 class UrlParamsSerializer(serializers.Serializer):
 
     shid = serializers.IntegerField()
@@ -213,10 +206,11 @@ class SearchHitSerializer(serializers.Serializer):
     title = serializers.CharField()
     snippet = serializers.CharField()
     score = serializers.FloatField()
-    keywords = serializers.SlugRelatedField(
-        read_only=True, many=True, slug_field='text')
+    keywords = serializers.ListField(child=serializers.CharField())
     image = serializers.CharField()
     url_params = UrlParamsSerializer()
+    url = serializers.URLField(required=False)
+    is_external = serializers.BooleanField()
 
 
 class SearchSerializer(serializers.Serializer):
@@ -224,4 +218,5 @@ class SearchSerializer(serializers.Serializer):
     query = serializers.CharField()
     total = serializers.IntegerField()
     hits = SearchHitSerializer(many=True)
-    category_assumptions = CategoryAssumptionsSerializer(many=True)
+    query_was_corrected = serializers.BooleanField()
+    used_query = serializers.CharField()

@@ -1,0 +1,100 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "russian_stop": {
+          "type": "stop",
+          "stopwords": "_russian_"
+        },
+        "russian_stemmer": {
+          "type": "stemmer",
+          "language": "russian"
+        },
+        "english_stop": {
+          "type": "stop",
+          "stopwords": "_english_"
+        },
+        "english_stemmer": {
+          "type": "stemmer",
+          "language": "english"
+        },
+        "english_possessive_stemmer": {
+          "type": "stemmer",
+          "language": "possessive_english"
+        },
+        "custom_ngram": {
+          "type": "edge_ngram",
+          "min_gram": 3,
+          "max_gram": 20
+        }
+      },
+      "analyzer": {
+        "app_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "english_possessive_stemmer",
+            "lowercase",
+            "custom_ngram",
+            "russian_stop",
+            "english_stop",
+            "english_stemmer",
+            "russian_stemmer"
+          ]
+        },
+        "app_search_analyzer": {
+          "type": "custom",
+          "tokenizer": "standard",
+          "filter": [
+            "english_possessive_stemmer",
+            "lowercase",
+            "russian_stop",
+            "english_stop",
+            "english_stemmer",
+            "russian_stemmer"
+          ]
+        },
+        "spelling_analyzer": {
+          "type": "custom",
+          "tokenizer": "letter",
+          "filter": [
+            "lowercase",
+            "asciifolding",
+            "word_delimiter"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "questions": {
+      "properties": {
+        "title": {
+          "type": "text",
+          "analyzer": "app_analyzer",
+          "search_analyzer": "app_search_analyzer"
+        },
+        "keywords": {
+          "type": "text",
+          "analyzer": "app_analyzer",
+          "search_analyzer": "app_search_analyzer"
+        },
+        "text": {
+          "type": "text",
+          "analyzer": "app_analyzer",
+          "search_analyzer": "app_search_analyzer"
+        },
+        "external": {
+          "type": "text",
+          "analyzer": "app_analyzer",
+          "search_analyzer": "app_search_analyzer"
+        },
+        "spelling": {
+          "type": "text",
+          "analyzer": "spelling_analyzer",
+          "search_analyzer": "simple"
+        }
+      }
+    }
+  }
+}

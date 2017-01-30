@@ -150,9 +150,9 @@ CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 
 
-SEARCH_INDEX_DB = os.path.join(DATA_DIR, 'search_index')
-SEARCH_LANGUAGES = ['russian', 'english']
 SEARCH_RESULTS_MAX = 100
+SEARCH_INDEX_NAME = PROGRAM_NAME
+SEARCH_INDEX_TYPE = 'questions'
 
 
 LOGGING = {
@@ -192,6 +192,13 @@ LOGGING = {
             'filename': os.path.join(LOGS_DIR, 'qua_api_requests.log'),
             'formatter': 'simple'
         },
+        'celery': {
+            'level': 'DEBUG',
+            'class': 'logging.handlers.RotatingFileHandler',
+            'filename': os.path.join(LOGS_DIR, 'celery.log'),
+            'formatter': 'verbose',
+            'maxBytes': 1024 * 1024 * 100,
+        }
     },
     'loggers': {
         'qua': {
@@ -205,12 +212,7 @@ LOGGING = {
             'propagate': False
         },
         'celery': {
-            'handlers': ['console'],
-            'level': 'DEBUG',
-            'propagate': True
-        },
-        'celery.task': {
-            'handlers': ['console'],
+            'handlers': ['celery'],
             'level': 'DEBUG',
             'propagate': True
         },
