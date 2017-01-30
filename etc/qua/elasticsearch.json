@@ -89,6 +89,11 @@
           "analyzer": "app_analyzer",
           "search_analyzer": "app_search_analyzer"
         },
+        "external_content": {
+          "type": "text",
+          "analyzer": "app_analyzer",
+          "search_analyzer": "app_search_analyzer"
+        },
         "spelling": {
           "type": "text",
           "analyzer": "spelling_analyzer",

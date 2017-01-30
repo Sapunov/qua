@@ -2,6 +2,7 @@ import logging
 import mistune
 
 from django.db import models
+from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from rest_framework import exceptions
@@ -143,14 +144,42 @@ class Question(Base):
         ordering = ('-answer', '-id')
 
 
+class ExternalResource(Base):
+
+    url = models.URLField(unique=True)
+
+    @classmethod
+    def create(cls, url, user):
+
+        log.debug('Creating external resource: %s by %s', url, user)
+
+        resource, _ = cls.objects.get_or_create(
+            url=url, created_by=user, updated_by=user
+        )
+
+        log.debug('Created external resource is %s', resource.id)
+
+        return resource
+
+    def __str__(self):
+
+        return self.url
+
+
 class SearchHistory(models.Model):
+
     query = models.TextField()
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
     results = models.IntegerField()
     searched_at = models.DateTimeField(auto_now_add=True)
     clicked_at = models.DateTimeField(blank=True, null=True)
     question = models.ForeignKey(
-        Question, on_delete=models.PROTECT, related_name='+', blank=True, null=True)
+        Question, on_delete=models.PROTECT, related_name='+', blank=True, null=True
+    )
+    external = models.BooleanField(default=False)
+    external_resource = models.ForeignKey(
+        ExternalResource, on_delete=models.PROTECT, related_name='+', blank=True, null=True
+    )
 
     def __str__(self):
         return '({4}) <{0}:{1:.30}> -> {2} ({3})'.format(

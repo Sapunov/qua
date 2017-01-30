@@ -208,7 +208,7 @@ class SearchHitSerializer(serializers.Serializer):
     score = serializers.FloatField()
     keywords = serializers.ListField(child=serializers.CharField())
     image = serializers.CharField()
-    url_params = UrlParamsSerializer()
+    url_params = UrlParamsSerializer(required=False)
     url = serializers.URLField(required=False)
     is_external = serializers.BooleanField()
 

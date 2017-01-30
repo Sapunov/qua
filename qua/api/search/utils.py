@@ -25,6 +25,21 @@ def deduplicate_spaces(text):
     return re.sub('(\s|\\n)+', ' ', text).strip()
 
 
+def get_title(html):
+
+    if html == '':
+        return html
+
+    soup = BeautifulSoup(html, 'lxml')
+
+    title = soup.title
+
+    if title is not None:
+        return title.get_text()
+    else:
+        return ''
+
+
 def get_text_from_html(html):
 
     if html == '':
@@ -49,9 +64,26 @@ def extract_all_links(html):
     return links
 
 
-def get_spelling_text(title, keywords, text, external):
+def get_spelling_text(title, keywords, text, external, external_content):
 
-    return ' '.join([title, text, external] + keywords)
+    result = ''
+
+    if title:
+        result += title + ' '
+
+    if text:
+        result += text + ' '
+
+    if external:
+        result += external + ' '
+
+    if external_content:
+        result += external_content + ' '
+
+    if keywords:
+        result += ' '.join(keywords)
+
+    return result.strip()
 
 
 def spelling_correction(query, index='_all', field='spelling'):
@@ -127,4 +159,15 @@ def keyboard_layout_inverse(string):
 
 def generate_snippet(hit):
 
-    return hit['text'][:140]
+    text = hit.get('text')
+
+    if text is None:
+        text = hit.get('external')
+
+    if text is None:
+        text = hit.get('external_content')
+
+    if text is None:
+        text = ''
+
+    return text[:140]

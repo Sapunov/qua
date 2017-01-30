@@ -1,9 +1,16 @@
 from django.shortcuts import redirect
+from django.views.generic.base import View
+
+from qua.api.tracker import trackable
 
 
-def away_view(request):
-    params = request.query_params
+class AwayView(View):
 
-    redirect_url = params.get('redirect_url', '/')
+    @trackable
+    def get(self, request):
 
-    return redirect(redirect_url)
+        params = request.GET
+
+        redirect_url = params.get('redirect_url', '/')
+
+        return redirect(redirect_url)

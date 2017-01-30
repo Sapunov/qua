@@ -17,7 +17,7 @@ class UrlParams:
         self.shid = shid
         self.qid = qid
         self.token = token
-        self.track = 'search'
+        self.track = 'search_internal'
 
 
 class SearchHit:
@@ -51,21 +51,18 @@ class SearchHit:
         )
 
     def get_away_url(self, url, search_history_id):
-        return reverse('away', kwargs={
-                'shid': search_history_id,
-                'qid': self.id,
-                'token': utils.sign('{0}-{1}'.format(search_history_id, self.id)),
-                'track': 'search',
-                'redirect_url': url
-            })
+        return '{0}?track=search_external&shid={1}&qid={2}&token={3}&redirect_url={4}'.format(
+            reverse('away'),
+            search_history_id,
+            self.id,
+            utils.sign('{0}-{1}'.format(search_history_id, self.id)),
+            url
+        )
 
 
 def _get_result_id(engine_hit_id):
 
-    if engine_hit_id.startswith('q-'):
-        return int(engine_hit_id[2:])
-    else:
-        return 0
+    return int(engine_hit_id[2:])
 
 
 class SearchResults:
@@ -118,7 +115,13 @@ def _create_search_body(queries):
         boolean.append({
             'multi_match': {
                 'query': item,
-                'fields': ['title^2', 'keywords^1.7', 'text^1.3', 'external'],
+                'fields': [
+                    'title^5.5',
+                    'keywords^4',
+                    'text^3',
+                    'external^5',
+                    'external_content^1'
+                ],
                 'operator': 'and',
                 'type': 'cross_fields'
         }})
@@ -129,7 +132,7 @@ def _create_search_body(queries):
                 'should': boolean
             }
         },
-        '_source': ['_id', 'text', 'title', 'keywords', 'is_external', 'external', 'url']
+        '_source': ['_id', 'text', 'title', 'keywords', 'is_external', 'external_content', 'url']
     }
 
     return body
@@ -206,6 +209,10 @@ def basesearch(query, user):
         used_query = query
 
     history_record = SearchHistory.objects.create(
-        query=used_query, user=user, results=result['hits']['total'])
+        query=used_query,
+        user=user,
+        results=result['hits']['total'],
+        external=True
+    )
 
     return SearchResults(query, result, history_record.id)
