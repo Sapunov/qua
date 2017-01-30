@@ -101,53 +101,84 @@ API разрешает посылать к себе запросы со след
 
 - GET **/search** - поиск по введенному тексу
     - query - текст запроса
-    - limit - размер выдачи
-    - offset - сдвиг в выдаче
-    - category -  название категории относительно которой нужно искать
+    - spelling - включена или выключена коррекция запроса (по умолчанию включена)
 
 Формат данных:
 
-`GET` **/api/search?query=друг**
+`GET` **/api/search?query=друг&spelling=0**
 
 ```
 {
     "ok": 1,
     "response": {
-        "category_assumptions": null,
         "hits": [
             {
-                "categories": [
-                    {
-                        "id": 1,
-                        "name": "Привет"
-                    }
-                ],
                 "id": 1,
                 "image": null,
-                "keywords": [],
+                "is_external": false,
+                "keywords": ["one", "two"],
                 "score": 1.0,
                 "snippet": "Привет тебе друг",
                 "title": "Привет тебе друг",
                 "url_params": {
                     "qid": 1,
                     "shid": 47,
-                    "token": "91727aa95d47fcdc9966"
+                    "token": "91727aa95d47fcdc9966",
+                    "track": "search_onternal"
                 }
+            },
+            {
+                "id": 1,
+                "image": "/static/images/jsifucwer.jpg",
+                "is_external": true,
+                "keywords": null,
+                "score": 0.45,
+                "snippet": "Привет тебе друг",
+                "title": "Привет тебе друг мой",
+                "url": "/away?track=search_external&shid=158&qid=6&token=29f0e3a50514dd530717&redirect_url=https://en.wikipedia.org/wiki/Friendship"
             }
         ],
-        "query": "друг",
-        "total": 1
+        "query": "друк",
+        "query_was_corrected": true,
+        "total": 2,
+        "used_query": "друг"
     }
 }
 ```
+
+**query_was_corrected** - принимает значение `true` когда система посчитала, что
+запрос неправильный и изменила его. В поле `query` всегда будет тот запрос, который
+ввел пользователь, а в поле `used_query` будет находится тот запрос, который действительно
+был использован в данном поиске.
+
+Чтобы выполнить запрос без коррекции (как есть), нужно выполнить запрос:
+`/api/search?query=друг&spelling=0`
+
+**used_query** - тот запрос, который действительно использовался при поиске.
+В слечае исправленной ошибки в запросе в этом поле будет корректный запрос.
+
+
+**hit.url** - адрес для переадресации при переходе к ответу. Стоит делать
+честный http редирукт на этот адрес с открытием дополнительного окна (`target="blank"`).
+
+В данной url содержатся параметры отслеживания и именно поэтому стоит использовать именно его.
+
+**hit.is_external** - флаг, показывающий является ли результат вопросом, созданным  в QUA,
+или же вопрос является внешним ресурсом (страницей документации, документом на jive и пр.).
+
+Если данный флаг установлен в `true`, то нужно сделать редирект на `hit.url`
+
+`id` в данном случае будет относится к коллекции `external_resources`, то есть можно будет
+изъять информацию о ресурсе с помощью запроса `/api/extermnal_serources/<int:id>`
+
+
+**url_params** - данное поле присутствует только в тех случаях, когда найденный ответ
+является внутренним вопросом QUA и нужно открыть страницу внутри JS приложения.
 
 
 ### Вопросы
 
 - GET **/questions** - список всех вопросов
-    - limit
-    - offset
-    - category
 - POST **/questions** - создание нового вопроса
 - GET **/questions/&lt;int:question_id&gt;** - выбор конкретного запроса по `question_id`
 - PUT **/questions/&lt;int:question_id&gt;** - обновление данных в вопросе `question_id`
@@ -182,12 +213,6 @@ API разрешает посылать к себе запросы со след
             },
             "version": 1
         },
-        "categories": [
-            {
-                "id": 1,
-                "name": "Привет"
-            }
-        ],
         "created_at": "2017-01-07T22:47:48.373734Z",
         "created_by": {
             "first_name": "",
@@ -222,16 +247,6 @@ API разрешает посылать к себе запросы со след
     "response":     [
         {
             "answer_exists": true,
-            "categories": [
-                {
-                    "id": 4,
-                    "name": "привет"
-                },
-                {
-                    "id": 12,
-                    "name": "жопа-2"
-                }
-            ],
             "created_at": "2017-01-14T09:51:52.428555Z",
             "created_by": {
                 "first_name": "",
@@ -256,7 +271,6 @@ API разрешает посылать к себе запросы со след
         },
         {
             "answer_exists": false,
-            "categories": [],
             "created_at": "2017-01-14T10:36:54.865758Z",
             "created_by": {
                 "first_name": "",
@@ -294,42 +308,3 @@ API разрешает посылать к себе запросы со след
 ```
 
 При добавлении обязательным элементом является `title`, при изменении все поля необязательные и будет изменено только то поле, которое указано.
-
-
-### Категории
-
-- GET **/categories** - список всех категорий
-    - limit
-    - offset
-- POST **/categories** - добавление новой категории
-- GET **/categories/&lt;int:category_id&gt;** - информация о категории `category_id`
-- PUT **/categories/&lt;int:category_id&gt;** - обновление данных категории `category_id`
-- DELETE **/category/&lt;int:category_id&gt;** - архивирование категории `category_id`
-
-Формат данных:
-
-`GET` **/api/categories/1**
-
-```
-{
-    "ok": 1,
-    "response": {
-        "created_at": "2017-01-07T22:46:26.603318Z",
-        "created_by": {
-            "first_name": "",
-            "id": 1,
-            "last_name": "",
-            "username": "nsapunov"
-        },
-        "id": 1,
-        "name": "Привет",
-        "updated_at": "2017-01-07T22:46:26.603410Z",
-        "updated_by": {
-            "first_name": "",
-            "id": 1,
-            "last_name": "",
-            "username": "nsapunov"
-        }
-    }
-}
-```
