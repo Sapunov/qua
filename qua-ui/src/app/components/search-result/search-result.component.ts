@@ -7,6 +7,8 @@ import { QuestionService } from '../../services/question.service';
 import { SearchService } from '../../services/search.service';
 import { IHits, ISearchResult } from '../../interfaces/search-hits.interface';
 
+import { URLS } from '../../../environments/const';
+
 @Component({
   selector: 'app-search-result',
   templateUrl: './search-result.component.html',
@@ -34,17 +36,32 @@ export class SearchResultComponent implements OnInit {
   }
 
   getQuestion(hit: IHits): void {
+    if (!hit.is_external) {
+      let params: NavigationExtras = {
+        queryParams: hit.url_params
+      };
+      this.router.navigate([`questions/${hit.id}`], params);
+    } else {
+      console.log(hit);
+      window.open(hit.url);
+    }
+  }
+
+  searchSpellOrigin() {
     let params: NavigationExtras = {
-      queryParams: hit.url_params
+      queryParams: {
+        query: this.result.query,
+        spelling: 0
+      }
     };
-    this.router.navigate([`questions/${hit.id}`], params);
+    this.router.navigate(['/search'], params);
   }
 
   ngOnInit() {
     this.route.queryParams
       .switchMap((params: Params) => {
         this.loading = true;
-        return this.search.goSearch(params['query'])
+        return this.search.goSearch(params['query'], params['spelling'])
           .catch(err => null);
       })
       .subscribe((result: ISearchResult) => {

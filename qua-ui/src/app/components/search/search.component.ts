@@ -3,7 +3,7 @@ import { Subscription }   from 'rxjs/Subscription';
 import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild, AfterViewInit } from '@angular/core';
 import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/router';
 
-import { MIN_CHARS_FOR_SEARCH } from '../../../environments/const';
+import { MIN_CHARS_FOR_SEARCH, SEARCH_DELAY } from '../../../environments/const';
 
 @Component({
   selector: 'app-search',
@@ -50,7 +50,7 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
     }
     this.timer = window.setTimeout(() => {
       this.getResults(this.query);
-    }, 300);
+    }, SEARCH_DELAY);
   }
 
   ngOnInit() {

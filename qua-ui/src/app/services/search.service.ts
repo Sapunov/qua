@@ -15,7 +15,7 @@ export class SearchService {
     private errorService: ErrorService,
     private http: Http) { }
 
-  goSearch(query: string): Promise<ISearchResult> {
+  goSearch(query: string, spelling?: string): Promise<ISearchResult> {
     query = query || '';
 
     if (query.length < MIN_CHARS_FOR_SEARCH) {
@@ -28,6 +28,9 @@ export class SearchService {
     let options = this.makeOptions();
     let param: URLSearchParams = new URLSearchParams;
     param.set('query', query);
+    if (typeof spelling !== 'undefined' && spelling === '0') {
+      param.set('spelling', spelling.toString());
+    }
     options.search = param;
     return this.http.get(`${URLS.search}`, options)
       .toPromise()
