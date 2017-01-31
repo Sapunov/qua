@@ -41,7 +41,9 @@ export class AuthService implements CanActivate {
   }
 
   getRedirect(): string {
-    return this.redirect;
+    let temp = this.redirect;
+    this.redirect = '/';
+    return temp;
   }
 
   canActivate() {
