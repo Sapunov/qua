@@ -17,10 +17,7 @@
   img,
   blockquote,
   table,
-  pre,
-  p > code,
-  > code {
-    width: 100%;
+  pre {
     border-radius: @border-radius;
     border: @border;
   }
@@ -56,9 +53,8 @@
   }
   > code,
   p > code {
-    padding: @indent-text;
-    display: block;
-    overflow-x: auto;
+    border-radius: @border-radius;
+    padding: 2px;
     font-family: consolas, monospace;
     background-color: @bg-color;
   }
