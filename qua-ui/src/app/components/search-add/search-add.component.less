@@ -5,6 +5,7 @@
 
   &-title {
     margin: 0;
+    line-height: 1;
     font-size: 1.2rem;
     font-weight: normal;
   }
@@ -19,43 +20,47 @@
   &-categories,
   &-keywords {
     &-control {
-      display: -webkit-flex;
-      display: -moz-flex;
-      display: -ms-flex;
-      display: -o-flex;
-      display: flex;
-      flex-flow: row wrap;
+      &-area {
+        display: -webkit-flex;
+        display: -moz-flex;
+        display: -ms-flex;
+        display: -o-flex;
+        display: flex;
+        flex-flow: row wrap;
+        margin-bottom: @indent;
+        padding: 6px 12px 1px;
+        border: @border;
+        border-radius: @border-radius;
+        background-color: @bg-color-2;
+        transition: border-color .2s ease;
+      }
 
       .input-st {
-        font-size: 1.05rem;
-        flex: 1 auto;
-        margin-right: @indent;
-        margin-bottom: 0;
-
-        &:not(:focus).ng-invalid {
-          border: @border;
-        }
+        height: auto;
+        border: 0;
+        padding: 0;
+        line-height: 1.3;
+        margin-right: @indent-text;
+        margin-bottom: @indent-text;
       }
     }
   }
 
-  &-keywords-keyword,
-  &-categories-category {
+  &-keywords-keyword {
     @ind: 4px;
     border-radius: @border-radius;
-    padding: @ind;
+    padding: 0;
     padding-left: @ind*2;
     color: lighten(@text-color-bl, 10%);
     background-color: @bg-color;
 
-    &:after {
-      content: ''
-    }
-
     > i {
       cursor: pointer;
-      padding: @ind;
-      padding-left: @ind;
+      padding: @ind/2 @ind;
+
+      &:hover {
+        color: lighten(@color-keyword-text, 10%);
+      }
     }
   }
 
