@@ -53,8 +53,6 @@
     flex-flow: row nowrap;
     height: 100%;
     .control-wrap {
-      padding-left: @indent - 7px;
-      padding-right: @indent - 7px;
       background-color: @main-color;
 
       &:hover {
@@ -67,6 +65,8 @@
       padding: 0;
       color: @text-color-2;
       height: 100%;
+      padding-left: @indent - 7px;
+      padding-right: @indent - 7px;
       background-color: transparent;
       > i {
         color: @text-color-2;
@@ -77,6 +77,9 @@
 }
 
 @media (max-width: @width-content-media) {
+  .control-btn > i {
+    font-size: 1.09rem;
+  }
   .control-btn-text {
     display: none;
   }
