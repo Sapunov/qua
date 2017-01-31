@@ -31,7 +31,7 @@ export class SearchQuestionComponent implements OnInit {
   edit() {
     this.questionService.question = this.question;
     this.loading = true;
-    this.router.navigate(['add']);
+    this.router.navigate(['edit']);
   }
 
   delete() {
