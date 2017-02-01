@@ -21,6 +21,7 @@
   &-keywords {
     &-control {
       &-area {
+        overflow: hidden;
         display: -webkit-flex;
         display: -moz-flex;
         display: -ms-flex;
@@ -49,14 +50,13 @@
   &-keywords-keyword {
     @ind: 4px;
     border-radius: @border-radius;
-    padding: 0;
-    padding-left: @ind*2;
+    padding: 0 @ind*2;
     color: lighten(@text-color-bl, 10%);
     background-color: @bg-color;
 
     > i {
       cursor: pointer;
-      padding: @ind/2 @ind;
+      padding-left: @ind;
 
       &:hover {
         color: lighten(@color-keyword-text, 10%);

@@ -14,8 +14,10 @@
     <div class="app-block-elem form-keywords">
       <form class="form-keywords-control" (ngSubmit)="addKeyword(); keywordForm.reset()" #keywordForm="ngForm">
         <label class="form-keywords-control-area" for="keyword">
-            <span class="form-keywords-keyword keywords-keyword" *ngFor="let kw of keywords">{{ kw }}
-              <i class="fa fa-times" (click)="delKeyword(kw)"></i></span>
+            <span class="form-keywords-keyword keywords-keyword" *ngFor="let kw of keywords">
+              <span class="keywrods-keyword-text">{{ kw }}</span>
+              <i class="keywords-keyword-icon fa fa-times" (click)="delKeyword(kw)"></i>
+            </span>
           <input id="keyword" name="keyword" class="input-st" type="text" placeholder="Ключевое словое" [(ngModel)]="keyword" required>
         </label>
         <button class="button-blue" type="submit">Добавить</button>
