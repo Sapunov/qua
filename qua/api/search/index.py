@@ -2,8 +2,10 @@ import logging
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from rest_framework import exceptions
 
 from qua.api.search.engine import get_search_engine
+from qua.api.search.engine import exceptions as es_exceptions
 from qua.api.search import utils
 from qua.api.search import crawler
 from qua.api.models import ExternalResource
@@ -32,25 +34,39 @@ def _index(
         'url': url
     }
 
-    engine.index(
-        index=settings.SEARCH_INDEX_NAME,
-        doc_type=settings.SEARCH_INDEX_TYPE,
-        id=id,
-        body=data
-    )
+    try:
+        engine.index(
+            index=settings.SEARCH_INDEX_NAME,
+            doc_type=settings.SEARCH_INDEX_TYPE,
+            id=id,
+            body=data
+        )
+    except es_exceptions.ElasticsearchException as e:
+        log.exception('ElasticsearchException: %s', e)
 
 
 def index_external_resource(url):
 
     log.debug('Index external resource: %s', url)
 
+    god_user = User.objects.get(username='god')
+    external_resource, created = ExternalResource.create(url, god_user)
+
+    if not created:
+
+        log.debug('External resource already created')
+
+        try:
+            content = external_resource.get_content()
+            return content if content is not None else ''
+        except exceptions.NotFound:
+            pass
+
     html = crawler.retrieve_page(url)
 
     if html is None:
+        external_resource.delete()
         return ''
-
-    god_user = User.objects.get(username='god')
-    external_resource = ExternalResource.create(url, god_user)
 
     title = utils.get_title(html)
     external = utils.get_text_from_html(html)

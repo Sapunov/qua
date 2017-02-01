@@ -211,6 +211,7 @@ class SearchHitSerializer(serializers.Serializer):
     url_params = UrlParamsSerializer(required=False)
     url = serializers.URLField(required=False)
     is_external = serializers.BooleanField()
+    resource = serializers.URLField(allow_null=True)
 
 
 class SearchSerializer(serializers.Serializer):
@@ -220,3 +221,4 @@ class SearchSerializer(serializers.Serializer):
     hits = SearchHitSerializer(many=True)
     query_was_corrected = serializers.BooleanField()
     used_query = serializers.CharField()
+    took = serializers.FloatField()
