@@ -72,12 +72,13 @@ class SearchResults:
         self.query_was_corrected = False
         self.used_query = self.query
 
-        self.took = result['took'] / 1000 # in seconds
+        self.took = 0
 
         self.total = 0
 
         if result is not None:
             self.total = result['hits']['total']
+            self.took = result['took'] / 1000 # in seconds
 
             if result['query_was_corrected']:
                 self.query_was_corrected = True
