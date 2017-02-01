@@ -19,11 +19,13 @@ export class AuthService implements CanActivate {
 
   isAuth: boolean;
   token: string;
+  redirect: string;
 
   constructor(
     private http: Http,
     private router: Router,
     private errorService: ErrorService) {
+      this.redirect = '/';
       this.headers = new Headers({
         'Content-type': 'application/json'
       });
@@ -31,6 +33,18 @@ export class AuthService implements CanActivate {
         headers: this.headers
       });
     }
+
+  setRedirect(path: string): void {
+    if (!this.isAuth) {
+      this.redirect = path;
+    }
+  }
+
+  getRedirect(): string {
+    let temp = this.redirect;
+    this.redirect = '/';
+    return temp;
+  }
 
   canActivate() {
     this.isAuth = this.checkAuth();
