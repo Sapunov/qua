@@ -12,6 +12,7 @@ export interface IHits {
   };
   url?: string;
   is_external?: boolean;
+  resource?: string;
 }
 
 export interface ICategoryAssumptions {
@@ -26,5 +27,6 @@ export interface ISearchResult {
   used_query: string;
   hits: IHits[];
   total: number;
+  took: number;
   category_assumptions?: ICategoryAssumptions[];
 };

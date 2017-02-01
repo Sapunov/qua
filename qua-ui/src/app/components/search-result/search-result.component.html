@@ -18,7 +18,17 @@
   </div>
   <div class="app-block search-result-hit" *ngFor="let hit of hits">
     <header>
-      <a class="hit-header" (click)="getQuestion(hit)">
+      <a *ngIf="hit.is_external" class="hit-header" [href]="hit.url">
+        <div class="hit-header-external">
+          <i class="fa fa-external-link"></i>
+          <span class="hit-header-title">{{ hit.title }}</span>
+        </div>
+        <span class="hit-header-resource">{{ hit.resource }}</span>
+        <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
+          <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
+        </div>
+      </a>
+      <a *ngIf="!hit.is_external" class="hit-header" (click)="getQuestion(hit)">
         <span class="hit-header-title">{{ hit.title }}</span>
         <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
           <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
