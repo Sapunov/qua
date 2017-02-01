@@ -1,7 +1,7 @@
-<div *ngIf="loading" class="loader-block">
-  <i class="fa fa-refresh loader"></i>
-</div>
 <div class="search-result" *ngIf="result">
+  <div class="app-block search-result-info" *ngIf="result.query">
+    <span>Результатов найдено: {{result.total}} ({{result.took}} сек.)</span>
+  </div>
   <div class="app-block search-result-empty" *ngIf="!result.query">
     <h1 class="search-result-title">
       Начните вводить вопрос
@@ -16,13 +16,14 @@
     <span>Искать вместо этого </span>
     <a class="origin" (click)="searchSpellOrigin()">{{ result.query }}</a>
   </div>
+  <div *ngIf="loading" class="loader-block">
+    <i class="fa fa-refresh loader"></i>
+  </div>
   <div class="app-block search-result-hit" *ngFor="let hit of hits">
     <header>
-      <a *ngIf="hit.is_external" class="hit-header" [href]="hit.url">
-        <div class="hit-header-external">
-          <i class="fa fa-external-link"></i>
-          <span class="hit-header-title">{{ hit.title }}</span>
-        </div>
+      <a *ngIf="hit.is_external" class="hit-header hit-header-external" [href]="hit.url">
+        <span class="badge"><i class="hit-header-icon fa fa-external-link"></i></span>
+        <span class="hit-header-title">{{ hit.title }}</span>
         <span class="hit-header-resource">{{ hit.resource }}</span>
         <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
           <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
