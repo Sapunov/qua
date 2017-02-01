@@ -2,6 +2,8 @@
 
 .answer-style,
 .editor-preview {
+  font-size: 16px;
+  color: #333;
   a {
     overflow-wrap: break-word;
     word-wrap: break-word;
@@ -15,12 +17,13 @@
   img,
   blockquote,
   table,
-  pre,
-  p > code,
-  > code {
-    width: 100%;
+  pre {
     border-radius: @border-radius;
     border: @border;
+  }
+
+  img {
+    width: 100%;
   }
 
   blockquote {
@@ -53,10 +56,10 @@
     background-color: @bg-color;
   }
   > code,
-  p > code {
-    padding: @indent-text;
-    display: block;
-    overflow-x: auto;
+  p > code,
+  li code {
+    border-radius: @border-radius;
+    padding: 2px;
     font-family: consolas, monospace;
     background-color: @bg-color;
   }

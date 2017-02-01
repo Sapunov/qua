@@ -26,7 +26,7 @@ export class AuthComponent implements OnInit {
     this.authService.auth(this.username, this.password)
       .then(() => {
         this.loading = false;
-        this.router.navigate(['/']);
+        this.router.navigateByUrl(this.authService.getRedirect());
       })
       .catch(err => {
         this.loading = false;

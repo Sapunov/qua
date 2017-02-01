@@ -36,6 +36,11 @@ const routes: Routes = [
     canActivate: [AuthService]
   },
   {
+    path: 'edit',
+    component: SearchAddComponent,
+    canActivate: [AuthService]
+  },
+  {
     path: 'auth',
     component: AuthComponent
   },

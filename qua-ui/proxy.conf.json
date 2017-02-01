@@ -1,5 +1,6 @@
-{
-  "/api": {
+[
+  {
+    "context": ["/api", "/away"],
     "target": {
       "host": "dev.qua.sapunovnik.ru",
       "protocol": "http",
@@ -8,4 +9,4 @@
     "secure": false,
     "changeOrigin": true
   }
-}
+]

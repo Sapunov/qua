@@ -1,6 +1,7 @@
 import { Subject } from 'rxjs/Subject';
 import { Subscription }   from 'rxjs/Subscription';
 import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
+import { Location } from '@angular/common';
 
 import { AuthService } from './services/auth.service';
 
@@ -12,11 +13,14 @@ import { AuthService } from './services/auth.service';
 export class AppComponent implements OnInit, OnDestroy {
   focusOnSf: Subject<boolean> = new Subject();
   isAuth: boolean;
-  sfHide: boolean = false;
+  sfHide: boolean;
   sub: Subscription;
 
-  constructor(private authService: AuthService) {
-
+  constructor(
+    private location: Location,
+    private authService: AuthService
+  ) {
+    this.sfHide = false;
   }
 
   @HostListener('document:keypress', ['$event'])
@@ -35,6 +39,7 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.authService.setRedirect(this.location.path());
     this.sub = this.authService.isAuth$.subscribe((isAuth: boolean) => {
       this.isAuth = isAuth;
     });
