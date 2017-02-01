@@ -14,23 +14,6 @@
     font-size: 1.1rem;
     font-weight: normal;
   }
-
-  &-query-corrected {
-    .corrected {
-      color: @text-color;
-      font-weight: bold;
-      font-style: oblique;
-    }
-    .origin {
-      cursor: pointer;
-      color: @text-color;
-      font-style: italic;
-
-      &:hover {
-        text-decoration: underline;
-      }
-    }
-  }
 }
 
 .hit-header {
@@ -39,6 +22,10 @@
   padding: @indent;
   padding-bottom: @indent - @indent-text;
   border-bottom: @border-bt;
+
+  &:visited &-title {
+    color: @color-visited;
+  }
 
   &-title {
     display: block;
@@ -50,16 +37,23 @@
   }
 
   &-external {
-    position: relative;
+    color: @text-color;
     text-decoration: none;
 
-    .hit-header-title {
-      padding-right: 10px;
+    &-title {
+      display: -webkit-flex;
+      display: -moz-flex;
+      display: -ms-flex;
+      display: -o-flex;
+      display: flex;
+      flex-flow: row nowrap;
+      justify-content: space-between;
     }
-    .badge {
-      line-height: 1;
-      // background-color: @color-keyword-bg;
-      color: @color-keyword-text;
+
+    &-icon {
+      align-self: center;
+      margin-top: 3px;
+      margin-left: @indent-text;
     }
   }
 
