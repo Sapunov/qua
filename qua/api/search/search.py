@@ -1,4 +1,5 @@
 import logging
+import time
 
 from django.urls import reverse
 from django.conf import settings
@@ -68,6 +69,9 @@ def _get_result_id(engine_hit_id):
 
 class SearchResults:
     def __init__(self, query, result=None, search_history_id=None):
+
+        start = time.time()
+
         self.query = query
         self.query_was_corrected = False
         self.used_query = self.query
@@ -102,6 +106,8 @@ class SearchResults:
                         url=hit['_source'].get('url', None)
                     )
                 )
+
+        log.debug('Results for query: `%s` was generated in %s secs.', query, time.time() - start)
 
     def __str__(self):
         return '<SearchResults:{0:.30}|{1}>'.format(self.query, self.total)
@@ -160,7 +166,7 @@ def _search(query_stack, index):
     for attempt in range(len(query_stack)):
         query = query_stack.pop()
 
-        found, hits, took = _get_results(query, index)
+        found, hits, took = _get_results(query, index, settings.SEARCH_RESULTS_MAX)
 
         if found:
             return {
