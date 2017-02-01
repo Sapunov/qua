@@ -5,7 +5,7 @@ import lxml.html
 from bs4 import BeautifulSoup
 
 from qua.api.search.engine import get_search_engine
-from qua.api.search.snippets import Snipper
+from qua.api.search import snippets
 
 
 log = logging.getLogger('qua.' + __name__)
@@ -175,6 +175,4 @@ def generate_snippet(query, hit):
     if text is None:
         return ''
 
-    snipper_obj = Snipper(text)
-
-    return snipper_obj.generate_snippet(query, 200)
+    return snippets.generate_snippet(text, query, 200)

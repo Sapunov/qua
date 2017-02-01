@@ -5,164 +5,162 @@ import logging
 log = logging.getLogger('qua.' + __name__)
 
 
-class Snipper:
+def _create_dict_key(word):
 
-    def __init__(self, text):
+    extracted = re.findall(r"(\w+)", word, re.UNICODE)
 
-        self._words = {}
-        self.list_of_words = []
-        self.avg_word_len = 0
+    if not extracted:
+        return None
+    else:
+        return extracted[0].lower()
 
-        counter = -1
-        sum_of_words_len = 0
 
-        for item in text.split(' '):
-            sum_of_words_len += len(item)
+def _words_mappings(text):
 
-            self.list_of_words.append(item)
-            counter += 1
+    words_map = {}
+    list_of_words = []
 
-            dict_item = self._process_word(item)
+    sum_of_words_len = 0
 
-            if dict_item is None:
-                continue
+    for idx, word in enumerate(text.split(' ')):
+        sum_of_words_len += len(word)
 
-            if dict_item not in self._words:
-                self._words[dict_item] = [counter]
-            else:
-                self._words[dict_item].append(counter)
+        list_of_words.append(word)
 
-        self.avg_word_len = sum_of_words_len / len(self.list_of_words)
+        dict_item = _create_dict_key(word)
 
-    def _process_word(self, word):
+        if dict_item is None:
+            continue
 
-        extracted = re.findall(r"(\w+)", word, re.UNICODE)
-
-        if not extracted:
-            return None
+        if dict_item not in words_map:
+            words_map[dict_item] = [idx]
         else:
-            return extracted[0].lower()
+            words_map[dict_item].append(idx)
+
+    avg_word_len = sum_of_words_len / len(list_of_words)
+
+    return words_map, list_of_words, avg_word_len
 
 
-    def __str__(self):
+def _get_surround(list_of_words, item_id, left=2, right=2):
 
-        return '<Words:%s>' % len(self._words)
+    tail = len(list_of_words) - 1
 
-    def __repr__(self):
+    if 0 > item_id > tail:
+        return []
 
-        return self.__str__()
+    result = []
 
-    def _parse_query(self, query):
+    for i in range(item_id - left, item_id + (right + 1)):
+        try:
+            result.append(list_of_words[i])
+        except IndexError:
+            continue
 
-        list_of_terms = [it.lower() for it in query.split(' ')]
-        mapping = {}
-        merged = []
+    return result
 
-        for idx, term in enumerate(list_of_terms):
-            if term in self._words:
-                for term_id in self._words[term]:
-                    mapping[term_id] = idx
 
-                merged.extend(self._words[term])
+def _generate_phrases_ids(mapping, merged):
 
-        return mapping, tuple(sorted(merged))
+    pos = None
+    result = []
+    tmp = []
 
-    def _get_surround(self, item_id, left=2, right=2):
+    for i in merged:
+        if pos is None:
+            pos = mapping[i] + 1
+            tmp.append(i)
+            continue
 
-        tail = len(self.list_of_words) - 1
+        if mapping[i] != pos:
+            result.append(tmp)
+            pos = mapping[i] + 1
+            tmp = [i]
+        else:
+            pos += 1
+            tmp.append(i)
 
-        if 0 > item_id > tail:
-            return []
+    result.append(tmp)
 
-        result = []
+    return sorted(result, key=lambda x: len(x), reverse=True)
 
-        for i in range(item_id - left, item_id + (right + 1)):
+
+def _calc_word_per_term(query_terms_count, snippet_len, avg_word_len):
+
+    avg_word_len = avg_word_len or 1
+
+    return int(snippet_len / query_terms_count / avg_word_len)
+
+
+def _highlight_snippet(snippet_list, query_terms, html_tag='strong'):
+
+    result = []
+
+    for snippet_item in snippet_list:
+        for word in snippet_item:
+            if _create_dict_key(word) in query_terms:
+                result.append('<{0}>{1}</{0}>'.format(html_tag, word))
+            else:
+                result.append(word)
+
+        result.append('...')
+
+    return ' '.join(result)
+
+
+def _parse_query(query, words_map):
+
+    list_of_terms = [it.lower() for it in query.split(' ')]
+    mapping = {}
+    merged = []
+
+    for idx, term in enumerate(list_of_terms):
+        if term in words_map:
+            for term_id in words_map[term]:
+                mapping[term_id] = idx
+
+            merged.extend(words_map[term])
+
+    return mapping, tuple(sorted(merged))
+
+
+def generate_snippet(text, query, length=200):
+
+    words_map, list_of_words, avg_word_len = _words_mappings(text)
+    snippet_items = []
+    mapping, merged = _parse_query(query, words_map)
+    phrases_ids = _generate_phrases_ids(mapping, merged)
+
+    query_terms = re.findall(r"(\w+)", query, re.UNICODE)
+
+    words_coef = int(_calc_word_per_term(len(query_terms), length, avg_word_len) / 2)
+
+    overall_snippet_len = 0
+
+    for item in phrases_ids:
+        tmp = []
+
+        if len(item) > 1:
+            for i, idx in enumerate(item):
+                if i == 0:
+                    tmp.extend(_get_surround(list_of_words, idx, left=words_coef, right=0))
+                elif i == len(item) - 1:
+                    tmp.extend(_get_surround(list_of_words, idx, left=0, right=words_coef))
+                else:
+                    tmp.extend(list_of_words[idx])
+        else:
             try:
-                result.append(self.list_of_words[i])
+                tmp = _get_surround(list_of_words, item[0], left=words_coef, right=words_coef)
             except IndexError:
                 continue
 
-        return result
+        snippet_items.append(tmp)
 
-    def _generate_phrases_ids(self, mapping, merged):
+        overall_snippet_len += sum([len(it) for it in tmp])
 
-        pos = None
-        result = []
+        if overall_snippet_len > length:
+            break
+
         tmp = []
 
-        for i in merged:
-            if pos is None:
-                pos = mapping[i] + 1
-                tmp.append(i)
-                continue
-
-            if mapping[i] != pos:
-                result.append(tmp)
-                pos = mapping[i] + 1
-                tmp = [i]
-            else:
-                pos += 1
-                tmp.append(i)
-
-        result.append(tmp)
-
-        return sorted(result, key=lambda x: len(x), reverse=True)
-
-    def _calc_word_per_term(self, query_terms_count, snippet_length):
-
-        return int(snippet_length / query_terms_count / self.avg_word_len)
-
-    def _highlight_snippet(self, snippet_list, query_terms, html_tag='strong'):
-
-        result = []
-
-        for snippet_item in snippet_list:
-            for word in snippet_item:
-                if self._process_word(word) in query_terms:
-                    result.append('<{0}>{1}</{0}>'.format(html_tag, word))
-                else:
-                    result.append(word)
-
-            result.append('...')
-
-        return ' '.join(result)
-
-    def generate_snippet(self, query, length=200):
-
-        snippet_items = []
-        mapping, merged = self._parse_query(query)
-        phrases_ids = self._generate_phrases_ids(mapping, merged)
-
-        query_terms = re.findall(r"(\w+)", query, re.UNICODE)
-
-        words_coef = int(self._calc_word_per_term(len(query_terms), length) / 2)
-
-        overall_snippet_len = 0
-
-        for item in phrases_ids:
-            tmp = []
-
-            if len(item) > 1:
-                for i, idx in enumerate(item):
-                    if i == 0:
-                        tmp.extend(self._get_surround(idx, left=words_coef, right=0))
-                    elif i == len(item) - 1:
-                        tmp.extend(self._get_surround(idx, left=0, right=words_coef))
-                    else:
-                        tmp.extend(self.list_of_words[idx])
-            else:
-                try:
-                    tmp = self._get_surround(item[0], left=words_coef, right=words_coef)
-                except IndexError:
-                    continue
-
-            snippet_items.append(tmp)
-
-            overall_snippet_len += sum([len(it) for it in tmp])
-
-            if overall_snippet_len > length:
-                break
-
-            tmp = []
-
-        return self._highlight_snippet(snippet_items, query_terms)
+    return _highlight_snippet(snippet_items, query_terms)
