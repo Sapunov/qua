@@ -1,5 +1,5 @@
 import 'rxjs/add/operator/switchMap';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Router, NavigationExtras } from '@angular/router';
 
@@ -14,7 +14,7 @@ import { URLS } from '../../../environments/const';
   templateUrl: './search-result.component.html',
   styleUrls: ['./search-result.component.less']
 })
-export class SearchResultComponent implements OnInit {
+export class SearchResultComponent implements OnInit, OnDestroy {
   result: ISearchResult;
   hits: IHits[];
   loading: boolean;
@@ -71,5 +71,9 @@ export class SearchResultComponent implements OnInit {
           return this.result = result;
         }
       });
+  }
+
+  ngOnDestroy() {
+    this.search.searchInfo.next(null);
   }
 }

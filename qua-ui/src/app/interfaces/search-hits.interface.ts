@@ -30,3 +30,8 @@ export interface ISearchResult {
   took: number;
   category_assumptions?: ICategoryAssumptions[];
 };
+
+export interface ISearchInfo {
+  took: number;
+  total: number;
+};

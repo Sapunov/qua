@@ -1,4 +1,5 @@
-import { Injectable }    from '@angular/core';
+import { Subject } from 'rxjs/Subject';
+import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
 import { URLS, MIN_CHARS_FOR_SEARCH } from '../../environments/const';
 
@@ -6,11 +7,14 @@ import 'rxjs/add/operator/toPromise';
 
 import { ErrorService } from './error.service';
 
-import { ISearchResult } from '../interfaces/search-hits.interface';
+import { ISearchResult, ISearchInfo } from '../interfaces/search-hits.interface';
 import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class SearchService {
+  searchInfo = new Subject<ISearchInfo>();
+  searchInfo$ = this.searchInfo.asObservable();
+
   constructor(
     private errorService: ErrorService,
     private http: Http) { }
@@ -35,6 +39,13 @@ export class SearchService {
     return this.http.get(`${URLS.search}`, options)
       .toPromise()
       .then(this.promiseHandler)
+      .then((result: ISearchResult) => {
+        this.searchInfo.next({
+          total: result.total,
+          took: result.took
+        });
+        return result;
+      })
       .catch(this.errorHandler);
   }
 
