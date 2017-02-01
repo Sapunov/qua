@@ -1,9 +1,14 @@
 import re
+import logging
 
 import lxml.html
 from bs4 import BeautifulSoup
 
 from qua.api.search.engine import get_search_engine
+from qua.api.search.snippets import Snipper
+
+
+log = logging.getLogger('qua.' + __name__)
 
 
 def delete_tags(soup_instance, tags):
@@ -47,8 +52,11 @@ def get_text_from_html(html):
 
     soup = BeautifulSoup(html, 'lxml')
 
-    body = delete_tags(soup.body, ('script', 'style', 'noscript'))
-    text = deduplicate_spaces(body.get_text())
+    if soup.body is not None:
+        body = delete_tags(soup.body, ('script', 'style', 'noscript'))
+        text = deduplicate_spaces(body.get_text())
+    else:
+        text = ''
 
     return text
 
@@ -157,17 +165,16 @@ def keyboard_layout_inverse(string):
     return result
 
 
-def generate_snippet(hit):
+def generate_snippet(query, hit):
 
     text = hit.get('text')
-
-    if text is None:
-        text = hit.get('external')
 
     if text is None:
         text = hit.get('external_content')
 
     if text is None:
-        text = ''
+        return ''
 
-    return text[:140]
+    snipper_obj = Snipper(text)
+
+    return snipper_obj.generate_snippet(query, 200)
