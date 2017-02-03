@@ -42,7 +42,6 @@ export class SearchResultComponent implements OnInit, OnDestroy {
       };
       this.router.navigate([`questions/${hit.id}`], params);
     } else {
-      console.log(hit);
       window.open(hit.url);
     }
   }
