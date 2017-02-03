@@ -11,11 +11,13 @@ import { IResponse } from '../interfaces/response.interface';
 @Injectable()
 export class QuestionService {
   public question: INewQuestion;
+  public questions: IQuestion[];
 
   constructor(
     private errorService: ErrorService,
     private http: Http) {
-      this.question = null;
+    this.question = null;
+    this.questions = null;
     }
 
   addQuestion(data: INewQuestion): Promise<IQuestion> {
@@ -61,6 +63,7 @@ export class QuestionService {
     return this.http.get(`${URLS.question}`, options)
       .toPromise()
       .then(this.promiseHandler)
+      .then((questions: IQuestion[]) => this.questions = questions)
       .catch(this.errorHandler);
   }
 
