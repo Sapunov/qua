@@ -64,7 +64,6 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
   ngOnInit() {
     this.subs.push(this.searchService.searchInfo$.subscribe((info) => {
       this.searchInfo = info;
-      console.log(info);
     }));
     this.route.queryParams.subscribe((param: Params) => {
       this.query = param['query'] || '';
