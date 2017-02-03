@@ -67,6 +67,10 @@ export class QuestionService {
       .catch(this.errorHandler);
   }
 
+  clearCacheQuestions() {
+    this.questions = null;
+  }
+
   private makeOptions() {
     let headers =  new Headers({
       'Content-type': 'application/json',
