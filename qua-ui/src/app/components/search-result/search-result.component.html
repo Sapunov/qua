@@ -7,7 +7,7 @@
     <button class="button-blue empty-button" (click)="addQuestion(result.query)">Добавить вопрос</button>
   </div>
   <div class="app-block search-result-query-corrected" *ngIf="result.query_was_corrected">
-    <span>По запросу <b>{{ result.query }}</b> найдено 0 результатов. Показаны результаты по запросу <b>{{ result.used_query }}</b>.</span>
+    <span>Не найдено результатов по запросу <b>{{ result.query }}</b>. Показаны результаты по запросу <b>{{ result.used_query }}</b>.</span>
   </div>
   <div *ngIf="loading" class="loader-block">
     <i class="fa fa-refresh loader"></i>
