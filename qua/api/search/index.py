@@ -15,21 +15,17 @@ log = logging.getLogger('qua.' + __name__)
 
 
 def _index(
-    id, is_external, title, text=None, external=None,
-    keywords=None, url=None, external_content=None
+    resource_id, title, is_external=False, text=None, keywords=None, url=None,
+    external_content=None
 ):
 
     engine = get_search_engine()
 
-    spelling = utils.get_spelling_text(title, keywords, text, external, external_content)
-
     data = {
         'title': title,
-        'keywords': keywords,
+        'keywords': keywords or [],
         'text': text,
-        'external': external,
         'external_content': external_content,
-        'spelling': spelling,
         'is_external': is_external,
         'url': url
     }
@@ -38,7 +34,7 @@ def _index(
         engine.index(
             index=settings.SEARCH_INDEX_NAME,
             doc_type=settings.SEARCH_INDEX_TYPE,
-            id=id,
+            id=resource_id,
             body=data
         )
     except es_exceptions.ElasticsearchException as e:
@@ -68,15 +64,16 @@ def index_external_resource(url):
         external_resource.delete()
         return ''
 
-    title = utils.get_title(html)
-    external = utils.get_text_from_html(html)
+    title = utils.get_title_from_html(html)
+    text = utils.get_text_from_html(html)
 
-    _index('e-%s' % external_resource.id, True, title,
-        external_content=external,
+    _index('e-%s' % external_resource.id, title,
+        is_external=True,
+        text=text,
         url=url
     )
 
-    return external
+    return title
 
 
 def index_question(question_id, title, keywords, html):
@@ -84,14 +81,15 @@ def index_question(question_id, title, keywords, html):
     log.debug('Indexing question %s', question_id)
 
     text = utils.get_text_from_html(html)
-    external = ''
+    external_content = ''
 
     for link in utils.extract_all_links(html):
-        external += index_external_resource(link)
+        external_content += index_external_resource(link)
 
     _index(
-        'q-%s' % question_id, False, title,
+        'q-%s' % question_id, title,
+        is_external=False,
         text=text,
-        external=external,
+        external_content=external_content,
         keywords=keywords
     )

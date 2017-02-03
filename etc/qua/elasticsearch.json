@@ -22,45 +22,49 @@
           "type": "stemmer",
           "language": "possessive_english"
         },
-        "custom_ngram": {
+        "custom_edge_ngram": {
           "type": "edge_ngram",
           "min_gram": 3,
           "max_gram": 20
+        },
+        "custom_word_delimiter": {
+          "type": "word_delimiter",
+          "generate_word_parts": true,
+          "generate_number_parts": true,
+          "protected_words_path": "qua_protected_words.txt"
+        },
+        "synonym": {
+          "type": "synonym",
+          "synonyms_path": "qua_synonyms.txt"
         }
       },
       "analyzer": {
         "app_analyzer": {
           "type": "custom",
-          "tokenizer": "standard",
+          "tokenizer": "whitespace",
           "filter": [
-            "english_possessive_stemmer",
             "lowercase",
-            "custom_ngram",
+            "custom_word_delimiter",
             "russian_stop",
             "english_stop",
             "english_stemmer",
-            "russian_stemmer"
+            "russian_stemmer",
+            "custom_edge_ngram"
           ]
         },
         "app_search_analyzer": {
           "type": "custom",
-          "tokenizer": "standard",
+          "tokenizer": "whitespace",
           "filter": [
-            "english_possessive_stemmer",
             "lowercase",
+            "custom_word_delimiter",
             "russian_stop",
             "english_stop",
             "english_stemmer",
+            "russian_stemmer",
+            "synonym",
+            "english_stemmer",
             "russian_stemmer"
-          ]
-        },
-        "spelling_analyzer": {
-          "type": "custom",
-          "tokenizer": "letter",
-          "filter": [
-            "lowercase",
-            "asciifolding",
-            "word_delimiter"
           ]
         }
       }
@@ -84,20 +88,10 @@
           "analyzer": "app_analyzer",
           "search_analyzer": "app_search_analyzer"
         },
-        "external": {
-          "type": "text",
-          "analyzer": "app_analyzer",
-          "search_analyzer": "app_search_analyzer"
-        },
         "external_content": {
           "type": "text",
           "analyzer": "app_analyzer",
           "search_analyzer": "app_search_analyzer"
-        },
-        "spelling": {
-          "type": "text",
-          "analyzer": "spelling_analyzer",
-          "search_analyzer": "simple"
         }
       }
     }

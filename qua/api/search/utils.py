@@ -30,7 +30,7 @@ def deduplicate_spaces(text):
     return re.sub('(\s|\\n)+', ' ', text).strip()
 
 
-def get_title(html):
+def get_title_from_html(html):
 
     if html == '':
         return html
@@ -72,29 +72,7 @@ def extract_all_links(html):
     return links
 
 
-def get_spelling_text(title, keywords, text, external, external_content):
-
-    result = ''
-
-    if title:
-        result += title + ' '
-
-    if text:
-        result += text + ' '
-
-    if external:
-        result += external + ' '
-
-    if external_content:
-        result += external_content + ' '
-
-    if keywords:
-        result += ' '.join(keywords)
-
-    return result.strip()
-
-
-def spelling_correction(query, index='_all', field='spelling'):
+def spelling_correction(query, index='_all', field='text'):
 
     engine = get_search_engine()
 
