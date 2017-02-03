@@ -25,14 +25,18 @@ export class SearchQuestionsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loading = true;
-    this.questionService.getQuestions()
-      .then((questions: IQuestion[]) => {
-        this.loading = false;
-        this.questions = questions;
-      })
-      .catch(err => {
-        this.loading = false;
-      });
+    if (this.questionService.questions) {
+      this.questions = this.questionService.questions;
+    } else {
+      this.loading = true;
+      this.questionService.getQuestions()
+        .then((questions: IQuestion[]) => {
+          this.loading = false;
+          this.questions = questions;
+        })
+        .catch(err => {
+          this.loading = false;
+        });
+    }
   }
 }

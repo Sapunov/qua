@@ -14,8 +14,8 @@
   justify-content: space-between;
 
   &-input {
-    flex-grow: 2;
     border: 0;
+    flex-grow: 2;
     outline: 0;
     padding: 0;
     font-size: 1.2rem;
@@ -30,21 +30,26 @@
   }
 
   &-info {
+    display: block;
     font-size: 0.8rem;
     color: @color-meta;
-  }
+    &-max,
+    &-min {
+      vertical-align: middle;
+    }
+    &-max {
+      @media (max-width: @width-content-media) {
+        display: none;
+      }
+    }
 
-  &-info-max {
-    @media (max-width: @width-content-media) {
+    &-min {
       display: none;
+      @media (max-width: @width-content-media) {
+        display: inline;
+      }
     }
   }
 
-  &-info-min {
-    display: none;
-    @media (max-width: @width-content-media) {
-      display: inline;
-    }
-  }
 }
 
