@@ -23,6 +23,7 @@ export class SearchService {
     query = query || '';
 
     if (query.length < MIN_CHARS_FOR_SEARCH) {
+      this.searchInfo.next(null);
       return Promise.resolve({
         query,
         total: 0,
