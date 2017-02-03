@@ -5,7 +5,8 @@ from django.urls import reverse
 from django.conf import settings
 
 from qua.api.models import SearchHistory
-from qua.api.search.engine import get_search_engine
+from qua.api.search.engine import SearchEngine
+from qua.api.search.engine import exceptions as engine_exceptions
 from qua import utils
 from qua.api.search import utils as search_utils
 
@@ -153,11 +154,14 @@ def _create_search_body(queries):
 
 def _get_results(query, index, size=100):
 
-    engine = get_search_engine()
+    engine = SearchEngine()
 
     body = _create_search_body([query, search_utils.translit(query)])
 
-    result = engine.search(index=index, body=body, size=size)
+    try:
+        result = engine.search(index=index, body=body, size=size)
+    except engine_exceptions.ElasticsearchException:
+        return (0, [], 0)
 
     return (result['hits']['total'], result['hits'], result['took'])
 

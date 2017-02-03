@@ -4,8 +4,8 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework import exceptions
 
-from qua.api.search.engine import get_search_engine
-from qua.api.search.engine import exceptions as es_exceptions
+from qua.api.search.engine import SearchEngine
+from qua.api.search.engine import exceptions as engine_exceptions
 from qua.api.search import utils
 from qua.api.search import crawler
 from qua.api.models import ExternalResource
@@ -19,7 +19,7 @@ def _index(
     external_content=None
 ):
 
-    engine = get_search_engine()
+    engine = SearchEngine()
 
     data = {
         'title': title,
@@ -37,8 +37,8 @@ def _index(
             id=resource_id,
             body=data
         )
-    except es_exceptions.ElasticsearchException as e:
-        log.exception('ElasticsearchException: %s', e)
+    except engine_exceptions.ElasticsearchException:
+        pass
 
 
 def index_external_resource(url):

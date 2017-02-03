@@ -11,6 +11,8 @@ def download_image(image_url):
 
 def retrieve_page(url):
 
+    log.debug('Trying to retieve page: %s', url)
+
     try:
         r = requests.get(url, timeout=30)
     except requests.exceptions.RequestException as e:
