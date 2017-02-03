@@ -8,6 +8,7 @@
     placeholder="Поиск"
     [(ngModel)] = "query"
     (keyup)="keyup($event)"
+    autocomplete="off"
     autofocus/>
     <span *ngIf="searchInfo" class="search-field-info search-field-info-max">Результатов найдено: {{searchInfo.total}} ({{searchInfo.took}} сек.)</span>
     <span *ngIf="searchInfo" class="search-field-info search-field-info-min">{{searchInfo.total}}</span>
