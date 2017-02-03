@@ -23,8 +23,9 @@ export class AppComponent implements OnInit, OnDestroy {
     this.sfHide = false;
   }
 
-  @HostListener('document:keypress', ['$event'])
+  @HostListener('document:keydown', ['$event'])
   onKeypress(event: KeyboardEvent) {
+    console.log(event);
     if (!this.sfHide) {
       this.focusOnSf.next(true);
     }
