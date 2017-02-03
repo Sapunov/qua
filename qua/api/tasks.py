@@ -47,3 +47,9 @@ def reindex_questions(self):
 
     for question in questions:
         _index_question(question)
+
+
+@celery.app.task(bind=True)
+def index_external(self, url):
+
+    index.index_external_resource(url)

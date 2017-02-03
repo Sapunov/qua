@@ -2,13 +2,15 @@ import logging
 import mistune
 
 from django.db import models
-from django.db import IntegrityError
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from rest_framework import exceptions
+from django.conf import settings
 
 from qua.api.utils import common
 from qua.api import constants
+
+from qua.api.search import engine as search_engine
 
 
 log = logging.getLogger('qua.' + __name__)
@@ -153,17 +155,35 @@ class ExternalResource(Base):
 
         log.debug('Creating external resource: %s by %s', url, user)
 
-        resource, _ = cls.objects.get_or_create(
+        resource, created = cls.objects.get_or_create(
             url=url, created_by=user, updated_by=user
         )
 
-        log.debug('Created external resource is %s', resource.id)
+        log.debug('%s external resource by id: %s',
+            'Created' if created else 'Getting',
+            resource.id
+        )
 
-        return resource
+        return resource, created
+
+    def get_content(self):
+
+        engine = search_engine.get_search_engine()
+
+        try:
+            doc = engine.get(
+                index=settings.SEARCH_INDEX_NAME,
+                doc_type=settings.SEARCH_INDEX_TYPE,
+                id='e-%s' % self.id
+            )
+        except search_engine.exceptions.NotFoundError:
+            raise exceptions.NotFound
+
+        return doc['_source'].get('external_content', None)
 
     def __str__(self):
 
-        return self.url
+        return '<ExternalResource: ({0}) {1}>'.format(self.id, self.url)
 
 
 class SearchHistory(models.Model):

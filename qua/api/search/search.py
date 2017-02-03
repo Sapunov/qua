@@ -28,10 +28,11 @@ class SearchHit:
         self.id = id
         self.title = title
         self.snippet = snippet
-        self.keywords = keywords
+        self.keywords = keywords or []
         self.score = score
         self.is_external = is_external
         self.image = image
+        self.resource = utils.extract_domain(url)
 
         if self.is_external:
             self.url = self.get_away_url(url, search_history_id)
@@ -71,10 +72,13 @@ class SearchResults:
         self.query_was_corrected = False
         self.used_query = self.query
 
+        self.took = 0
+
         self.total = 0
 
         if result is not None:
             self.total = result['hits']['total']
+            self.took = result['took'] / 1000 # in seconds
 
             if result['query_was_corrected']:
                 self.query_was_corrected = True
@@ -90,7 +94,9 @@ class SearchResults:
                         title=hit['_source']['title'],
                         search_history_id=search_history_id,
                         keywords=hit['_source']['keywords'],
-                        snippet=search_utils.generate_snippet(hit['_source']),
+                        snippet=search_utils.generate_snippet(
+                            self.used_query, hit['_source']
+                        ),
                         score=hit['_score'],
                         is_external=hit['_source']['is_external'],
                         url=hit['_source'].get('url', None)
@@ -146,7 +152,7 @@ def _get_results(query, index, size=100):
 
     result = engine.search(index=index, body=body, size=size)
 
-    return (result['hits']['total'], result['hits'])
+    return (result['hits']['total'], result['hits'], result['took'])
 
 
 def _search(query_stack, index):
@@ -154,13 +160,14 @@ def _search(query_stack, index):
     for attempt in range(len(query_stack)):
         query = query_stack.pop()
 
-        found, hits = _get_results(query, index)
+        found, hits, took = _get_results(query, index)
 
         if found:
             return {
-                "hits": hits,
-                "query": query,
-                "query_was_corrected": attempt > 0
+                'hits': hits,
+                'query': query,
+                'query_was_corrected': attempt > 0,
+                'took': took
             }
 
 
