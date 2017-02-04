@@ -2,6 +2,7 @@ import 'rxjs/add/operator/switchMap';
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { ActivatedRoute, Params } from '@angular/router';
 import { Router, NavigationExtras } from '@angular/router';
+import { NgProgressService } from 'ng2-progressbar';
 
 import { QuestionService } from '../../services/question.service';
 import { SearchService } from '../../services/search.service';
@@ -17,15 +18,14 @@ import { URLS } from '../../../environments/const';
 export class SearchResultComponent implements OnInit, OnDestroy {
   result: ISearchResult;
   hits: IHits[];
-  loading: boolean;
 
   constructor(
     private search: SearchService,
     private route: ActivatedRoute,
     private router: Router,
+    private pbService: NgProgressService,
     private questionService: QuestionService
   ) {
-    this.loading = false;
   }
 
   addQuestion(title: string): void {
@@ -59,12 +59,12 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.queryParams
       .switchMap((params: Params) => {
-        this.loading = true;
+        this.pbService.start();
         return this.search.goSearch(params['query'], params['spelling'])
           .catch(err => null);
       })
       .subscribe((result: ISearchResult) => {
-        this.loading = false;
+        this.pbService.done();
         if (result) {
           this.hits = result.hits;
           return this.result = result;

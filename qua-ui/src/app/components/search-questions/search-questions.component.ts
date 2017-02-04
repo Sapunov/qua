@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { NgProgressService } from 'ng2-progressbar';
 
 import { QuestionService } from '../../services/question.service';
 import { IQuestion } from '../../interfaces/question.interface';
@@ -11,13 +12,12 @@ import { IQuestion } from '../../interfaces/question.interface';
 })
 export class SearchQuestionsComponent implements OnInit {
   questions: IQuestion[] = [];
-  loading: boolean;
 
   constructor(
     private questionService: QuestionService,
+    private pbService: NgProgressService,
     private router: Router
   ) {
-    this.loading = false;
   }
 
   getQuestion(id: number) {
@@ -28,14 +28,14 @@ export class SearchQuestionsComponent implements OnInit {
     if (this.questionService.questions) {
       this.questions = this.questionService.questions;
     } else {
-      this.loading = true;
+      this.pbService.start();
       this.questionService.getQuestions()
         .then((questions: IQuestion[]) => {
-          this.loading = false;
+          this.pbService.done();
           this.questions = questions;
         })
         .catch(err => {
-          this.loading = false;
+          this.pbService.done();
         });
     }
   }
