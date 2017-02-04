@@ -27,8 +27,17 @@
 }
 
 .app-error {
+  width: @width-popup;
   z-index: 999999999999;
   position: absolute;
   bottom: @indent*3;
   right: @indent;
+
+  @media(max-width: @width-content-media) {
+    margin-top: @indent;
+    position: relative;
+    width: 100%;
+    bottom: auto;
+    right: auto;
+  }
 }

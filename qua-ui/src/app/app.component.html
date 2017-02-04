@@ -14,9 +14,9 @@
   <div class="wrapper-resize">
     <div class="app-content" >
       <app-search [sfHide]="sfHide" [focusOnSf]="focusOnSf"></app-search>
+      <app-error class="app-error"></app-error>
       <router-outlet (activate)="onActivate($event)"></router-outlet>
     </div>
   </div>
   <app-footer class="app-footer"></app-footer>
-  <app-error class="app-error"></app-error>
 </div>
