@@ -1,5 +1,6 @@
 import re
 import logging
+import tempfile
 
 import lxml.html
 from bs4 import BeautifulSoup
