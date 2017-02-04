@@ -10,7 +10,8 @@ from django.conf import settings
 from qua.api.utils import common
 from qua.api import constants
 
-from qua.api.search import engine as search_engine
+from qua.api.search.engine import SearchEngine
+from qua.api.search.engine import exceptions as engine_exceptions
 
 
 log = logging.getLogger('qua.' + __name__)
@@ -159,16 +160,16 @@ class ExternalResource(Base):
             url=url, created_by=user, updated_by=user
         )
 
-        log.debug('%s external resource by id: %s',
-            'Created' if created else 'Getting',
-            resource.id
+        log.debug('ExternalResource by id: %s %s',
+            resource.id,
+            'created' if created else 'returning',
         )
 
         return resource, created
 
-    def get_content(self):
+    def get_content(self, fields=None):
 
-        engine = search_engine.get_search_engine()
+        engine = SearchEngine()
 
         try:
             doc = engine.get(
@@ -176,10 +177,18 @@ class ExternalResource(Base):
                 doc_type=settings.SEARCH_INDEX_TYPE,
                 id='e-%s' % self.id
             )
-        except search_engine.exceptions.NotFoundError:
+        except engine_exceptions.NotFoundError:
             raise exceptions.NotFound
 
-        return doc['_source'].get('external_content', None)
+        if fields:
+            result = {}
+
+            for field in fields:
+                result[field] = doc['_source'].get(field, None)
+        else:
+            result = doc['_source']
+
+        return result
 
     def __str__(self):
 

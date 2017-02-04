@@ -156,6 +156,13 @@ SEARCH_RESULTS_MAX = 100
 SEARCH_INDEX_NAME = PROGRAM_NAME
 SEARCH_INDEX_TYPE = 'questions'
 
+CRAWLER = {
+    'permitted_content_types': [
+        'text/html',
+        'application/pdf'
+    ]
+}
+
 
 LOGGING = {
     'version': 1,
@@ -180,12 +187,6 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'qua.log'),
-            'formatter': 'verbose'
-        },
-        'django': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'django.log'),
             'formatter': 'verbose'
         },
         'requests': {
@@ -217,12 +218,7 @@ LOGGING = {
             'handlers': ['celery'],
             'level': 'DEBUG',
             'propagate': True
-        },
-        'django': {
-            'handlers': ['django'],
-            'level': 'DEBUG',
-            'propagate': True
-        },
+        }
     },
 }
 

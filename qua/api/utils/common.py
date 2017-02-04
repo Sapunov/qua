@@ -1,15 +1,11 @@
 import re
 import hashlib
-from bs4 import BeautifulSoup
+import tempfile
 
 
 def word_normalize(phrase):
     words = re.findall(r'([\w_\-\@]+)', phrase, re.UNICODE)
     return ' '.join(word.lower() for word in words)
-
-
-def snippet(text):
-    return text[0:50]
 
 
 def remove_empty_values(data):
@@ -40,23 +36,13 @@ def h6(string):
     return hashlib.sha256(byte_string).hexdigest()[:6]
 
 
-def get_text_from_html(html):
+def temp_file(data, suffix='', prefix='', binary=False):
 
-    internal_tags = ['style', 'script', '[document]', 'head', 'title']
-    bs_instance = BeautifulSoup(html, 'lxml')
+    filepath = tempfile.mktemp(suffix=suffix, prefix=prefix)
 
-    def _visible(element):
-        if element.parent.name in internal_tags:
-            return False
-        elif re.match('<!--.*-->', str(element)):
-            return False
-        return True
+    mode = 'wb' if binary else 'w'
 
-    texts = bs_instance.findAll(text=True)
+    with open(filepath, mode) as fd:
+        fd.write(data)
 
-    visible_texts = filter(_visible, texts)
-
-    text = ' '.join([elem.strip('\n') for elem in visible_texts])
-    text = text.replace('  ', ' ')
-
-    return text.strip()
+    return filepath

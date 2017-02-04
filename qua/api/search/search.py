@@ -5,7 +5,8 @@ from django.urls import reverse
 from django.conf import settings
 
 from qua.api.models import SearchHistory
-from qua.api.search.engine import get_search_engine
+from qua.api.search.engine import SearchEngine
+from qua.api.search.engine import exceptions as engine_exceptions
 from qua import utils
 from qua.api.search import utils as search_utils
 
@@ -76,13 +77,10 @@ class SearchResults:
         self.query_was_corrected = False
         self.used_query = self.query
 
-        self.took = 0
-
         self.total = 0
 
         if result is not None:
             self.total = result['hits']['total']
-            self.took = result['took'] / 1000 # in seconds
 
             if result['query_was_corrected']:
                 self.query_was_corrected = True
@@ -107,7 +105,12 @@ class SearchResults:
                     )
                 )
 
-        log.debug('Results for query: `%s` was generated in %s secs.', query, time.time() - start)
+        self.took = round(time.time() - start, 3)
+
+        log.debug('Results for query: `%s` was generated in %s sec. ' \
+            'Elasticsearch spent %s sec.',
+            query, self.took, result['took'] / 1000 if result else None
+        )
 
     def __str__(self):
         return '<SearchResults:{0:.30}|{1}>'.format(self.query, self.total)
@@ -128,11 +131,10 @@ def _create_search_body(queries):
             'multi_match': {
                 'query': item,
                 'fields': [
-                    'title^5.5',
-                    'keywords^4',
-                    'text^3',
-                    'external^5',
-                    'external_content^1'
+                    'title^2',
+                    'keywords2',
+                    'text^1.5',
+                    'external_content'
                 ],
                 'operator': 'and',
                 'type': 'cross_fields'
@@ -152,11 +154,14 @@ def _create_search_body(queries):
 
 def _get_results(query, index, size=100):
 
-    engine = get_search_engine()
+    engine = SearchEngine()
 
     body = _create_search_body([query, search_utils.translit(query)])
 
-    result = engine.search(index=index, body=body, size=size)
+    try:
+        result = engine.search(index=index, body=body, size=size)
+    except engine_exceptions.ElasticsearchException:
+        return (0, [], 0)
 
     return (result['hits']['total'], result['hits'], result['took'])
 

@@ -4,7 +4,8 @@ import logging
 import lxml.html
 from bs4 import BeautifulSoup
 
-from qua.api.search.engine import get_search_engine
+from qua.api.search.engine import SearchEngine
+from qua.api.search.engine import exceptions as engine_exceptions
 from qua.api.search import snippets
 
 
@@ -27,10 +28,10 @@ def delete_tags(soup_instance, tags):
 
 def deduplicate_spaces(text):
 
-    return re.sub('(\s|\\n)+', ' ', text).strip()
+    return re.sub('(\s)+', ' ', text).strip()
 
 
-def get_title(html):
+def get_title_from_html(html):
 
     if html == '':
         return html
@@ -54,14 +55,14 @@ def get_text_from_html(html):
 
     if soup.body is not None:
         body = delete_tags(soup.body, ('script', 'style', 'noscript'))
-        text = deduplicate_spaces(body.get_text())
+        text = deduplicate_spaces(re.sub('<[^<]+?>', '', str(body)))
     else:
         text = ''
 
     return text
 
 
-def extract_all_links(html):
+def extract_all_links(html, filter_hash=True):
 
     if html == '':
         return []
@@ -69,34 +70,15 @@ def extract_all_links(html):
     html = lxml.html.fromstring(html)
     links = set(html.xpath("//a/@href"))
 
+    if filter_hash:
+        links = [link for link in links if not link.startswith('#')]
+
     return links
 
 
-def get_spelling_text(title, keywords, text, external, external_content):
+def spelling_correction(query, index='_all', field='text'):
 
-    result = ''
-
-    if title:
-        result += title + ' '
-
-    if text:
-        result += text + ' '
-
-    if external:
-        result += external + ' '
-
-    if external_content:
-        result += external_content + ' '
-
-    if keywords:
-        result += ' '.join(keywords)
-
-    return result.strip()
-
-
-def spelling_correction(query, index='_all', field='spelling'):
-
-    engine = get_search_engine()
+    engine = SearchEngine()
 
     corrected = False
     output = ''
@@ -109,14 +91,20 @@ def spelling_correction(query, index='_all', field='spelling'):
         }
     }
 
-    result = engine.suggest(index=index, body=body)
+    try:
+        result = engine.suggest(index=index, body=body)
 
-    for suggest in result['spelling']:
-        if len(suggest['options']) > 0:
-            corrected = True
-            output += suggest['options'][0]['text'] + ' '
-        else:
-            output += suggest['text'] + ' '
+        log.debug('Spelling: %s', result)
+
+        if 'spelling' in result:
+            for suggest in result['spelling']:
+                if len(suggest['options']) > 0:
+                    corrected = True
+                    output += suggest['options'][0]['text'] + ' '
+                else:
+                    output += suggest['text'] + ' '
+    except engine_exceptions.ElasticsearchException:
+        pass
 
     return (corrected, output.strip())
 
@@ -175,4 +163,6 @@ def generate_snippet(query, hit):
     if text is None:
         return ''
 
-    return snippets.generate_snippet(text, query, 200)
+    snippet_text = snippets.generate_snippet(text, query, 200)
+
+    return snippet_text or text[:200]
