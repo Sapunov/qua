@@ -24,7 +24,17 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   @HostListener('document:keydown', ['$event'])
+  onKeypdown(event: KeyboardEvent) {
+    if (event.keyCode === 8) {
+      this.focusOnSeacrh();
+    }
+  }
+  @HostListener('document:keypress', ['$event'])
   onKeypress(event: KeyboardEvent) {
+    this.focusOnSeacrh();
+  }
+
+  focusOnSeacrh() {
     if (!this.sfHide) {
       this.focusOnSf.next(true);
     }
