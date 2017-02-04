@@ -160,14 +160,14 @@ class ExternalResource(Base):
             url=url, created_by=user, updated_by=user
         )
 
-        log.debug('%s external resource by id: %s',
-            'Created' if created else 'Getting',
-            resource.id
+        log.debug('ExternalResource by id: %s %s',
+            resource.id,
+            'created' if created else 'returning',
         )
 
         return resource, created
 
-    def get_content(self):
+    def get_content(self, fields=None):
 
         engine = SearchEngine()
 
@@ -180,7 +180,15 @@ class ExternalResource(Base):
         except engine_exceptions.NotFoundError:
             raise exceptions.NotFound
 
-        return doc['_source'].get('external_content', None)
+        if fields:
+            result = {}
+
+            for field in fields:
+                result[field] = doc['_source'].get(field, None)
+        else:
+            result = doc['_source']
+
+        return result
 
     def __str__(self):
 

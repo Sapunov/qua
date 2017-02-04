@@ -39,16 +39,21 @@ def _check_content_type(content_type, permitted):
     return False
 
 
+class FormatNotFoundError(Exception):
+    pass
+
+
 class FormatConvertor:
 
     @classmethod
     def pdf(cls, data):
 
-        temp_file = common.temp_file(data, suffix='.pdf')
+        temp_file = common.temp_file(data, suffix='.pdf', binary=True)
 
         try:
             text = textract.process(temp_file)
         except Exception as e:
+            log.exception('TexttracException: %s', e)
             return None
         finally:
             os.remove(temp_file)
@@ -56,6 +61,7 @@ class FormatConvertor:
         try:
             decoded = text.decode('utf-8')
         except UnicodeDecodeError:
+            log.exception('UnicodeDecodeError exception while decoding %s', temp_file)
             return None
 
         text = search_utils.deduplicate_spaces(decoded)
@@ -85,6 +91,9 @@ class FormatConvertor:
     @classmethod
     def format(cls, data, format_name):
 
+        if not cls.can_format(format_name):
+            raise FormatNotFoundError
+
         return getattr(cls, format_name)(data)
 
     @classmethod
@@ -112,11 +121,13 @@ def retrieve_page(url):
         settings.CRAWLER['permitted_content_types']
     )
 
+    log.debug('Content-Type of the %s - %s', url, content_type)
+
     if content_type is None:
         return None
 
     if content_type != 'text':
         if FormatConvertor.can_format(content_type):
-            return FormatConvertor.format(r.text, content_type)
+            return FormatConvertor.format(r.content, content_type)
     else:
         return r.text
