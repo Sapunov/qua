@@ -63,13 +63,16 @@ def get_text_from_html(html):
     return text
 
 
-def extract_all_links(html):
+def extract_all_links(html, filter_hash=True):
 
     if html == '':
         return []
 
     html = lxml.html.fromstring(html)
     links = set(html.xpath("//a/@href"))
+
+    if filter_hash:
+        links = [link for link in links if not link.startswith('#')]
 
     return links
 
