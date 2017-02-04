@@ -38,6 +38,10 @@ export class QuestionService {
 
   deleteQuestion(id: number): Promise<boolean> {
     let options = this.makeOptions();
+    let index = this.searchQuestionById(id);
+    if (index !== -1) {
+      this.questions.splice(index, 1);
+    }
     return this.http.delete(`${URLS.question}/${id}`, options)
       .toPromise()
       .then(this.promiseHandler)
@@ -69,6 +73,19 @@ export class QuestionService {
 
   clearCacheQuestions() {
     this.questions = null;
+  }
+
+  private searchQuestionById(id): number {
+    let index = -1;
+    if (!this.questions) {
+      return index;
+    }
+    this.questions.forEach((question, i) => {
+      if (question.id === id) {
+        index = i;
+      }
+    });
+    return index;
   }
 
   private makeOptions() {
