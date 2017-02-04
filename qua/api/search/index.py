@@ -53,8 +53,8 @@ def index_external_resource(url):
         log.debug('External resource already created')
 
         try:
-            content = external_resource.get_content()
-            return content if content is not None else ''
+            content = external_resource.get_content(fields=('title',))
+            return content['title']
         except exceptions.NotFound:
             pass
 
