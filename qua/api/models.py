@@ -60,6 +60,14 @@ class Keyword(models.Model):
         return self.text
 
 
+class QuestionListRepr:
+
+    def __init__(self, queryset, total):
+
+        self.items = queryset
+        self.total = total
+
+
 class Question(Base):
 
     title = models.CharField(max_length=300)
@@ -74,6 +82,9 @@ class Question(Base):
     @classmethod
     def get(cls, pk=None, **kwargs):
 
+        offset = kwargs.pop('offset', 0)
+        limit = kwargs.pop('limit', None)
+
         if pk is not None:
             try:
                 return cls.objects.get(pk=pk, deleted=False, **kwargs)
@@ -82,7 +93,10 @@ class Question(Base):
 
         results = cls.objects.filter(deleted=False, **kwargs)
 
-        return results
+        total = results.count()
+        limit = limit if limit is not None else total
+
+        return QuestionListRepr(results[offset:limit], total)
 
     @classmethod
     def create(cls, title, user, keywords=None):

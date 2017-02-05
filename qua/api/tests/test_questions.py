@@ -31,10 +31,13 @@ class QuestionTest(BaseQuaTestCase):
         self.assertEqual(resp.status_code, 200)
 
         response = resp.data['response']
+        items = response['items']
 
         self.assertEqual(len(response), 3)
+        self.assertIn('total', response)
+        self.assertIn('pagination', response)
 
-        first = response[0]
+        first = items[0]
 
         self.assertEqual(len(first.keys()), 8)
 
@@ -54,7 +57,7 @@ class QuestionTest(BaseQuaTestCase):
 
         response = resp.data['response']
 
-        self.assertEqual(len(response.keys()), 8)
+        self.assertEqual(len(response.keys()), 9)
 
         self.assertIn('id', response)
         self.assertIn('title', response)
@@ -64,6 +67,7 @@ class QuestionTest(BaseQuaTestCase):
         self.assertIn('updated_at', response)
         self.assertIn('created_by', response)
         self.assertIn('updated_by', response)
+        self.assertIn('answer_exists', response)
 
     def test_format_create(self):
         data = json.dumps({
@@ -77,7 +81,7 @@ class QuestionTest(BaseQuaTestCase):
 
         response = resp.data['response']
 
-        self.assertEqual(len(response.keys()), 8)
+        self.assertEqual(len(response.keys()), 9)
         self.assertIn('id', response)
         self.assertIn('title', response)
         self.assertIn('answer', response)
@@ -86,6 +90,7 @@ class QuestionTest(BaseQuaTestCase):
         self.assertIn('updated_at', response)
         self.assertIn('created_by', response)
         self.assertIn('updated_by', response)
+        self.assertIn('answer_exists', response)
 
         answer = response['answer']
 
@@ -110,7 +115,7 @@ class QuestionTest(BaseQuaTestCase):
 
         response = resp.data['response']
 
-        self.assertEqual(len(response.keys()), 8)
+        self.assertEqual(len(response.keys()), 9)
         self.assertIn('id', response)
         self.assertIn('title', response)
         self.assertIn('answer', response)
@@ -119,6 +124,7 @@ class QuestionTest(BaseQuaTestCase):
         self.assertIn('updated_at', response)
         self.assertIn('created_by', response)
         self.assertIn('updated_by', response)
+        self.assertIn('answer_exists', response)
 
         answer = response['answer']
 
@@ -175,7 +181,7 @@ class QuestionTest(BaseQuaTestCase):
 
         self.assertEqual(resp.status_code, 200)
 
-        self.assertEqual(len(resp.data['response'].keys()), 8)
+        self.assertEqual(len(resp.data['response'].keys()), 9)
 
     def test_update_keywords(self):
         first_keywords = ['one', 'two']

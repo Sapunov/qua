@@ -109,26 +109,12 @@ class AnswerSerializer(DynamicFieldsModelSerializer):
         exclude = ('id', 'question')
 
 
-class QuestionListSerializer(serializers.ModelSerializer):
-
-    keywords = serializers.SlugRelatedField(
-        many=True, read_only=True, slug_field='text')
-
-    answer_exists = serializers.BooleanField()
-
-    created_by = UserSerializer(read_only=True)
-    updated_by = UserSerializer(read_only=True)
-
-    class Meta:
-        model = Question
-        exclude = ('deleted',)
-
-
-class QuestionSerializer(serializers.ModelSerializer):
+class QuestionSerializer(DynamicFieldsModelSerializer):
 
     title = serializers.CharField(max_length=300, required=False)
     keywords = AutoUpdatePrimaryKeyRelatedField(model=Keyword, many=True, required=False)
     answer = AnswerSerializer(required=False)
+    answer_exists = serializers.BooleanField(required=False)
     created_by = UserSerializer(read_only=True)
     updated_by = UserSerializer(read_only=True)
 
@@ -190,6 +176,15 @@ class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
         exclude = ('deleted',)
+
+
+class QuestionListSerializer(serializers.Serializer):
+
+    total = serializers.IntegerField()
+    items = QuestionSerializer(many=True, fields=(
+        'answer_exists', 'title', 'keywords', 'created_at', 'created_by',
+        'updated_at', 'updated_by', 'id'
+    ))
 
 
 class UrlParamsSerializer(serializers.Serializer):

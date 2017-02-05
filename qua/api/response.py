@@ -9,14 +9,12 @@ def get_response_dict(ok=1, response=None):
 
 
 class QuaApiResponse(Response):
-    def __init__(self, data=None, status=None, template_name=None,
-        headers=None, content_type=None
-    ):
+
+    def __init__(self, data=None, **kwargs):
+
         super(QuaApiResponse, self).__init__(
             data=get_response_dict(response=data),
-            status=status,
-            template_name=template_name, headers=headers,
-            content_type=content_type
+            **kwargs
         )
 
 

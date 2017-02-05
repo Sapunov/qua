@@ -152,26 +152,29 @@ def _create_search_body(queries):
     return body
 
 
-def _get_results(query, index, size=100):
+def _get_results(query, index, limit, offset):
 
     engine = SearchEngine()
 
     body = _create_search_body([query, search_utils.translit(query)])
 
+    if limit > settings.SEARCH_RESULTS_MAX:
+        limit = settings.SEARCH_RESULTS_MAX
+
     try:
-        result = engine.search(index=index, body=body, size=size)
+        result = engine.search(index=index, body=body, size=limit, from_=offset)
     except engine_exceptions.ElasticsearchException:
         return (0, [], 0)
 
     return (result['hits']['total'], result['hits'], result['took'])
 
 
-def _search(query_stack, index):
+def _search(query_stack, index, limit, offset):
 
     for attempt in range(len(query_stack)):
         query = query_stack.pop()
 
-        found, hits, took = _get_results(query, index, settings.SEARCH_RESULTS_MAX)
+        found, hits, took = _get_results(query, index, limit, offset)
 
         if found:
             return {
@@ -182,7 +185,7 @@ def _search(query_stack, index):
             }
 
 
-def basesearch(query, user, spelling=True):
+def basesearch(query, user, spelling=True, limit=10, offset=0):
 
     log.debug('Search for: %s', query)
 
@@ -217,7 +220,7 @@ def basesearch(query, user, spelling=True):
     """
     search_stack.append(query)
 
-    result = _search(search_stack, settings.SEARCH_INDEX_NAME)
+    result = _search(search_stack, settings.SEARCH_INDEX_NAME, limit, offset)
 
     if result is None:
         return SearchResults(query)
