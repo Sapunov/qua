@@ -9,9 +9,6 @@
   <div class="app-block search-result-query-corrected" *ngIf="result.query_was_corrected">
     <span>Не найдено результатов по запросу <b>{{ result.query }}</b>. Показаны результаты по запросу <b>{{ result.used_query }}</b>.</span>
   </div>
-  <div *ngIf="loading" class="loader-block">
-    <i class="fa fa-refresh loader"></i>
-  </div>
   <div class="app-block search-result-hit" *ngFor="let hit of hits">
     <header>
       <a *ngIf="hit.is_external" class="hit-header hit-header-external" [href]="hit.url" target="_blank">

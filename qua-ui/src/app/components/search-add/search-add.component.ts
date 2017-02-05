@@ -2,6 +2,7 @@ import 'rxjs/add/operator/switchMap';
 import { Component, OnInit, OnDestroy, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { ActivatedRoute, Params, Router, NavigationExtras } from '@angular/router';
 import { FormGroup } from '@angular/forms';
+import { NgProgressService } from 'ng2-progressbar';
 
 import { MarkdownComponent } from '../markdown/markdown.component';
 
@@ -18,8 +19,6 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MarkdownComponent) private mde: MarkdownComponent;
   @ViewChild('inputTitle') private inputTitle: ElementRef;
 
-  loading: boolean = false;
-
   sfHide: boolean;
   isEdit: boolean;
   question: IQuestion;
@@ -32,10 +31,12 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService,
+    private pbService: NgProgressService,
   ) {
     this.sfHide = true;
     this.isEdit = false;
     this.title = '';
+    this.keyword = '';
     this.keywords = [];
     this.answer = {
       raw: ''
@@ -58,27 +59,33 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     }
   }
 
+  onBackspace(event: KeyboardEvent) {
+    if (this.keywords.length && !this.keyword) {
+      this.keywords.pop();
+    }
+  }
+
   edit(id: number, data: INewQuestion) {
-    this.loading = true;
+    this.pbService.start();
     this.questionService.editQuestion(id, data)
       .then((que: IQuestion) => {
-        this.loading = false;
+        this.pbService.done();
         this.router.navigate([`questions/${que.id}`]);
       })
       .catch(err => {
-        this.loading = false;
+        this.pbService.done();
       });
   }
 
   add(data: INewQuestion) {
-    this.loading = true;
+    this.pbService.start();
     this.questionService.addQuestion(data)
       .then((que: IQuestion) => {
-        this.loading = false;
+        this.pbService.done();
         this.router.navigate([`questions/${que.id}`]);
       })
       .catch(err => {
-        this.loading = false;
+        this.pbService.done();
       });
   }
 

@@ -4,6 +4,7 @@ import { FormsModule }              from '@angular/forms';
 import { HttpModule }               from '@angular/http';
 import { RouterModule }             from '@angular/router';
 import { AppRoutingModule }         from './app-routing.module';
+import { NgProgressModule }         from 'ng2-progressbar';
 
 import { AppComponent }             from './app.component';
 import { AuthComponent }            from './components/auth/auth.component';
@@ -36,13 +37,14 @@ import { QuestionService }          from './services/question.service';
     AuthComponent,
     FooterComponent,
     SearchQuestionsComponent,
-    ErrorComponent
+    ErrorComponent,
   ],
   imports: [
     BrowserModule,
     FormsModule,
     HttpModule,
-    AppRoutingModule
+    AppRoutingModule,
+    NgProgressModule
   ],
   providers: [
     AuthService,
