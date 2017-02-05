@@ -102,10 +102,12 @@ API разрешает посылать к себе запросы со след
 - GET **/search** - поиск по введенному тексу
     - query - текст запроса
     - spelling - включена или выключена коррекция запроса (по умолчанию включена)
+    - limit - сколько результатов должно быть получено
+    - offset - сдвиг относительно начала набора результатов
 
 Формат данных:
 
-`GET` **/api/search?query=друг&spelling=0**
+`GET` **/api/search?query=друг&spelling=0&offset=0&limit=10**
 
 ```
 {
@@ -138,13 +140,18 @@ API разрешает посылать к себе запросы со след
                 "snippet": "Привет тебе друг",
                 "title": "Привет тебе друг мой",
                 "url": "/away?track=search_external&shid=158&qid=6&token=29f0e3a50514dd530717&redirect_url=https://en.wikipedia.org/wiki/Friendship"
-            }
+            },
+            ...
         ],
         "query": "друк",
         "query_was_corrected": true,
-        "total": 2,
+        "total": 20,
         "used_query": "друг",
-        "took": 0.087
+        "took": 0.087,
+        "pagination": {
+            "next": "/api/search?query=друг&spelling=0&offset=10&limit=10",
+            "prev": null
+        }
     }
 }
 ```
@@ -189,6 +196,8 @@ API разрешает посылать к себе запросы со след
 поэтому может не отражать действительности так как кроме запроса к elasticsearch происходит
 еще много магии.
 
+**pagination** - ссылки для обеспечения пагинации. Если в одну либо другую сторону больше не результатов, то будет `null`
+
 
 ### Вопросы
 
@@ -218,6 +227,7 @@ API разрешает посылать к себе запросы со след
             "id": 1,
             "raw": "првиет",
             "snippet": "фывафыва",
+            "answer_exists": true,
             "updated_at": "2017-01-08T00:14:45.323372Z",
             "updated_by": {
                 "first_name": "",
@@ -254,58 +264,68 @@ API разрешает посылать к себе запросы со след
 Вместо поля `answer` выдается `answer_exists` с булевым значением есть ответ на вопрос или нет.
 
 `GET` **/api/questions**
+    - limit - сколько результатов должно быть получено
+    - offset - сдвиг относительно начала набора результатов
 
 ```
-{
-    "ok": 1,
-    "response":     [
-        {
-            "answer_exists": true,
-            "created_at": "2017-01-14T09:51:52.428555Z",
-            "created_by": {
-                "first_name": "",
-                "id": 1,
-                "last_name": "",
-                "username": "nsapunov"
+{  
+    "ok":1,
+    "response":{  
+        "items":[  
+            {  
+                "answer_exists":true,
+                "created_at":"2017-01-14T09:51:52.428555Z",
+                "created_by":{  
+                    "first_name":"",
+                    "id":1,
+                    "last_name":"",
+                    "username":"nsapunov"
+                },
+                "id":49,
+                "keywords":[  
+                    "привет",
+                    "nikita",
+                    "слон"
+                ],
+                "title":"привет",
+                "updated_at":"2017-01-14T09:51:52.451319Z",
+                "updated_by":{  
+                    "first_name":"",
+                    "id":1,
+                    "last_name":"",
+                    "username":"nsapunov"
+                }
             },
-            "id": 49,
-            "keywords": [
-                "привет",
-                "nikita",
-                "слон"
-            ],
-            "title": "привет",
-            "updated_at": "2017-01-14T09:51:52.451319Z",
-            "updated_by": {
-                "first_name": "",
-                "id": 1,
-                "last_name": "",
-                "username": "nsapunov"
-            }
-        },
-        {
-            "answer_exists": false,
-            "created_at": "2017-01-14T10:36:54.865758Z",
-            "created_by": {
-                "first_name": "",
-                "id": 1,
-                "last_name": "",
-                "username": "nsapunov"
+            {  
+                "answer_exists":false,
+                "created_at":"2017-01-14T10:36:54.865758Z",
+                "created_by":{  
+                    "first_name":"",
+                    "id":1,
+                    "last_name":"",
+                    "username":"nsapunov"
+                },
+                "id":50,
+                "keywords":[  
+                    "слон"
+                ],
+                "title":"Джигурда",
+                "updated_at":"2017-01-14T10:36:54.884780Z",
+                "updated_by":{  
+                    "first_name":"",
+                    "id":1,
+                    "last_name":"",
+                    "username":"nsapunov"
+                }
             },
-            "id": 50,
-            "keywords": [
-                "слон"
-            ],
-            "title": "Джигурда",
-            "updated_at": "2017-01-14T10:36:54.884780Z",
-            "updated_by": {
-                "first_name": "",
-                "id": 1,
-                "last_name": "",
-                "username": "nsapunov"
-            }
+            ...
+        ],
+        "total":22,
+        "pagination":{  
+            "next":"/api/questions?offset=20&limit=10",
+            "prev":"/api/questions?offset=10&limit=10"
         }
-    ]
+    }
 }
 ```
 
