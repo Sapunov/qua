@@ -6,7 +6,7 @@ import { NgProgressService } from 'ng2-progressbar';
 
 import { QuestionService } from '../../services/question.service';
 import { SearchService } from '../../services/search.service';
-import { IHits, ISearchResult } from '../../interfaces/search-hits.interface';
+import { IHits, ISearchResult, ISearchParams } from '../../interfaces/search-hits.interface';
 
 import { URLS } from '../../../environments/const';
 
@@ -18,6 +18,9 @@ import { URLS } from '../../../environments/const';
 export class SearchResultComponent implements OnInit, OnDestroy {
   result: ISearchResult;
   hits: IHits[];
+  prevResult: string;
+  nextResult: string;
+  url: string;
 
   constructor(
     private search: SearchService,
@@ -26,6 +29,10 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     private pbService: NgProgressService,
     private questionService: QuestionService
   ) {
+    this.prevResult = null;
+    this.nextResult = null;
+    this.hits = [];
+    this.url = '/search';
   }
 
   addQuestion(title: string): void {
@@ -56,26 +63,20 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     this.router.navigate(['/search'], params);
   }
 
-  onScrollDown() {
-    this.search.loadNextResult()
-      .then(result => {
-        if (result) {
-          this.hits = this.hits.concat(result.hits);
-        }
-      });
-  }
-
   ngOnInit() {
     this.route.queryParams
-      .switchMap((params: Params) => {
+      .switchMap((params: ISearchParams) => {
+        window.scrollTo(0, 0);
         this.pbService.start();
-        return this.search.goSearch(params['query'], params['spelling'])
+        return this.search.goSearch(params)
           .catch(err => null);
       })
       .subscribe((result: ISearchResult) => {
         this.pbService.done();
         if (result) {
           this.hits = result.hits;
+          this.prevResult = result.pagination.prev;
+          this.nextResult = result.pagination.next;
           return this.result = result;
         }
       });

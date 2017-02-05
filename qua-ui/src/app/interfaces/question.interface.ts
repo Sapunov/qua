@@ -48,3 +48,8 @@ export interface INewQuestion {
   keywords?: string[];
   title: string;
 }
+
+export interface IQuestionsParams {
+  offset: string;
+  limit: string;
+}

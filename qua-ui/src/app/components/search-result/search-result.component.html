@@ -1,13 +1,7 @@
-<div
-  infinite-scroll
-  [infiniteScrollDistance]="1"
-  [infiniteScrollThrottle]="300"
-  (scrolled)="onScrollDown()"
-  class="search-result"
-  *ngIf="result">
-  <div class="app-block search-result-empty" *ngIf="!result.query">
-    <h1 class="search-result-title">Начните вводить вопрос</h1>
-  </div>
+<div class="app-block search-result-empty" *ngIf="!result">
+  <h1 class="search-result-title">Начните вводить вопрос</h1>
+</div>
+<div  class="search-result" *ngIf="result">
   <div class="app-block search-result-empty" *ngIf="!result.total && result.query">
     <h1 class="search-result-title">Еще никто не задавался подобным вопросом. Будьте первым!</h1>
     <button class="button-blue empty-button" (click)="addQuestion(result.query)">Добавить вопрос</button>
@@ -38,4 +32,5 @@
       <span class="hit-snippet-text" [innerHTML]="hit.snippet"></span>
     </div>
   </div>
+  <app-pagination class="pagination" [prev]="prevResult" [next]="nextResult" [url]="url"></app-pagination>
 </div>

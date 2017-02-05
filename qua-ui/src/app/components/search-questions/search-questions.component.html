@@ -1,10 +1,4 @@
-<div
-  infinite-scroll
-  [infiniteScrollDistance]="1"
-  [infiniteScrollThrottle]="300"
-  (scrolled)="onScrollDown()"
-  class="search-questions"
-  *ngIf="questions">
+<div  class="search-questions" *ngIf="questions">
   <div class="app-block search-questions-list" *ngFor="let question of items">
     <header>
       <a class="question-header" (click)="getQuestion(question.id)">
@@ -28,5 +22,5 @@
       </div>
     </div>
   </div>
+  <app-pagination class="pagination" [prev]="prevResult" [next]="nextResult" [url]="url"></app-pagination>
 </div>
-

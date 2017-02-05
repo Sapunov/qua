@@ -1,28 +1,31 @@
 import 'rxjs/add/operator/toPromise';
 import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
-import { URLS } from '../../environments/const';
+import { UrlSerializer } from '@angular/router';
+import { URLS, ITEM_LIMIT, ITEM_OFFSET } from '../../environments/const';
 
 import { ErrorService } from './error.service';
 
-import { INewQuestion, IQuestion, IQuestions } from '../interfaces/question.interface';
+import { INewQuestion, IQuestion, IQuestions, IQuestionsParams } from '../interfaces/question.interface';
 import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class QuestionService {
   public question: INewQuestion;
   public questions: IQuestions;
-  private nextItems: string;
-  private prevItems: string;
+  private currentPage: IQuestionsParams;
 
   constructor(
+    private urlSerializer: UrlSerializer,
     private errorService: ErrorService,
     private http: Http
   ) {
     this.question = null;
     this.questions = null;
-    this.prevItems = '';
-    this.nextItems = '';
+    this.currentPage = {
+      offset: ITEM_OFFSET,
+      limit: ITEM_LIMIT
+    };
   }
 
   addQuestion(data: INewQuestion): Promise<IQuestion> {
@@ -67,35 +70,36 @@ export class QuestionService {
       .catch(this.errorHandler);
   }
 
-  getQuestions(): Promise<IQuestions> {
+  getQuestions(params: IQuestionsParams): Promise<IQuestions> {
+    params = {
+      offset: params.offset || this.currentPage.offset,
+      limit: params.limit || this.currentPage.limit
+    };
+    if (!this.isAnotherRequest(params) && this.questions) {
+      return Promise.resolve(this.questions);
+    }
     let options = this.makeOptions();
+    let param: URLSearchParams = new URLSearchParams;
+    param.set('offset', params.offset);
+    param.set('limit', params.limit);
+    options.search = param;
     return this.http.get(`${URLS.question}`, options)
       .toPromise()
       .then(this.promiseHandler)
       .then((questions: IQuestions) => {
-        this.nextItems = questions.pagination.next;
-        this.prevItems = questions.pagination.prev;
+        this.currentPage = params;
         return this.questions = questions;
       })
       .catch(this.errorHandler);
   }
 
-  loadNextItems(): Promise<IQuestions> {
-    if (!this.nextItems) {
-      return Promise.resolve(null);
+  isAnotherRequest(params: IQuestionsParams): boolean {
+    if (
+      params.offset === this.currentPage.offset &&
+      params.limit === this.currentPage.limit) {
+      return false;
     }
-    let options = this.makeOptions();
-    let url = this.nextItems;
-    this.nextItems = null;
-    return this.http.get(`${url}`, options)
-      .toPromise()
-      .then(this.promiseHandler)
-      .then((questions: IQuestions) => {
-        this.prevItems = questions.pagination.prev;
-        this.nextItems = questions.pagination.next;
-        return questions;
-      })
-      .catch(this.errorHandler);
+    return true;
   }
 
   clearCacheQuestions() {

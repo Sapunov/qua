@@ -5,7 +5,6 @@ import { HttpModule }               from '@angular/http';
 import { RouterModule }             from '@angular/router';
 import { AppRoutingModule }         from './app-routing.module';
 import { NgProgressModule }         from 'ng2-progressbar';
-import { InfiniteScrollModule }     from 'angular2-infinite-scroll';
 
 import { AppComponent }             from './app.component';
 import { AuthComponent }            from './components/auth/auth.component';
@@ -15,6 +14,7 @@ import { FooterComponent }          from './components/footer/footer.component';
 import { SearchComponent }          from './components/search/search.component';
 import { MarkdownComponent }        from './components/markdown/markdown.component';
 import { SearchAddComponent }       from './components/search-add/search-add.component';
+import { PaginationComponent }      from './components/pagination/pagination.component';
 import { SearchResultComponent }    from './components/search-result/search-result.component';
 import { SearchQuestionComponent }  from './components/search-question/search-question.component';
 import { SearchQuestionsComponent } from './components/search-questions/search-questions.component';
@@ -39,6 +39,7 @@ import { QuestionService }          from './services/question.service';
     FooterComponent,
     SearchQuestionsComponent,
     ErrorComponent,
+    PaginationComponent,
   ],
   imports: [
     BrowserModule,
@@ -46,7 +47,6 @@ import { QuestionService }          from './services/question.service';
     HttpModule,
     AppRoutingModule,
     NgProgressModule,
-    InfiniteScrollModule
   ],
   providers: [
     AuthService,

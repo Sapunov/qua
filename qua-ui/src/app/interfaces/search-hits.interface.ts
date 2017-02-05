@@ -32,3 +32,10 @@ export interface ISearchInfo {
   took: number;
   total: number;
 };
+
+export interface ISearchParams {
+  query: string;
+  offset: string;
+  limit: string;
+  spelling?: string;
+}
