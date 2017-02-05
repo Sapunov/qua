@@ -17,8 +17,8 @@ export class ErrorService {
   }
 
   viewError(err: QuaError) {
-    console.dir(err);
     console.error(err);
+    console.error(err.stack);
     this.error.next(err);
   }
 
