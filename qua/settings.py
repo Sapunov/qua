@@ -1,6 +1,7 @@
 import os
 import datetime
 
+
 PROGRAM_NAME = 'qua'
 
 # /var/www/qua on production environment
@@ -15,7 +16,7 @@ DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
 
 STATIC = os.path.join(ROOT, 'static')
 
-SECRET_KEY = '7dz6*-2e%4mi1gsh)9ko9)0ocv@cb8z_cfjuez0(^8aa3+1+d-'
+SECRET_KEY = 'secret_key'
 
 DEBUG = True
 
@@ -102,7 +103,7 @@ else:
             'ENGINE':   'django.db.backends.postgresql_psycopg2',
             'NAME':     'qua',
             'USER':     'qua_user',
-            'PASSWORD': '18pic81j67j4wDz',
+            'PASSWORD': 'password',
             'HOST':     'localhost',
             'PORT':     '5432',
         },
@@ -159,7 +160,17 @@ CRAWLER = {
     'permitted_content_types': [
         'text/html',
         'application/pdf'
-    ]
+    ],
+    'external_resources': {
+        'jive.croc.ru': {
+            'retriever': 'qua.api.search.extresources.JiveCrocRu',
+            'auth': {
+                'type': 'basic',
+                'username': 'username',
+                'password': 'password'
+            }
+        }
+    }
 }
 
 

@@ -166,3 +166,17 @@ def generate_snippet(query, hit):
     snippet_text = snippets.generate_snippet(text, query, 200)
 
     return snippet_text or text[:200]
+
+
+def get_content_type(content_type):
+
+    content_types = {
+        'text/html': 'text',
+        'application/pdf': 'pdf'
+    }
+
+    for c_type in content_types:
+        if c_type in content_type:
+            return content_types[c_type]
+
+    return None
