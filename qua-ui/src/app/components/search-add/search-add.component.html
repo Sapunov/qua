@@ -18,7 +18,7 @@
               <span class="keywrods-keyword-text">{{ kw }}</span>
               <i class="keywords-keyword-icon fa fa-times" (click)="delKeyword(kw)"></i>
             </span>
-          <input #inpKeyword name="keyword" class="input-st" type="text" placeholder="Ключевое словое" [(ngModel)]="keyword" required>
+          <input #inpKeyword name="keyword" class="input-st" type="text" placeholder="Ключевое словое" (keydown.backspace)="onBackspace($event)" [(ngModel)]="keyword" required>
         </label>
         <button class="button-blue" type="submit">Добавить</button>
       </form>

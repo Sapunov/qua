@@ -36,6 +36,7 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
     this.sfHide = true;
     this.isEdit = false;
     this.title = '';
+    this.keyword = '';
     this.keywords = [];
     this.answer = {
       raw: ''
@@ -55,6 +56,12 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
       this.edit(this.question.id, data);
     } else {
       this.add(data);
+    }
+  }
+
+  onBackspace(event: KeyboardEvent) {
+    if (this.keywords.length && !this.keyword) {
+      this.keywords.pop();
     }
   }
 
