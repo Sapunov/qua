@@ -1,6 +1,7 @@
 import logging
 from hashlib import sha256
 from urllib.parse import urlparse
+from importlib import import_module
 
 from django.conf import settings
 
@@ -22,8 +23,30 @@ def is_sign_ok(input_sign, string, length=20):
     return input_sign == sign(string, length=length)
 
 
+def url_part(url, part_name):
+
+    parsed = urlparse(url)
+
+    if hasattr(parsed, part_name):
+        return getattr(parsed, part_name)
+
+
 def extract_domain(url):
 
-    o = urlparse(url)
+    netloc = url_part(url, 'netloc')
 
-    return o.netloc if o.netloc else None
+    return netloc if netloc else None
+
+
+def import_module_class(name):
+
+    module_name, class_name = name.rsplit('.', 1)
+
+    module = import_module(module_name)
+
+    try:
+        class_ = getattr(module, class_name)
+    except AttributeError:
+        raise ImportError('No class <%s> in %s' % (class_name, module))
+
+    return class_

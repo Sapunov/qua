@@ -5,6 +5,7 @@ import logging
 import textract
 from django.conf import settings
 
+from qua import utils
 from qua.api.utils import common
 from qua.api.search import utils as search_utils
 
@@ -16,25 +17,11 @@ def download_image(image_url):
     pass
 
 
-def _get_content_type(content_type):
-
-    CONTENT_TYPES = {
-        'text/html': 'text',
-        'application/pdf': 'pdf'
-    }
-
-    for c_type in CONTENT_TYPES:
-        if c_type in content_type:
-            return CONTENT_TYPES[c_type]
-
-    return None
-
-
 def _check_content_type(content_type, permitted):
 
     for c_type in permitted:
         if c_type in content_type:
-            return _get_content_type(content_type)
+            return search_utils.get_content_type(content_type)
 
     return None
 
@@ -102,9 +89,36 @@ class FormatConvertor:
         return '<title>{0}<title><body>{1}</body>'.format(title, body)
 
 
+def _from_custom_retriever(url, retriever_settings):
+
+    if 'retriever' not in retriever_settings:
+        raise ValueError('`retriever` field is required in ' \
+            'ext_resource configuration')
+
+    try:
+        retriever_cls = utils.import_module_class(
+            retriever_settings['retriever']
+        )
+    except ImportError as e:
+        log.exception('Exception while importing custom retriever: %s', e)
+        return None
+
+    retriever = retriever_cls(retriever_settings)
+
+    return retriever.retrieve_page(url)
+
+
 def retrieve_page(url):
 
     log.debug('Trying to retieve page: %s', url)
+
+    resource = utils.extract_domain(url)
+
+    if resource and (resource in settings.CRAWLER['external_resources']):
+        return _from_custom_retriever(
+            url,
+            settings.CRAWLER['external_resources'][resource]
+        )
 
     try:
         r = requests.get(url, timeout=30)
