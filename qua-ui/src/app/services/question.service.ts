@@ -5,20 +5,25 @@ import { URLS } from '../../environments/const';
 
 import { ErrorService } from './error.service';
 
-import { INewQuestion, IQuestion } from '../interfaces/question.interface';
+import { INewQuestion, IQuestion, IQuestions } from '../interfaces/question.interface';
 import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class QuestionService {
   public question: INewQuestion;
-  public questions: IQuestion[];
+  public questions: IQuestions;
+  private nextItems: string;
+  private prevItems: string;
 
   constructor(
     private errorService: ErrorService,
-    private http: Http) {
+    private http: Http
+  ) {
     this.question = null;
     this.questions = null;
-    }
+    this.prevItems = '';
+    this.nextItems = '';
+  }
 
   addQuestion(data: INewQuestion): Promise<IQuestion> {
     let options = this.makeOptions();
@@ -40,7 +45,7 @@ export class QuestionService {
     let options = this.makeOptions();
     let index = this.searchQuestionById(id);
     if (index !== -1) {
-      this.questions.splice(index, 1);
+      this.questions.items.splice(index, 1);
     }
     return this.http.delete(`${URLS.question}/${id}`, options)
       .toPromise()
@@ -62,12 +67,34 @@ export class QuestionService {
       .catch(this.errorHandler);
   }
 
-  getQuestions(): Promise<IQuestion[]> {
+  getQuestions(): Promise<IQuestions> {
     let options = this.makeOptions();
     return this.http.get(`${URLS.question}`, options)
       .toPromise()
       .then(this.promiseHandler)
-      .then((questions: IQuestion[]) => this.questions = questions)
+      .then((questions: IQuestions) => {
+        this.nextItems = questions.pagination.next;
+        this.prevItems = questions.pagination.prev;
+        return this.questions = questions;
+      })
+      .catch(this.errorHandler);
+  }
+
+  loadNextItems(): Promise<IQuestions> {
+    if (!this.nextItems) {
+      return Promise.resolve(null);
+    }
+    let options = this.makeOptions();
+    let url = this.nextItems;
+    this.nextItems = null;
+    return this.http.get(`${url}`, options)
+      .toPromise()
+      .then(this.promiseHandler)
+      .then((questions: IQuestions) => {
+        this.prevItems = questions.pagination.prev;
+        this.nextItems = questions.pagination.next;
+        return questions;
+      })
       .catch(this.errorHandler);
   }
 
@@ -80,7 +107,7 @@ export class QuestionService {
     if (!this.questions) {
       return index;
     }
-    this.questions.forEach((question, i) => {
+    this.questions.items.forEach((question, i) => {
       if (question.id === id) {
         index = i;
       }

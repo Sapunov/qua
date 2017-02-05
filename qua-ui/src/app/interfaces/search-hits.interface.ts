@@ -15,20 +15,17 @@ export interface IHits {
   resource?: string;
 }
 
-export interface ICategoryAssumptions {
-  id: number;
-  name: string;
-  score: number;
-}
-
 export interface ISearchResult {
+  hits: IHits[];
   query: string;
   query_was_corrected: string;
-  used_query: string;
-  hits: IHits[];
   total: number;
+  used_query: string;
   took: number;
-  category_assumptions?: ICategoryAssumptions[];
+  pagination: {
+    next: string | null;
+    prev: string | null;
+  };
 };
 
 export interface ISearchInfo {

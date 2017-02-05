@@ -56,6 +56,15 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     this.router.navigate(['/search'], params);
   }
 
+  onScrollDown() {
+    this.search.loadNextResult()
+      .then(result => {
+        if (result) {
+          this.hits = this.hits.concat(result.hits);
+        }
+      });
+  }
+
   ngOnInit() {
     this.route.queryParams
       .switchMap((params: Params) => {

@@ -14,10 +14,16 @@ import { IResponse } from '../interfaces/response.interface';
 export class SearchService {
   searchInfo = new Subject<ISearchInfo>();
   searchInfo$ = this.searchInfo.asObservable();
+  private prevResult: string;
+  private nextResult: string;
 
   constructor(
     private errorService: ErrorService,
-    private http: Http) { }
+    private http: Http
+  ) {
+    this.prevResult = '';
+    this.nextResult = '';
+  }
 
   goSearch(query: string, spelling?: string): Promise<ISearchResult> {
     query = query || '';
@@ -33,6 +39,8 @@ export class SearchService {
     let options = this.makeOptions();
     let param: URLSearchParams = new URLSearchParams;
     param.set('query', query);
+    param.set('offset', '0');
+    param.set('limit', '10');
     if (typeof spelling !== 'undefined' && spelling === '0') {
       param.set('spelling', spelling.toString());
     }
@@ -41,10 +49,30 @@ export class SearchService {
       .toPromise()
       .then(this.promiseHandler)
       .then((result: ISearchResult) => {
+        this.prevResult = result.pagination.prev;
+        this.nextResult = result.pagination.next;
         this.searchInfo.next({
           total: result.total,
           took: result.took
         });
+        return result;
+      })
+      .catch(this.errorHandler);
+  }
+
+  loadNextResult(): Promise<ISearchResult> {
+    if (!this.nextResult) {
+      return Promise.resolve(null);
+    }
+    let options = this.makeOptions();
+    let url = this.nextResult;
+    this.nextResult = null;
+    return this.http.get(`${url}`, options)
+      .toPromise()
+      .then(this.promiseHandler)
+      .then((result: ISearchResult) => {
+        this.prevResult = result.pagination.prev;
+        this.nextResult = result.pagination.next;
         return result;
       })
       .catch(this.errorHandler);

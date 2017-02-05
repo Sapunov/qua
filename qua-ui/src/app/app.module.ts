@@ -5,6 +5,7 @@ import { HttpModule }               from '@angular/http';
 import { RouterModule }             from '@angular/router';
 import { AppRoutingModule }         from './app-routing.module';
 import { NgProgressModule }         from 'ng2-progressbar';
+import { InfiniteScrollModule }     from 'angular2-infinite-scroll';
 
 import { AppComponent }             from './app.component';
 import { AuthComponent }            from './components/auth/auth.component';
@@ -44,7 +45,8 @@ import { QuestionService }          from './services/question.service';
     FormsModule,
     HttpModule,
     AppRoutingModule,
-    NgProgressModule
+    NgProgressModule,
+    InfiniteScrollModule
   ],
   providers: [
     AuthService,
