@@ -31,13 +31,14 @@
   }
 
   &-info {
-    display: block;
+    display: -webkit-flex;
+    display: -moz-flex;
+    display: -ms-flex;
+    display: -o-flex;
+    display: flex;
+    align-items: center;
     font-size: 0.9rem;
     color: @color-meta;
-    &-max,
-    &-min {
-      vertical-align: middle;
-    }
     &-max {
       @media (max-width: @width-content-media) {
         display: none;
