@@ -36,7 +36,7 @@ def _check_content_type(content_type, permitted):
         if c_type in content_type:
             return _get_content_type(content_type)
 
-    return False
+    return None
 
 
 class FormatNotFoundError(Exception):
