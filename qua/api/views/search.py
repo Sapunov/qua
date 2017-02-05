@@ -2,10 +2,12 @@ import logging
 
 from rest_framework import exceptions
 from rest_framework.views import APIView
+from django.conf import settings
 
 from qua.api.search import search
 from qua.api.response import QuaApiResponse
 from qua.api.serializers import SearchSerializer
+from qua.api.pagination import paginate
 
 
 log = logging.getLogger('qua.' + __name__)
@@ -13,7 +15,9 @@ log = logging.getLogger('qua.' + __name__)
 
 class SearchView(APIView):
 
-    def get(self, request, format=None):
+    @paginate
+    def get(self, request, format=None, limit=settings.PAGE_SIZE, offset=0):
+
         params = request.query_params
 
         if 'query' not in params:
@@ -25,7 +29,11 @@ class SearchView(APIView):
             spelling = True
 
         results = search.basesearch(
-            params['query'], user=request.user, spelling=spelling
+            params['query'],
+            user=request.user,
+            spelling=spelling,
+            limit=limit,
+            offset=offset
         )
         serializer = SearchSerializer(results)
 
