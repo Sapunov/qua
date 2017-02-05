@@ -96,7 +96,7 @@ class Question(Base):
         total = results.count()
         limit = limit if limit is not None else total
 
-        return QuestionListRepr(results[offset:limit], total)
+        return QuestionListRepr(results[offset:offset + limit], total)
 
     @classmethod
     def create(cls, title, user, keywords=None):
