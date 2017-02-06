@@ -76,7 +76,7 @@ def extract_all_links(html, filter_hash=True):
     return links
 
 
-def spelling_correction(query, index='_all', field='text'):
+def spelling_correction(query, index='spelling', field='text'):
 
     engine = SearchEngine()
 

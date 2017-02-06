@@ -156,6 +156,9 @@ SEARCH_RESULTS_MAX = 100
 SEARCH_INDEX_NAME = PROGRAM_NAME
 SEARCH_INDEX_TYPE = 'questions'
 
+SEARCH_SPELLING_INDEX_NAME = 'spelling'
+SEARCH_SPELLING_INDEX_TYPE = 'main'
+
 CRAWLER = {
     'permitted_content_types': [
         'text/html',

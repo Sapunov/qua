@@ -14,6 +14,27 @@ from qua.api.models import ExternalResource
 log = logging.getLogger('qua.' + __name__)
 
 
+def _add_to_spelling_database(title, text, keywords):
+
+    engine = SearchEngine()
+
+    data = title + ' ' + text
+    data = data + ' ' + ' '.join(keywords)
+
+    body = {
+        'text': data
+    }
+
+    try:
+        engine.index(
+            index=settings.SEARCH_SPELLING_INDEX_NAME,
+            doc_type=settings.SEARCH_SPELLING_INDEX_TYPE,
+            body=body
+        )
+    except engine_exceptions.ElasticsearchException:
+        pass
+
+
 def _index(
     resource_id, title, is_external=False, text=None, keywords=None, url=None,
     external_content=None
@@ -39,6 +60,8 @@ def _index(
         )
     except engine_exceptions.ElasticsearchException:
         pass
+
+    _add_to_spelling_database(title, text, data['keywords'])
 
 
 def index_external_resource(url):
