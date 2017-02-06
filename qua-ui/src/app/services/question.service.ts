@@ -104,6 +104,10 @@ export class QuestionService {
 
   clearCacheQuestions() {
     this.questions = null;
+    this.currentPage = {
+      limit: ITEM_LIMIT,
+      offset: ITEM_OFFSET
+    };
   }
 
   private searchQuestionById(id): number {
