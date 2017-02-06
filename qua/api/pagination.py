@@ -69,10 +69,10 @@ def _get_previous_link(request, limit, offset):
     url = request.get_full_path()
     url = replace_query_param(url, LIMIT_QUERY_PARAM, limit)
 
-    if offset - limit <= 0:
-        return remove_query_param(url, OFFSET_QUERY_PARAM)
-
-    offset = offset - limit
+    if offset - limit < 0:
+        offset = 0
+    else:
+        offset = offset - limit
 
     return replace_query_param(url, OFFSET_QUERY_PARAM, offset)
 
