@@ -24,7 +24,7 @@
         },
         "custom_edge_ngram": {
           "type": "edge_ngram",
-          "min_gram": 3,
+          "min_gram": 2,
           "max_gram": 50
         },
         "custom_word_delimiter": {
@@ -36,6 +36,10 @@
         "synonym": {
           "type": "synonym",
           "synonyms_path": "qua_synonyms.txt"
+        },
+        "protectedwords": {
+          "type": "keyword_marker",
+          "keywords_path": "qua_protected_words.txt"
         }
       },
       "analyzer": {
@@ -47,6 +51,7 @@
             "custom_word_delimiter",
             "russian_stop",
             "english_stop",
+            "protectedwords",
             "english_stemmer",
             "russian_stemmer",
             "custom_edge_ngram"
@@ -60,6 +65,7 @@
             "custom_word_delimiter",
             "russian_stop",
             "english_stop",
+            "protectedwords",
             "english_stemmer",
             "russian_stemmer",
             "synonym",

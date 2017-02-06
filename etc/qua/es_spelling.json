@@ -27,6 +27,10 @@
         "synonym": {
           "type": "synonym",
           "synonyms_path": "qua_synonyms.txt"
+        },
+        "protectedwords": {
+          "type": "keyword_marker",
+          "keywords_path": "qua_protected_words.txt"
         }
       },
       "analyzer": {
@@ -38,6 +42,7 @@
             "custom_word_delimiter",
             "russian_stop",
             "english_stop",
+            "protectedwords",
             "english_stemmer",
             "russian_stemmer",
             "synonym",
