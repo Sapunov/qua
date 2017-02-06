@@ -131,8 +131,8 @@ def _create_search_body(queries):
             'multi_match': {
                 'query': item,
                 'fields': [
-                    'title^2',
-                    'keywords2',
+                    'title^3',
+                    'keywords^2',
                     'text^1.5',
                     'external_content'
                 ],

@@ -25,7 +25,7 @@
         "custom_edge_ngram": {
           "type": "edge_ngram",
           "min_gram": 3,
-          "max_gram": 20
+          "max_gram": 50
         },
         "custom_word_delimiter": {
           "type": "word_delimiter",
