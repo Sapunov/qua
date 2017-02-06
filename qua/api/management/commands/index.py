@@ -4,6 +4,7 @@ from qua.api import tasks
 
 
 class Command(BaseCommand):
+
     help = 'Search index admin utility'
 
     def add_arguments(self, parser):
