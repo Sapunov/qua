@@ -2,12 +2,14 @@
   <h1 class="auth-title">Вход в Qua</h1>
   <div class="auth-block">
     <input
+      #inputUsername
       [(ngModel)]="username"
       name="username"
       class="input-st auth-input"
       type="text"
       placeholder="Логин"
-      required>
+      required
+      autofocus>
     <input
       [(ngModel)]="password"
       name="password"

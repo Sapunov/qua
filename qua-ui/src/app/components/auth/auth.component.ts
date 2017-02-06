@@ -1,4 +1,4 @@
-import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Input, Output, EventEmitter, ViewChild, ElementRef, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 
 import { AuthService } from '../../services/auth.service';
@@ -8,7 +8,8 @@ import { AuthService } from '../../services/auth.service';
   templateUrl: './auth.component.html',
   styleUrls: ['./auth.component.less']
 })
-export class AuthComponent implements OnInit {
+export class AuthComponent implements OnInit, AfterViewInit {
+  @ViewChild('inputUsername') private inputUsername: ElementRef;
   sfHide: boolean;
   username: string;
   password: string;
@@ -32,9 +33,14 @@ export class AuthComponent implements OnInit {
         this.loading = false;
       });
   }
+
   ngOnInit() {
     if (this.authService.checkAuth()) {
       this.router.navigate(['/']);
     }
+  }
+
+  ngAfterViewInit() {
+    this.inputUsername.nativeElement.focus();
   }
 }
