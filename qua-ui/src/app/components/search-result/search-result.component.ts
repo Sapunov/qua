@@ -78,6 +78,9 @@ export class SearchResultComponent implements OnInit, OnDestroy {
           this.prevResult = result.pagination.prev;
           this.nextResult = result.pagination.next;
           return this.result = result;
+        } else {
+          this.hits = [];
+          this.result = null;
         }
       });
   }

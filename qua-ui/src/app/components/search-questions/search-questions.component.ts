@@ -35,9 +35,9 @@ export class SearchQuestionsComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.pbService.start();
     this.route.queryParams
       .switchMap((params: IQuestionsParams) => {
+        this.pbService.start();
         window.scrollTo(0, 0);
         return this.questionService.getQuestions(params)
           .catch(err => {
