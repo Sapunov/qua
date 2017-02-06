@@ -51,8 +51,12 @@
     display: -o-flex;
     display: flex;
     flex-flow: row nowrap;
-    height: 100%;
     .control-wrap {
+      display: -webkit-flex;
+      display: -moz-flex;
+      display: -ms-flex;
+      display: -o-flex;
+      display: flex;
       background-color: @main-color;
 
       &:hover {
@@ -64,7 +68,6 @@
       display: inline-block;
       padding: 0;
       color: @text-color-2;
-      height: 100%;
       padding-left: @indent - 7px;
       padding-right: @indent - 7px;
       background-color: transparent;
