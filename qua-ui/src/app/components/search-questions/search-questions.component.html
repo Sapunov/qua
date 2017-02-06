@@ -1,5 +1,5 @@
-<div class="search-questions" *ngIf="questions">
-  <div class="app-block search-questions-list" *ngFor="let question of questions">
+<div  class="search-questions" *ngIf="questions">
+  <div class="app-block search-questions-list" *ngFor="let question of items">
     <header>
       <a class="question-header" (click)="getQuestion(question.id)">
         <span class="question-header-badge badge" data-answer-exists="yes" *ngIf="question.answer_exists">Есть ответ</span>
@@ -22,5 +22,5 @@
       </div>
     </div>
   </div>
+  <app-pagination class="pagination" [prev]="prevResult" [next]="nextResult" [url]="url"></app-pagination>
 </div>
-

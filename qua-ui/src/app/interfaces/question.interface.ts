@@ -33,10 +33,23 @@ export interface IQuestion {
   updated_by: IUser;
 }
 
+export interface IQuestions {
+  items: IQuestion[];
+  total: number;
+  pagination: {
+    next: string | null;
+    prev: string | null;
+  };
+}
 export interface INewQuestion {
   answer?: {
     raw?: string;
   };
   keywords?: string[];
   title: string;
+}
+
+export interface IQuestionsParams {
+  offset: string;
+  limit: string;
 }

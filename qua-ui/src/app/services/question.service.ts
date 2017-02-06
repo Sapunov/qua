@@ -1,24 +1,32 @@
 import 'rxjs/add/operator/toPromise';
 import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
-import { URLS } from '../../environments/const';
+import { UrlSerializer } from '@angular/router';
+import { URLS, ITEM_LIMIT, ITEM_OFFSET } from '../../environments/const';
 
 import { ErrorService } from './error.service';
 
-import { INewQuestion, IQuestion } from '../interfaces/question.interface';
+import { INewQuestion, IQuestion, IQuestions, IQuestionsParams } from '../interfaces/question.interface';
 import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class QuestionService {
   public question: INewQuestion;
-  public questions: IQuestion[];
+  public questions: IQuestions;
+  private currentPage: IQuestionsParams;
 
   constructor(
+    private urlSerializer: UrlSerializer,
     private errorService: ErrorService,
-    private http: Http) {
+    private http: Http
+  ) {
     this.question = null;
     this.questions = null;
-    }
+    this.currentPage = {
+      offset: ITEM_OFFSET,
+      limit: ITEM_LIMIT
+    };
+  }
 
   addQuestion(data: INewQuestion): Promise<IQuestion> {
     let options = this.makeOptions();
@@ -40,7 +48,7 @@ export class QuestionService {
     let options = this.makeOptions();
     let index = this.searchQuestionById(id);
     if (index !== -1) {
-      this.questions.splice(index, 1);
+      this.questions.items.splice(index, 1);
     }
     return this.http.delete(`${URLS.question}/${id}`, options)
       .toPromise()
@@ -62,13 +70,36 @@ export class QuestionService {
       .catch(this.errorHandler);
   }
 
-  getQuestions(): Promise<IQuestion[]> {
+  getQuestions(params: IQuestionsParams): Promise<IQuestions> {
+    params = {
+      offset: params.offset || this.currentPage.offset,
+      limit: params.limit || this.currentPage.limit
+    };
+    if (!this.isAnotherRequest(params) && this.questions) {
+      return Promise.resolve(this.questions);
+    }
     let options = this.makeOptions();
+    let param: URLSearchParams = new URLSearchParams;
+    param.set('offset', params.offset);
+    param.set('limit', params.limit);
+    options.search = param;
     return this.http.get(`${URLS.question}`, options)
       .toPromise()
       .then(this.promiseHandler)
-      .then((questions: IQuestion[]) => this.questions = questions)
+      .then((questions: IQuestions) => {
+        this.currentPage = params;
+        return this.questions = questions;
+      })
       .catch(this.errorHandler);
+  }
+
+  isAnotherRequest(params: IQuestionsParams): boolean {
+    if (
+      params.offset === this.currentPage.offset &&
+      params.limit === this.currentPage.limit) {
+      return false;
+    }
+    return true;
   }
 
   clearCacheQuestions() {
@@ -80,7 +111,7 @@ export class QuestionService {
     if (!this.questions) {
       return index;
     }
-    this.questions.forEach((question, i) => {
+    this.questions.items.forEach((question, i) => {
       if (question.id === id) {
         index = i;
       }
