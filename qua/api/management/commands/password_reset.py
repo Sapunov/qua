@@ -53,8 +53,17 @@ class Command(BaseCommand):
                 )
                 return None
         else:
-            user.set_unusable_password()
-            user.save()
+            if options['create']:
+                self.stdout.write(
+                    self.style.ERROR(
+                        'User `{0}` already exists. Run without ' \
+                        '`-c` to reset password'.format(username)
+                    )
+                )
+                return None
+            else:
+                user.set_unusable_password()
+                user.save()
 
         self.stdout.write(
             self.style.SUCCESS(
