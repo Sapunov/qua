@@ -42,17 +42,6 @@ export class SearchResultComponent implements OnInit, OnDestroy {
     this.router.navigate(['add']);
   }
 
-  getQuestion(hit: IHits): void {
-    if (!hit.is_external) {
-      let params: NavigationExtras = {
-        queryParams: hit.url_params
-      };
-      this.router.navigate([`questions/${hit.id}`], params);
-    } else {
-      window.open(hit.url);
-    }
-  }
-
   searchSpellOrigin() {
     let params: NavigationExtras = {
       queryParams: {
