@@ -2,16 +2,16 @@ import 'rxjs/add/operator/toPromise';
 import { Injectable } from '@angular/core';
 import { Headers, Http, RequestOptions, URLSearchParams } from '@angular/http';
 import { UrlSerializer } from '@angular/router';
-import { URLS, ITEM_LIMIT, ITEM_OFFSET } from '../../environments/const';
+import { URLS, ITEM_LIMIT, ITEM_OFFSET, LOCALSTORAGE_ID } from '../../environments/const';
 
 import { ErrorService } from './error.service';
 
-import { INewQuestion, IQuestion, IQuestions, IQuestionsParams } from '../interfaces/question.interface';
+import { INewQuestion, IQuestion, IQuestions, IQuestionsParams, ITempQuestion } from '../interfaces/question.interface';
 import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
 export class QuestionService {
-  public question: INewQuestion;
+  public question: IQuestion | INewQuestion;
   public questions: IQuestions;
   private currentPage: IQuestionsParams;
 
@@ -36,6 +36,11 @@ export class QuestionService {
       .catch(this.errorHandler);
   }
 
+  addQuestionWithTitle(title: string) {
+    this.question = {
+      title
+    } as INewQuestion;
+  }
   editQuestion(id: number, data: INewQuestion): Promise<IQuestion> {
     let options = this.makeOptions();
     return this.http.put(`${URLS.question}/${id}`, JSON.stringify(data), options)
@@ -93,6 +98,19 @@ export class QuestionService {
       .catch(this.errorHandler);
   }
 
+  getQuestionForEdit(): ITempQuestion {
+    if (this.question) {
+      return {
+        question: this.question as IQuestion,
+        title: this.question.title,
+        keywords: this.question.keywords ? this.question.keywords.slice() : [],
+        answer: this.question.answer ? this.question.answer.raw : '',
+        id: this.question['id'] || 0,
+      };
+    }
+    return null;
+  }
+
   isAnotherRequest(params: IQuestionsParams): boolean {
     if (
       params.offset === this.currentPage.offset &&
@@ -108,6 +126,21 @@ export class QuestionService {
       limit: ITEM_LIMIT,
       offset: ITEM_OFFSET
     };
+  }
+
+  setCacheNewQuestion(question: ITempQuestion): boolean {
+    localStorage.setItem(`${LOCALSTORAGE_ID}-question`, JSON.stringify(question));
+    return true;
+  }
+
+  getCacheNewQuestion(): any {
+    return JSON.parse(localStorage.getItem(`${LOCALSTORAGE_ID}-question`)) || null;
+  }
+
+  clearCacheNewQuestion(): boolean {
+    localStorage.removeItem(`${LOCALSTORAGE_ID}-question`);
+
+    return true;
   }
 
   private searchQuestionById(id): number {

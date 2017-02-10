@@ -49,6 +49,14 @@ export interface INewQuestion {
   title: string;
 }
 
+export interface ITempQuestion {
+  question?: IQuestion;
+  answer: string;
+  keywords: string[];
+  title: string;
+  id: number;
+}
+
 export interface IQuestionsParams {
   offset: string;
   limit: string;

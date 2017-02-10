@@ -36,9 +36,7 @@ export class SearchResultComponent implements OnInit, OnDestroy {
   }
 
   addQuestion(title: string): void {
-    this.questionService.question = {
-      title
-    };
+    this.questionService.addQuestionWithTitle(title);
     this.router.navigate(['add']);
   }
 
