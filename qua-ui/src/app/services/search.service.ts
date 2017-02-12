@@ -53,7 +53,6 @@ export class SearchService {
 
   private makeOptions() {
     let headers =  new Headers({
-      'Content-type': 'application/json',
       Authorization: `JWT ${localStorage.getItem('token')}`
     });
     let options = new RequestOptions({
