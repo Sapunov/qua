@@ -49,6 +49,9 @@ export class AppComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
+    this.authService.checkToken().catch(() => {
+      this.authService.logout();
+    });
     this.authService.setRedirect(this.location.path());
     this.sub = this.authService.isAuth$.subscribe((isAuth: boolean) => {
       this.isAuth = isAuth;

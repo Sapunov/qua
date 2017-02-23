@@ -3,6 +3,7 @@ export const URLS = {
   question: '/api/questions',
   category: '/api/categories',
   auth: '/api/auth',
+  verify: '/api/token-verify'
 };
 
 export const MIN_CHARS_FOR_SEARCH = 2;
