@@ -42,16 +42,19 @@ def serialize(serializer_class, instance, data=None, **kwargs):
 class AutoUpdatePrimaryKeyRelatedField(serializers.PrimaryKeyRelatedField):
 
     def __init__(self, model, **kwargs):
+
         self.model = model
         super(AutoUpdatePrimaryKeyRelatedField, self).__init__(**kwargs)
 
     def get_queryset(self, data):
+
         try:
             return self.model.get_or_create(data)
         except AttributeError:
             raise AttributeError('Model must have "get_or_create" method')
 
     def to_internal_value(self, data):
+
         if self.pk_field is not None:
             data = self.pk_field.to_internal_value(data)
 

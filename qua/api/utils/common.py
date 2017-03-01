@@ -4,6 +4,7 @@ import tempfile
 
 
 def word_normalize(phrase):
+
     words = re.findall(r'([\w_\-\@]+)', phrase, re.UNICODE)
     return ' '.join(word.lower() for word in words)
 

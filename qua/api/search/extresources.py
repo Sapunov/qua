@@ -7,7 +7,7 @@ from urllib.parse import urljoin
 from qua import utils
 
 
-log = logging.getLogger('qua.' + '__name__')
+log = logging.getLogger('qua.' + __name__)
 
 
 class BaseRetriever:
