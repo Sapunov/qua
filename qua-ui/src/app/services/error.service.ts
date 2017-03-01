@@ -31,7 +31,6 @@ export class ErrorService {
       });
       error.response = response;
     } else {
-      console.log(response);
       let res;
       try {
         res = response.json() as IResponse;

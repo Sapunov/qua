@@ -104,8 +104,13 @@ export class AuthService implements CanActivate {
           }
           return true;
         })
-        .catch(this.handleError);
+        .catch(this.handleError)
+        .catch(() => {
+          this.logout();
+          return false;
+        });
     }
+    return Promise.resolve(false);
   }
 
   private handleError = (error) => {
