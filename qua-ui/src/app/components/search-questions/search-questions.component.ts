@@ -30,10 +30,6 @@ export class SearchQuestionsComponent implements OnInit {
     this.url = '/questions';
   }
 
-  getQuestion(id: number) {
-    this.router.navigate([`questions/${id}`]);
-  }
-
   ngOnInit() {
     this.route.queryParams
       .switchMap((params: IQuestionsParams) => {

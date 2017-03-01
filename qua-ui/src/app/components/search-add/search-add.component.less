@@ -3,6 +3,17 @@
 .search-add {
   flex-flow: column wrap;
 
+  &-cache {
+    .action {
+      cursor: pointer;
+      color: @text-color;
+      font-weight: bold;
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
   &-title {
     margin: 0;
     line-height: 1;

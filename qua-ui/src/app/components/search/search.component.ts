@@ -66,7 +66,8 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       this.searchInfo = info;
     }));
     this.route.queryParams.subscribe((param: Params) => {
-      this.query = param['query'] || '';
+      let query = param['query'] || '';
+      this.query = query.replace(/\+(?=\w|\d|[а-яёА-ЯЁ])/ig, ' ');
     });
   }
 

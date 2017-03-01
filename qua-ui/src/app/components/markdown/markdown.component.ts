@@ -22,6 +22,12 @@ export class MarkdownComponent implements OnInit, AfterViewInit {
     return this.mde.value();
   }
 
+  setValue(value: string) {
+    if (value) {
+      this.mde.value(value);
+    }
+  }
+
   ngOnInit() {
   }
 

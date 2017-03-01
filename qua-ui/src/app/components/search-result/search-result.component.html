@@ -21,7 +21,7 @@
           <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>
         </div>
       </a>
-      <a *ngIf="!hit.is_external" class="hit-header" (click)="getQuestion(hit)">
+      <a *ngIf="!hit.is_external" class="hit-header" [routerLink]="['/questions', hit.id]" [queryParams]="hit.url_params">
         <span class="hit-header-title">{{ hit.title }}</span>
         <div *ngIf="hit.keywords.length" class="hit-header-keywords keywords">
           <span class="keywords-keyword" *ngFor="let keyword of hit.keywords">{{ keyword }}</span>

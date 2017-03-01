@@ -1,4 +1,7 @@
-<div class=" app-block search-add">
+<div class="app-block search-add-cache" *ngIf="cache">
+  <span>У вас есть не сохранненые изменения <span class="action" (click)="continueChanges()">продолжить</span> или <span class="action" (click)="clearChanges()">удалить</span>?</span>
+</div>
+<div class="app-block search-add" (keyup)="onKeypress()">
   <h1 class="search-add-title">Добавить вопрос</h1>
   <form class="search-add-form form" (ngSubmit)="onSubmit(addForm)" #addForm="ngForm">
     <input
@@ -23,7 +26,7 @@
         <button class="button-blue" type="submit">Добавить</button>
       </form>
     </div>
-    <app-markdown class="app-block-elem form-textarea" #md [raw]="answer.raw"></app-markdown>
+    <app-markdown class="app-block-elem form-textarea" #md [raw]="answer"></app-markdown>
     <div class="form-control">
       <button class="button-blue form-control-submit" type="submit" [disabled]="loading">Сохранить</button>
     </div>

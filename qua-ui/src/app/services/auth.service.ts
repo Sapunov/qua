@@ -25,14 +25,14 @@ export class AuthService implements CanActivate {
     private http: Http,
     private router: Router,
     private errorService: ErrorService) {
-      this.redirect = '/';
-      this.headers = new Headers({
-        'Content-type': 'application/json'
-      });
-      this.options = new RequestOptions({
-        headers: this.headers
-      });
-    }
+    this.redirect = '/';
+    this.headers = new Headers({
+      'Content-type': 'application/json'
+    });
+    this.options = new RequestOptions({
+      headers: this.headers
+    });
+  }
 
   setRedirect(path: string): void {
     if (!this.isAuth) {
@@ -41,7 +41,7 @@ export class AuthService implements CanActivate {
   }
 
   getRedirect(): string {
-    let temp = this.redirect;
+    let temp = this.redirect === '/auth' ? '/' : this.redirect;
     this.redirect = '/';
     return temp;
   }
@@ -56,7 +56,7 @@ export class AuthService implements CanActivate {
   }
 
   auth(username: string, password: string): Promise<any> {
-    let data: any  = {
+    let data: any = {
       username,
       password
     };
@@ -88,6 +88,29 @@ export class AuthService implements CanActivate {
     let isAuth: boolean = Boolean(token);
     this.isAuthSource.next(isAuth);
     return isAuth;
+  }
+
+  checkToken(): Promise<boolean> {
+    let token: string = localStorage.getItem('token');
+    if (token) {
+      return this.http.post(URLS.verify, JSON.stringify({ token }), this.options)
+        .toPromise()
+        .then((response: any) => {
+          return response.json() as IResponse;
+        })
+        .then((response: IResponse) => {
+          if (!response.ok) {
+            throw response.error;
+          }
+          return true;
+        })
+        .catch(this.handleError)
+        .catch(() => {
+          this.logout();
+          return false;
+        });
+    }
+    return Promise.resolve(false);
   }
 
   private handleError = (error) => {

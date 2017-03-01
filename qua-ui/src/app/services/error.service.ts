@@ -31,15 +31,27 @@ export class ErrorService {
       });
       error.response = response;
     } else {
-      let res = response.json() as IResponse;
+      let res;
+      try {
+        res = response.json() as IResponse;
+      } catch (e) {
+        res = {
+          error: {
+            error_msg: `This url: ${response.url} is ${response.statusText}`
+          }
+        };
+      }
       if (!res.ok) {
         error = new QuaError(res.error);
       }
-      if (response.status === 401 || response.status === 403) {
+      if (response.status === 401) {
         // Необходимо выделить вызывать метод logout сервиса auth. Но пока хз как
         localStorage.removeItem('token');
         this.router.navigate(['auth']);
         // ----------------------------------------------------------------------
+      }
+      if (response.status === 403) {
+        this.router.navigate(['/']);
       }
     }
     this.viewError(error);
