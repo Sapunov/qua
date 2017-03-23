@@ -32,3 +32,9 @@ Version 1.0.0
 	* [ui] Handling unknown routes
 	* [ui] Reset form after add category - https://trello.com/c/YB1cHpdX/46--
 	* [ui] Start search with 2 chars - https://trello.com/c/rTgCkt4c/64-2
+
+
+Version 2.0.0
+----
+* What's new:
+	* New structure: microservice architecture
