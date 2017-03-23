@@ -1,3 +1,4 @@
 #!/bin/bash
 
-sudo docker run -d --name redisserver01 qua-redis
+sudo docker run --name redisserver01 \
+	-d qua-redis
