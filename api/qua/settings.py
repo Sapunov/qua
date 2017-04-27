@@ -20,7 +20,7 @@ SECRET_KEY = 'secret_key'
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '*']
+ALLOWED_HOSTS = ['*']
 
 STATICFILES_DIRS = (
     STATIC,
@@ -42,29 +42,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'rest_framework',
-    'corsheaders', # while development
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'corsheaders.middleware.CorsMiddleware', # while development
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-#    'django.middleware.clickjacking.XFrameOptionsMiddleware', # while development
+   'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'qua.api.middleware.LoggingMiddleware',
 ]
-
-# While development
-CORS_ORIGIN_WHITELIST = (
-    'localhost:4200'
-)
-
-# While development
-CORS_ALLOW_CREDENTIALS = True
 
 APPEND_SLASH = False
 
@@ -142,39 +132,7 @@ JWT_AUTH = {
 PAGE_SIZE = 10
 
 REDIS_DB = 0
-
 REDIS_URL = 'redis://localhost:6379/{}'.format(REDIS_DB)
-BROKER_URL = REDIS_URL
-CELERY_RESULT_BACKEND = REDIS_URL
-CELERY_SEND_EVENTS = True
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-
-
-SEARCH_RESULTS_MAX = 100
-SEARCH_INDEX_NAME = PROGRAM_NAME
-SEARCH_INDEX_TYPE = 'questions'
-
-SEARCH_SPELLING_INDEX_NAME = 'spelling'
-SEARCH_SPELLING_INDEX_TYPE = 'main'
-
-CRAWLER = {
-    'permitted_content_types': [
-        'text/html',
-        'application/pdf'
-    ],
-    'external_resources': {
-        'jive.croc.ru': {
-            'retriever': 'qua.api.search.extresources.JiveCrocRu',
-            'auth': {
-                'type': 'basic',
-                'username': 'username',
-                'password': 'password'
-            }
-        }
-    }
-}
 
 
 LOGGING = {
@@ -207,13 +165,6 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': os.path.join(LOGS_DIR, 'qua_api_requests.log'),
             'formatter': 'simple'
-        },
-        'celery': {
-            'level': 'DEBUG',
-            'class': 'logging.handlers.RotatingFileHandler',
-            'filename': os.path.join(LOGS_DIR, 'celery.log'),
-            'formatter': 'verbose',
-            'maxBytes': 1024 * 1024 * 100,
         }
     },
     'loggers': {
@@ -226,11 +177,6 @@ LOGGING = {
             'handlers': ['requests'],
             'level': 'INFO',
             'propagate': False
-        },
-        'celery': {
-            'handlers': ['celery'],
-            'level': 'DEBUG',
-            'propagate': True
         }
     },
 }
