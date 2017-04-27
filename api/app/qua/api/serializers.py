@@ -1,12 +1,11 @@
 import logging
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 
 from qua.api.models import Question, Keyword, Answer
-from qua.api import tasks
 
 
 log = logging.getLogger('qua.' + __name__)
@@ -122,6 +121,7 @@ class QuestionSerializer(DynamicFieldsModelSerializer):
     updated_by = UserSerializer(read_only=True)
 
     def create(self, validated_data):
+
         if 'title' not in validated_data:
             raise ValidationError({'title': ['This field is required.']})
 
@@ -138,7 +138,7 @@ class QuestionSerializer(DynamicFieldsModelSerializer):
                 question
             )
 
-        tasks.index_question.delay(question.id)
+        # TODO: index question
 
         return question
 
@@ -172,7 +172,8 @@ class QuestionSerializer(DynamicFieldsModelSerializer):
                 )
 
         instance.save()
-        tasks.index_question.delay(instance.id)
+
+        # TODO: reindex question
 
         return instance
 

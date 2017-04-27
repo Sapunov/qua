@@ -11,7 +11,9 @@ jwt_response_payload_handler = api_settings.JWT_RESPONSE_PAYLOAD_HANDLER
 
 
 class CustomJSONWebTokenAPIView(JSONWebTokenAPIView):
+
     def post(self, request, *args, **kwargs):
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
@@ -23,14 +25,17 @@ class CustomJSONWebTokenAPIView(JSONWebTokenAPIView):
 
 
 class ObtainJSONWebToken(CustomJSONWebTokenAPIView):
+
     serializer_class = JSONWebTokenSerializer
 
 
 class VerifyJSONWebToken(CustomJSONWebTokenAPIView):
+
     serializer_class = VerifyJSONWebTokenSerializer
 
 
 class RefreshJSONWebToken(CustomJSONWebTokenAPIView):
+
     serializer_class = RefreshJSONWebTokenSerializer
 
 

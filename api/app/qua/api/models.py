@@ -1,17 +1,14 @@
 import logging
 import mistune
 
-from django.db import models
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
+from django.db import models
 from rest_framework import exceptions
-from django.conf import settings
 
-from qua.api.utils import common
 from qua.api import constants
-
-from qua.api.search.engine import SearchEngine
-from qua.api.search.engine import exceptions as engine_exceptions
+from qua.api.utils import common
 
 
 log = logging.getLogger('qua.' + __name__)
@@ -174,35 +171,7 @@ class ExternalResource(Base):
             url=url, created_by=user, updated_by=user
         )
 
-        log.debug('ExternalResource by id: %s %s',
-            resource.id,
-            'created' if created else 'returning',
-        )
-
         return resource, created
-
-    def get_content(self, fields=None):
-
-        engine = SearchEngine()
-
-        try:
-            doc = engine.get(
-                index=settings.SEARCH_INDEX_NAME,
-                doc_type=settings.SEARCH_INDEX_TYPE,
-                id='e-%s' % self.id
-            )
-        except engine_exceptions.NotFoundError:
-            raise exceptions.NotFound
-
-        if fields:
-            result = {}
-
-            for field in fields:
-                result[field] = doc['_source'].get(field, None)
-        else:
-            result = doc['_source']
-
-        return result
 
     def __str__(self):
 

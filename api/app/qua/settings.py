@@ -4,7 +4,6 @@ import datetime
 
 PROGRAM_NAME = 'qua'
 
-# /var/www/qua on production environment
 ROOT = os.path.abspath(os.path.dirname(__file__))
 
 VAR = '/var'
@@ -14,17 +13,11 @@ VAR_LOG = os.path.join(VAR, 'log')
 LOGS_DIR = os.path.join(VAR_LOG, PROGRAM_NAME)
 DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
 
-STATIC = os.path.join(ROOT, 'static')
-
-SECRET_KEY = 'secret_key'
+SECRET_KEY = 'somestrongdjangokey'
 
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-
-STATICFILES_DIRS = (
-    STATIC,
-)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
@@ -35,7 +28,6 @@ STATIC_ROOT = os.path.join(DATA_DIR, 'static')
 
 INSTALLED_APPS = [
     'qua.api',
-    'qua.ui',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -93,7 +85,7 @@ else:
             'ENGINE':   'django.db.backends.postgresql_psycopg2',
             'NAME':     'qua',
             'USER':     'qua_user',
-            'PASSWORD': 'password',
+            'PASSWORD': 'somestrongdbpassword',
             'HOST':     'localhost',
             'PORT':     '5432',
         },

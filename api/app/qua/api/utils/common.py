@@ -10,6 +10,7 @@ def word_normalize(phrase):
 
 
 def remove_empty_values(data):
+
     if isinstance(data, dict):
         clear_dict = {}
 
@@ -33,6 +34,7 @@ def remove_empty_values(data):
 
 
 def h6(string):
+
     byte_string = bytes(string, "utf-8")
     return hashlib.sha256(byte_string).hexdigest()[:6]
 
