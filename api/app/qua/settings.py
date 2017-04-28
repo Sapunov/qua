@@ -84,9 +84,9 @@ else:
         'default': {
             'ENGINE':   'django.db.backends.postgresql_psycopg2',
             'NAME':     'qua',
-            'USER':     'qua_user',
+            'USER':     'quauser',
             'PASSWORD': 'somestrongdbpassword',
-            'HOST':     'localhost',
+            'HOST':     'postgres01',
             'PORT':     '5432',
         },
     }
