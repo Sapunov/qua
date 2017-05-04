@@ -1,4 +1,5 @@
 '''Ternary search tree implementstion'''
+import re
 
 
 class Node:
@@ -6,6 +7,7 @@ class Node:
     def __init__(self, data=None, rating=None, payload=None):
 
         self.data = data
+        self.also = []
         self.rating = rating
         self.payload = payload
 
@@ -51,7 +53,7 @@ class TernarySearchTree:
 
         return self._count_leaves
 
-    def _insert(self, node, char, rating=None, payload=None):
+    def _insert(self, node, char, rating=None, payload=None, also=None):
 
         if node.data is None:
             node.data = char
@@ -68,7 +70,14 @@ class TernarySearchTree:
                     node.rating = rating
                     node.payload = payload
                     self._count_leaves += 1
+
+                if also is not None and also not in node.also:
+                    node.also.append(also)
+
                 return None
+        elif also is not None and rating is not None:
+            if also not in node.also:
+                node.also.append(also)
 
         if char == node.data:
             # middle
@@ -118,6 +127,10 @@ class TernarySearchTree:
         if node.rating is not None:
             buffer.append((node.rating, prefix + node.data, node.payload))
 
+            if len(node.also) > 0:
+                for als in node.also:
+                    buffer.append((node.rating, als, node.payload))
+
     def _prefixes(self, string):
 
         res = []
@@ -127,6 +140,19 @@ class TernarySearchTree:
             string = string[:len(string) - 1]
 
         return res
+
+    def _query_parts(self, query):
+
+        parts = set(re.findall(r"(\w+)", query, re.UNICODE))
+        parts.update(query.split(' '))
+
+        excess = set()
+
+        for elem in parts:
+            if query.startswith(elem):
+                excess.add(elem)
+
+        return list(parts - excess)
 
     def optimize(self, common_num=10, cache_threshold=1000):
 
@@ -145,7 +171,7 @@ class TernarySearchTree:
                 self._cache[prefix] = sorted(
                     leaves, key=lambda it: it[0], reverse=True)[:common_num]
 
-    def insert(self, string, rating, payload=None):
+    def insert(self, string, rating, payload=None, also=None):
 
         node = self.root
         lstring = len(string)
@@ -153,9 +179,14 @@ class TernarySearchTree:
         for i in range(lstring):
             # If this is the last letter -> pass rating
             if i == lstring - 1:
-                self._insert(node, string[i], rating, payload)
+                self._insert(node, string[i], rating, payload, also)
             else:
-                node = self._insert(node, string[i], payload)
+                node = self._insert(node, string[i], payload, also)
+
+        # Adding also values
+
+        for word in self._query_parts(string):
+            self.insert(word, rating // 2, payload, string)
 
     def search(self, string):
 
@@ -193,7 +224,15 @@ class TernarySearchTree:
         self._traverse(child, prefix[0:-1], buffer, full_traverse)
         buffer.sort(key=lambda it: it[0], reverse=True)
 
-        buffer = buffer[:limit]
+        # Removing also duplicates
+        uniq_buffer = []
+        dup = set([])
+        for item in buffer:
+            if item[1] not in dup:
+                uniq_buffer.append(item)
+                dup.add(item[1])
+
+        buffer = uniq_buffer[:limit]
 
         if not with_payload:
             buffer = [(it[0], it[1]) for it in buffer]
