@@ -11,7 +11,7 @@ class AccumulateQueue(models.Model):
     quick_ans = models.CharField(max_length=300, blank=True, null=True)
     freq = models.IntegerField(default=1)
     processed = models.BooleanField(default=False)
-    group_id = models.IntegerField()
+    group_id = models.CharField(max_length=14)
 
     @classmethod
     def add(cls, items):
@@ -40,4 +40,7 @@ class AccumulateQueue(models.Model):
             if to_add['freq'] is None:
                 del to_add['freq']
 
-            cls.objects.create(**to_add)
+            try:
+                cls.objects.create(**to_add)
+            except Exception:
+                continue
