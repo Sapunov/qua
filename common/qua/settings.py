@@ -29,4 +29,12 @@ REDIS = {
     'db_persistent': 1
 }
 
+POSTGRESQL = {
+    'host': 'postgresserver',
+    'port': '5432',
+    'user': 'quauser',
+    'password': 'somestrongdbpassword',
+    'engine': 'django.db.backends.postgresql_psycopg2'
+}
+
 MAX_SEARCH_RESULTS = 100

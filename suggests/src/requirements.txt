@@ -1,5 +1,8 @@
 appdirs==1.4.3
+click==6.7
+croniter==0.3.16
 Django==1.11
+django-rq==0.9.5
 djangorestframework==3.6.2
 djangorestframework-jwt==1.10.0
 mistune==0.7.4
@@ -7,7 +10,11 @@ packaging==16.8
 psycopg2==2.7.1
 PyJWT==1.5.0
 pyparsing==2.2.0
+python-dateutil==2.6.0
 pytz==2017.2
 redis==2.10.5
 requests==2.13.0
+rq==0.7.1
+rq-scheduler==0.7.0
 six==1.10.0
+uWSGI==2.0.15

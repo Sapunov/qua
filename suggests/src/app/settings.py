@@ -30,8 +30,12 @@ MIDDLEWARE = [
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(qua_settings.DATA_DIR, APP_NAME + '.sqlite3'),
+        'ENGINE': qua_settings.POSTGRESQL['engine'],
+        'NAME': APP_NAME.replace('.', '_'),
+        'HOST': qua_settings.POSTGRESQL['host'],
+        'PORT': qua_settings.POSTGRESQL['port'],
+        'USER': qua_settings.POSTGRESQL['user'],
+        'PASSWORD': qua_settings.POSTGRESQL['password']
     }
 }
 

@@ -5,7 +5,7 @@ from setuptools import find_packages, setup
 if __name__ == '__main__':
     setup(
         name='qua',
-        version='0.3',
+        version='0.4',
 
         description='QUA common library',
         long_description=None,
