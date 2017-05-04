@@ -1,4 +1,4 @@
-# Описание API
+# Описание api сервиса API
 
 
 ## Общее
@@ -268,50 +268,50 @@ API разрешает посылать к себе запросы со след
     - offset - сдвиг относительно начала набора результатов
 
 ```
-{  
+{
     "ok":1,
-    "response":{  
-        "items":[  
-            {  
+    "response":{
+        "items":[
+            {
                 "answer_exists":true,
                 "created_at":"2017-01-14T09:51:52.428555Z",
-                "created_by":{  
+                "created_by":{
                     "first_name":"",
                     "id":1,
                     "last_name":"",
                     "username":"nsapunov"
                 },
                 "id":49,
-                "keywords":[  
+                "keywords":[
                     "привет",
                     "nikita",
                     "слон"
                 ],
                 "title":"привет",
                 "updated_at":"2017-01-14T09:51:52.451319Z",
-                "updated_by":{  
+                "updated_by":{
                     "first_name":"",
                     "id":1,
                     "last_name":"",
                     "username":"nsapunov"
                 }
             },
-            {  
+            {
                 "answer_exists":false,
                 "created_at":"2017-01-14T10:36:54.865758Z",
-                "created_by":{  
+                "created_by":{
                     "first_name":"",
                     "id":1,
                     "last_name":"",
                     "username":"nsapunov"
                 },
                 "id":50,
-                "keywords":[  
+                "keywords":[
                     "слон"
                 ],
                 "title":"Джигурда",
                 "updated_at":"2017-01-14T10:36:54.884780Z",
-                "updated_by":{  
+                "updated_by":{
                     "first_name":"",
                     "id":1,
                     "last_name":"",
@@ -321,7 +321,7 @@ API разрешает посылать к себе запросы со след
             ...
         ],
         "total":22,
-        "pagination":{  
+        "pagination":{
             "next":"/api/questions?offset=20&limit=10",
             "prev":"/api/questions?offset=10&limit=10"
         }
