@@ -19,20 +19,23 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild(MarkdownComponent) private mde: MarkdownComponent;
   @ViewChild('inputTitle') private inputTitle: ElementRef;
 
-  private sfHide = true;
-  private title = '';
-  private keyword = '';
-  private answer = '';
-  private id = 0;
-  private keywords: string[] = [];
-  private cache: ITempQuestion = null;
+  sfHide = true;
+  title = '';
+  keyword = '';
+  answer = '';
+  id = 0;
+  keywords: string[] = [];
+  cache: ITempQuestion = null;
+  loading: boolean;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private questionService: QuestionService,
     private pbService: NgProgressService,
-  ) { }
+  ) {
+    this.loading = false;
+  }
 
   onSubmit(form: FormGroup): void {
     if (form.invalid) {
@@ -58,19 +61,23 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
 
 
   edit(id: number, data: INewQuestion) {
+    this.loading = true;
     this.pbService.start();
     this.questionService.editQuestion(id, data)
       .then((que: IQuestion) => {
+        this.loading = false;
         this.questionService.clearCacheNewQuestion();
         this.pbService.done();
         this.router.navigate([`questions/${que.id}`]);
       })
       .catch(err => {
+        this.loading = false;
         this.pbService.done();
       });
   }
 
   add(data: INewQuestion) {
+    this.loading = true;
     this.pbService.start();
     this.questionService.addQuestion(data)
       .then((que: IQuestion) => {
@@ -79,6 +86,7 @@ export class SearchAddComponent implements OnInit, OnDestroy, AfterViewInit {
         this.router.navigate([`questions/${que.id}`]);
       })
       .catch(err => {
+        this.loading = false;
         this.pbService.done();
       });
   }

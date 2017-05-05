@@ -15,7 +15,7 @@
       required
       autofocus/>
     <div class="app-block-elem form-keywords">
-      <form class="form-keywords-control" (ngSubmit)="addKeyword(keywordForm); keywordForm.reset(); inpKeyword.focus()" #keywordForm="ngForm">
+      <form class="form-keywords-control" (ngSubmit)="addKeyword(); keywordForm.reset(); inpKeyword.focus()" #keywordForm="ngForm">
         <label class="form-keywords-control-area">
             <span class="form-keywords-keyword keywords-keyword" *ngFor="let kw of keywords">
               <span class="keywrods-keyword-text">{{ kw }}</span>
