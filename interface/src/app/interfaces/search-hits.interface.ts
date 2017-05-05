@@ -13,7 +13,7 @@ export interface IHits {
   url?: string;
   is_external?: boolean;
   resource?: string;
-}
+};
 
 export interface ISearchResult {
   hits: IHits[];
@@ -38,4 +38,15 @@ export interface ISearchParams {
   offset: string;
   limit: string;
   spelling?: string;
-}
+};
+
+export interface IGetSuggests {
+  query: string;
+  limit?: string;
+};
+
+export interface ISuggest {
+  text: string;
+  rate: number;
+  quick_ans: string;
+};
