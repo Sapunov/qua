@@ -54,7 +54,7 @@
 - - -
 
 
-##### `/suggests`
+##### `/suggest`
 
 **GET**
 
