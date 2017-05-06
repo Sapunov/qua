@@ -24,3 +24,4 @@ class SuggestAnswer(serializers.Serializer):
     text = serializers.CharField()
     rate = serializers.IntegerField()
     quick_ans = serializers.CharField()
+    prefix = serializers.CharField()
