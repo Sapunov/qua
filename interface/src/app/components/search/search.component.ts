@@ -47,11 +47,22 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       }
     };
 
+    this.suggests = [];
     this.router.navigate(['/search'], params);
   }
 
+  highlightSuggests(query: string, suggests: ISuggest[]): ISuggest[] {
+    return suggests.map(suggest => {
+      suggest.html = suggest.text.replace(query, `<b style="color: #2b2f33">${query}</b>`);
+      return suggest;
+    });
+  }
+
   getSuggests(query: string): void {
-    if (!query) return;
+    if (!query) {
+      return;
+    }
+
     if (this.lastQuery === query && this.suggests.length !== 0) {
       return;
     };
@@ -61,7 +72,7 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       query: query,
       limit: LIMIT_FOR_SUGGESTS
     })
-      .then(suggests => this.suggests = suggests)
+      .then(suggests => this.suggests = this.highlightSuggests(query, suggests))
       .catch(err => null);
   }
 
@@ -96,10 +107,6 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
     return index === this.currentSuggest;
   }
 
-  clearQuery(): void {
-    this.query = '';
-  }
-
   clearSuggests(event): void {
     if (event.target.nodeName === 'LI' || event.target.nodeName === 'INPUT') {
       return;
@@ -113,7 +120,8 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       event.keyCode === 37 ||
       event.keyCode === 38 ||
       event.keyCode === 39 ||
-      event.keyCode === 40
+      event.keyCode === 40 ||
+      event.keyCode === 13
     ) {
       this.upDownArrowHandler(event.keyCode);
       return;

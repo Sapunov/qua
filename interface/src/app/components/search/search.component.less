@@ -64,6 +64,7 @@
   }
 
   &-suggests {
+    z-index: 100000;
     width: 100%;
     top: 50px;
     left: 0;
@@ -76,15 +77,24 @@
     border-bottom-right-radius: @border-radius;
     box-shadow: @box-shadow;
 
-    li > {
+    li {
+      color: lighten(@text-color-bl, 10%);
       cursor: pointer;
       padding: 0 @indent 0;
       line-height: 30px;
+
+      /deep/ b {
+        color: @text-color-bl;
+      }
     }
 
     .selected {
-      color: #fff;
+      color: @text-color-2;
       background-color: @main-color;
+
+      /deep/ b {
+        color: inherit;
+      }
     }
   }
 }

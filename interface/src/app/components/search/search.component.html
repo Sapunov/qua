@@ -5,7 +5,7 @@
   (document:click)="clearSuggests($event)"
   #searchForm="ngForm">
   <i class="fa fa-search search-field-icon" *ngIf="!query"></i>
-  <i class="fa fa-times search-field-icon search-field-icon-clear" *ngIf="query" (click)="clearQuery()"></i>
+  <i class="fa fa-times search-field-icon search-field-icon-clear" *ngIf="query" (click)="searchForm.reset()"></i>
   <input
     #inputSearch
     name="searchField"
@@ -15,7 +15,7 @@
     [(ngModel)] = "query"
     (keyup)="keyup($event)"
     (keyup.enter)="getResults(query)"
-    (click)="getSuggests(query)"
+    (click)="getSuggests(query, $event)"
     autocomplete="off"
     autofocus/>
     <span class="search-field-info">
@@ -27,6 +27,7 @@
       [class.selected]="isSelected(i)"
       *ngFor="let suggest of suggests; let i = index"
       (mouseenter)="onMouseenter(i)"
-      (click)="useSuggest(suggest)">{{suggest.text}}</li>
+      (click)="useSuggest(suggest)"
+      [innerHTML]="suggest.html"></li>
     </ul>
 </form>

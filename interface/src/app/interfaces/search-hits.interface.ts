@@ -47,6 +47,7 @@ export interface IGetSuggests {
 
 export interface ISuggest {
   text: string;
+  html?: string;
   rate: number;
   quick_ans: string;
 };
