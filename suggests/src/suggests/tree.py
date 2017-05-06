@@ -55,6 +55,8 @@ def load_tree():
 
 def suggest(prefix, limit):
 
+    prefix = prefix.lower()
+
     ans = []
 
     load_tree()

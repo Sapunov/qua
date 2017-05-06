@@ -6,8 +6,6 @@ from suggests import models
 from suggests import serializers
 from suggests import tree
 
-from qua.rest.exceptions import QuaException
-
 
 class Accumulate(APIView):
 
