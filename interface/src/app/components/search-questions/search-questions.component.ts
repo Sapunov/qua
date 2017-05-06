@@ -41,11 +41,13 @@ export class SearchQuestionsComponent implements OnInit {
           });
       })
       .subscribe((questions: IQuestions) => {
-        this.pbService.done();
-        this.questions = questions;
-        this.items = questions.items;
-        this.prevResult = questions.pagination.prev;
-        this.nextResult = questions.pagination.next;
+        if (questions) {
+          this.pbService.done();
+          this.questions = questions;
+          this.items = questions.items;
+          this.prevResult = questions.pagination.prev;
+          this.nextResult = questions.pagination.next;
+        }
       });
   }
 }

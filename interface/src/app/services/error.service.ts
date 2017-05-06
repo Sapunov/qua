@@ -1,6 +1,7 @@
 import { Subject } from 'rxjs/Subject';
 import { Injectable, Injector } from '@angular/core';
 import { Router } from '@angular/router';
+import { SHOW_ERROR } from '../../environments/const';
 
 import { IError } from '../interfaces/error.interface';
 import { IResponse } from '../interfaces/response.interface';
@@ -17,21 +18,32 @@ export class ErrorService {
   }
 
   viewError(err: QuaError) {
-    console.error(err);
-    console.error(err.stack);
+    if (SHOW_ERROR) {
+      console.error(err);
+      console.error(err.stack);
+    }
+
     this.error.next(err);
   }
 
   handleError(response: any) {
     let error = null;
+
     if (response.status === 500) {
       error = new QuaError({
         error_msg: 'External error',
         error_code: 500
       });
       error.response = response;
+    } if (response.status === 0) {
+      error = new QuaError({
+        error_msg: 'Internet disconnected',
+        error_code: 0
+      });
+      error.response = response;
     } else {
       let res;
+
       try {
         res = response.json() as IResponse;
       } catch (e) {
@@ -41,19 +53,23 @@ export class ErrorService {
           }
         };
       }
+
       if (!res.ok) {
         error = new QuaError(res.error);
       }
+
       if (response.status === 401) {
-        // Необходимо выделить вызывать метод logout сервиса auth. Но пока хз как
+        // Необходимо вызывать метод logout сервиса auth. Но пока хз как
         localStorage.removeItem('token');
         this.router.navigate(['auth']);
         // ----------------------------------------------------------------------
       }
+
       if (response.status === 403) {
         this.router.navigate(['/']);
       }
     }
+
     this.viewError(error);
     return Promise.reject(error);
   }

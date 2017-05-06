@@ -14,3 +14,4 @@ export const ITEM_LIMIT = '10';
 export const ITEM_OFFSET = '0';
 export const LOCALSTORAGE_ID = 'qua';
 export const LIMIT_FOR_SUGGESTS = '10';
+export const SHOW_ERROR = true;
