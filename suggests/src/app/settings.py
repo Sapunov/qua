@@ -28,16 +28,24 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-DATABASES = {
-    'default': {
-        'ENGINE': qua_settings.POSTGRESQL['engine'],
-        'NAME': APP_NAME.replace('.', '_'),
-        'HOST': qua_settings.POSTGRESQL['host'],
-        'PORT': qua_settings.POSTGRESQL['port'],
-        'USER': qua_settings.POSTGRESQL['user'],
-        'PASSWORD': qua_settings.POSTGRESQL['password']
+if DEBUG:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(qua_settings.DATA_DIR, APP_NAME + '.sqlite3'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': qua_settings.POSTGRESQL['engine'],
+            'NAME': APP_NAME.replace('.', '_'),
+            'HOST': qua_settings.POSTGRESQL['host'],
+            'PORT': qua_settings.POSTGRESQL['port'],
+            'USER': qua_settings.POSTGRESQL['user'],
+            'PASSWORD': qua_settings.POSTGRESQL['password']
+        }
+    }
 
 ROOT_URLCONF = 'app.urls'
 
@@ -59,7 +67,8 @@ REST_FRAMEWORK = {
     'UNAUTHENTICATED_USER': None,
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-    )
+    ),
+    'EXCEPTION_HANDLER': 'qua.rest.exceptions.api_exception_handler',
 }
 
 RQ_QUEUES = {

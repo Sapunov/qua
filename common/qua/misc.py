@@ -52,3 +52,27 @@ def keyboard_layout_inverse(string):
         result += dic.get(letter, letter)
 
     return result
+
+
+def remove_empty_values(data):
+
+    if isinstance(data, dict):
+        clear_dict = {}
+
+        for key, value in data.items():
+            cleared_value = remove_empty_values(value)
+            if cleared_value:
+                clear_dict[key] = cleared_value
+
+        return clear_dict
+    elif isinstance(data, list):
+        clear_list = []
+
+        for item in data:
+            cleared_value = remove_empty_values(item)
+            if cleared_value:
+                clear_list.append(cleared_value)
+
+        return clear_list
+    else:
+        return data if data else False
