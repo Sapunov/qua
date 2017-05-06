@@ -8,7 +8,7 @@
       "root": "src",
       "outDir": "dist",
       "assets": [],
-      "deployUrl": "static/wi",
+      "deployUrl": "/static/",
       "index": "index.html",
       "main": "main.ts",
       "test": "test.ts",
