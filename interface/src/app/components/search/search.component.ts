@@ -68,6 +68,7 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
     };
 
     this.lastQuery = query;
+    this.currentSuggest = -1;
     this.searchService.getSuggests({
       query: query,
       limit: LIMIT_FOR_SUGGESTS
