@@ -1,9 +1,9 @@
 #!/bin/bash
 
 sudo docker run -d \
-    --name qua-suggests \
-    --link postgresserver:postgresserver \
+	--name qua-suggests \
+	--link postgresserver:postgresserver \
 	--link redisserver:redisserver \
-    -v qua-suggests-data:/var/lib/qua/data \
-    -p 9001:80 \
-    qua-suggests:latest
+	-v qua-suggests-data:/var/lib/qua/data \
+	-p 9001:80 \
+	qua-suggests:latest
