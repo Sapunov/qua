@@ -15,3 +15,8 @@ class QuaApiResponse(Response):
 
         super(QuaApiResponse, self).__init__(
             data=get_response_dict(response=data), **kwargs)
+
+
+def jwt_response_payload_handler(token, user=None, request=None):
+
+    return get_response_dict(response={'token': token})

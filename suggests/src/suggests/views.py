@@ -1,6 +1,6 @@
 from rest_framework.views import APIView
 
-from qua.common import serialize, deserialize
+from qua.rest.serializers import serialize, deserialize
 from qua.rest.response import QuaApiResponse
 from suggests import models
 from suggests import serializers
