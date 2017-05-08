@@ -90,16 +90,21 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
   upDownArrowHandler(code): void {
     if (code === 38) {
       this.currentSuggest -= 1;
+
+      if (this.currentSuggest < 0) {
+        this.currentSuggest = this.suggests.length - 1
+      }
     }
 
     if (code === 40) {
       this.currentSuggest += 1;
+
+      if (this.currentSuggest > this.suggests.length - 1) {
+        this.currentSuggest = 0
+      }
     }
 
     if (code === 40 || code === 38) {
-      if (this.currentSuggest < 0 || this.currentSuggest > this.suggests.length - 1) {
-        this.currentSuggest = 0;
-      }
       this.query = this.suggests[this.currentSuggest].text;
     }
   }
