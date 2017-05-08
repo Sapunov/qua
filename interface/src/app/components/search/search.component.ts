@@ -51,9 +51,9 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
     this.router.navigate(['/search'], params);
   }
 
-  highlightSuggests(query: string, suggests: ISuggest[]): ISuggest[] {
+  highlightSuggests(suggests: ISuggest[]): ISuggest[] {
     return suggests.map(suggest => {
-      suggest.html = suggest.text.replace(query, `<b style="color: #2b2f33">${query}</b>`);
+      suggest.html = suggest.text.replace(suggest.prefix, `<b style="color: #2b2f33">${suggest.prefix}</b>`);
       return suggest;
     });
   }
@@ -73,7 +73,7 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       query: query,
       limit: LIMIT_FOR_SUGGESTS
     })
-      .then(suggests => this.suggests = this.highlightSuggests(query, suggests))
+      .then(suggests => this.suggests = this.highlightSuggests(suggests))
       .catch(err => null);
   }
 
