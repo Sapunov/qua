@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from django.views.generic.base import View
 
-from qua.api.tracker import trackable
+from api.tracker import trackable
 
 
 class AwayView(View):

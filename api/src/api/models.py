@@ -7,17 +7,19 @@ from django.core.cache import cache
 from django.db import models
 from rest_framework import exceptions
 
-from qua.api import constants
-from qua.api.utils import common
+from qua import constants
+from qua import misc
 
 
-log = logging.getLogger('qua.' + __name__)
+log = logging.getLogger(settings.APP_NAME + __name__)
 
 
 class Base(models.Model):
 
-    created_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
-    updated_by = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
+    created_by = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='+')
+    updated_by = models.ForeignKey(
+        User, on_delete=models.PROTECT, related_name='+')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -44,7 +46,7 @@ class Keyword(models.Model):
         keywords = []
 
         for word in words:
-            normalized_word = common.word_normalize(word)
+            normalized_word = misc.word_normalize(word)
 
             keyword, _ = cls.objects.get_or_create(pk=normalized_word)
 
@@ -98,11 +100,12 @@ class Question(Base):
     @classmethod
     def create(cls, title, user, keywords=None):
 
-        log.debug('Creating question with title: %s, keywords: %s by %s',
-            title, keywords, user
-        )
+        log.debug(
+            'Creating question with title: %s, keywords: %s by %s',
+            title, keywords, user)
 
-        question = cls.objects.create(title=title, created_by=user, updated_by=user)
+        question = cls.objects.create(
+            title=title, created_by=user, updated_by=user)
 
         log.debug('Created answer: %s', question)
 
@@ -115,7 +118,8 @@ class Question(Base):
 
     def update(self, user, title=None, keywords=None):
 
-        log.debug('Updating %s with title: %s, keywords: %s by %s',
+        log.debug(
+            'Updating %s with title: %s, keywords: %s by %s',
             self, title, keywords, user
         )
 
@@ -186,14 +190,21 @@ class SearchHistory(models.Model):
     searched_at = models.DateTimeField(auto_now_add=True)
     clicked_at = models.DateTimeField(blank=True, null=True)
     question = models.ForeignKey(
-        Question, on_delete=models.PROTECT, related_name='+', blank=True, null=True
-    )
+        Question,
+        on_delete=models.PROTECT,
+        related_name='+',
+        blank=True,
+        null=True)
     external = models.BooleanField(default=False)
     external_resource = models.ForeignKey(
-        ExternalResource, on_delete=models.PROTECT, related_name='+', blank=True, null=True
-    )
+        ExternalResource,
+        on_delete=models.PROTECT,
+        related_name='+',
+        blank=True,
+        null=True)
 
     def __str__(self):
+
         return '({4}) <{0}:{1:.30}> -> {2} ({3})'.format(
             self.id, self.query, self.question, self.user, self.results)
 
@@ -202,8 +213,8 @@ class Answer(Base):
 
     raw = models.TextField()
     question = models.OneToOneField(
-        Question, related_name='answer', on_delete=models.CASCADE
-    )
+        Question, related_name='answer',
+        on_delete=models.CASCADE)
     version = models.IntegerField(default=1)
 
     def __str__(self):
@@ -216,7 +227,8 @@ class Answer(Base):
         if raw == '':
             return None
 
-        log.debug('Creating answer with raw: %s for %s by %s', raw, question, user)
+        log.debug(
+            'Creating answer with raw: %s for %s by %s', raw, question, user)
 
         answer = cls.objects.create(
             raw=raw, created_by=user, updated_by=user, question=question)

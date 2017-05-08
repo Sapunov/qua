@@ -1,6 +1,9 @@
 from datetime import datetime
 from hashlib import sha1
+from importlib import import_module
+from urllib.parse import urlparse
 import os
+import tempfile
 
 
 def sha1_hash(string):
@@ -76,3 +79,66 @@ def remove_empty_values(data):
         return clear_list
     else:
         return data if data else False
+
+
+def url_part(url, part_name):
+
+    parsed = urlparse(url)
+
+    if hasattr(parsed, part_name):
+        return getattr(parsed, part_name)
+
+
+def extract_domain(url):
+
+    netloc = url_part(url, 'netloc')
+
+    return netloc if netloc else None
+
+
+def import_module_class(name):
+
+    module_name, class_name = name.rsplit('.', 1)
+
+    module = import_module(module_name)
+
+    try:
+        class_ = getattr(module, class_name)
+    except AttributeError:
+        raise ImportError('No class <%s> in %s' % (class_name, module))
+
+    return class_
+
+
+def word_normalize(phrase):
+
+    words = [word.strip().lower() for word in phrase.split(' ')]
+
+    return ' '.join([word for word in words if word])
+
+
+def temp_file(data, suffix='', prefix='', binary=False):
+
+    filepath = tempfile.mktemp(suffix=suffix, prefix=prefix)
+
+    mode = 'wb' if binary else 'w'
+
+    with open(filepath, mode) as fd:
+        fd.write(data)
+
+    return filepath
+
+
+def h6(string):
+
+    return sha1_hash(string)[:6]
+
+
+def sign(string, secret_key, length=20):
+
+    return sha1_hash(string + secret_key)[0:length]
+
+
+def is_sign_ok(input_sign, string, secret_key, length=20):
+
+    return input_sign == sign(string, secret_key, length=length)

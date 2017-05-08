@@ -1,17 +1,10 @@
 import os
 import datetime
 
+from qua import settings as qua_settings
 
-PROGRAM_NAME = 'qua'
 
-ROOT = os.path.abspath(os.path.dirname(__file__))
-
-VAR = '/var'
-VAR_LIB = os.path.join(VAR, 'lib')
-VAR_LOG = os.path.join(VAR, 'log')
-
-LOGS_DIR = os.path.join(VAR_LOG, PROGRAM_NAME)
-DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
+APP_NAME = qua_settings.PROGRAM_NAME + '.api'
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -24,10 +17,8 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 )
 
-STATIC_ROOT = os.path.join(DATA_DIR, 'static')
-
 INSTALLED_APPS = [
-    'qua.api',
+    'api.apps.ApiConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -45,19 +36,17 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'qua.api.middleware.LoggingMiddleware',
+    'qua.rest.middleware.LoggingMiddleware',
 ]
 
 APPEND_SLASH = False
 
-ROOT_URLCONF = 'qua.urls'
+ROOT_URLCONF = 'app.urls'
 
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [
-            os.path.join(ROOT, 'templates')
-        ],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -70,26 +59,40 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'qua.wsgi.application'
+WSGI_APPLICATION = 'app.wsgi.application'
 
 if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(DATA_DIR, 'database.sqlite3'),
-        }
-    }
+    DATABASE_HOST = '127.0.0.1'
+    REDIS_HOST = '127.0.0.1'
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE':   'django.db.backends.postgresql_psycopg2',
-            'NAME':     'qua',
-            'USER':     'quauser',
-            'PASSWORD': 'somestrongdbpassword',
-            'HOST':     'postgres01',
-            'PORT':     '5432',
-        },
+    DATABASE_HOST = qua_settings.POSTGRESQL['host']
+    REDIS_HOST = qua_settings.REDIS['host']
+
+DATABASES = {
+    'default': {
+        'ENGINE': qua_settings.POSTGRESQL['engine'],
+        'NAME': APP_NAME.replace('.', '_'),
+        'HOST': DATABASE_HOST,
+        'PORT': qua_settings.POSTGRESQL['port'],
+        'USER': qua_settings.POSTGRESQL['user'],
+        'PASSWORD': qua_settings.POSTGRESQL['password']
     }
+}
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://{0}:{1}/{2}'.format(
+            REDIS_HOST,
+            qua_settings.REDIS['port'],
+            qua_settings.REDIS['db_cache']
+        ),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient'
+        },
+        'KEY_PREFIX': APP_NAME
+    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -113,19 +116,18 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
-    'EXCEPTION_HANDLER': 'qua.api.exceptions.custom_api_exception_handler',
+    'EXCEPTION_HANDLER': 'qua.rest.exceptions.api_exception_handler',
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    )
 }
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'qua.api.response.custom_jwt_response_payload_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'qua.rest.response.jwt_response_payload_handler',
 }
 
 PAGE_SIZE = 10
-
-REDIS_DB = 0
-REDIS_URL = 'redis://localhost:6379/{}'.format(REDIS_DB)
-
 
 LOGGING = {
     'version': 1,
@@ -141,21 +143,17 @@ LOGGING = {
         },
     },
     'handlers': {
-        'console': {
-            'level': 'INFO',
-            'class': 'logging.StreamHandler',
-            'formatter': 'simple'
-        },
         'qua': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'qua.log'),
+            'filename': os.path.join(qua_settings.LOGS_DIR, APP_NAME + '.log'),
             'formatter': 'verbose'
         },
         'requests': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOGS_DIR, 'qua_api_requests.log'),
+            'filename': os.path.join(
+                qua_settings.LOGS_DIR, APP_NAME + '.requests.log'),
             'formatter': 'simple'
         }
     },
@@ -171,13 +169,6 @@ LOGGING = {
             'propagate': False
         }
     },
-}
-
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.path.join(DATA_DIR, 'cache'),
-    }
 }
 
 LANGUAGE_CODE = 'en-us'

@@ -3,15 +3,15 @@ import logging
 from django.conf import settings
 from rest_framework.views import APIView
 
-from qua.api.models import Question
-from qua.api.pagination import paginate
-from qua.api.response import QuaApiResponse
-from qua.api.serializers import QuestionSerializer, QuestionListSerializer
-from qua.api.serializers import serialize, deserialize
-from qua.api.tracker import trackable
+from api.models import Question
+from api.pagination import paginate
+from api.serializers import QuestionSerializer, QuestionListSerializer
+from api.tracker import trackable
+from qua.rest.response import QuaApiResponse
+from qua.rest.serializers import serialize, deserialize
 
 
-log = logging.getLogger('qua.' + __name__)
+log = logging.getLogger(settings.APP_NAME + __name__)
 
 
 class QuestionListView(APIView):

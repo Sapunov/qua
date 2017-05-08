@@ -1,13 +1,14 @@
 import logging
 
+from django.conf import settings
 from django.utils import timezone
 
-from qua import utils
-from qua.api.models import SearchHistory, Question, ExternalResource
-from qua.api.exceptions import ExitDecoratorError
+from qua import misc
+from qua.rest.exceptions import ExitDecoratorError
+from api.models import SearchHistory, Question, ExternalResource
 
 
-log = logging.getLogger('qua.' + __name__)
+log = logging.getLogger(settings.APP_NAME + __name__)
 
 
 def get_object(obj, primary_key):
@@ -32,7 +33,8 @@ def search_tracker(params, external=False):
         raise ExitDecoratorError('Qid not specofied')
 
     if ('token' not in params) or (
-        not utils.is_sign_ok(params['token'], '{0}-{1}'.format(shid, qid))
+        not misc.is_sign_ok(
+            params['token'], '{0}-{1}'.format(shid, qid), settings.SECRET_KEY)
     ):
         raise ExitDecoratorError('Wrong token or not specified')
 
@@ -42,6 +44,7 @@ def search_tracker(params, external=False):
         if external:
             external_resource = get_object(ExternalResource, qid)
             history_record.external_resource = external_resource
+            history_record.external = True
         else:
             question = get_object(Question, qid)
             history_record.question = question
@@ -51,7 +54,9 @@ def search_tracker(params, external=False):
 
 
 def trackable(func):
+
     def wrapper(self, request, *args, **kwargs):
+
         params = request.GET
 
         if 'track' in params:
@@ -65,4 +70,5 @@ def trackable(func):
                 return func(self, request, *args, **kwargs)
 
         return func(self, request, *args, **kwargs)
+
     return wrapper

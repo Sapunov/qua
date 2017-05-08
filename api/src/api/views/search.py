@@ -1,15 +1,14 @@
-import json
 import logging
 
 from django.conf import settings
 from rest_framework import exceptions
 from rest_framework.views import APIView
 
-from qua.api.pagination import paginate
-from qua.api.response import QuaApiResponse
+from api.pagination import paginate
+from qua.rest.response import QuaApiResponse
 
 
-log = logging.getLogger('qua.' + __name__)
+log = logging.getLogger(settings.APP_NAME + __name__)
 
 
 class SearchView(APIView):
@@ -20,7 +19,8 @@ class SearchView(APIView):
         params = request.query_params
 
         if 'query' not in params:
-            raise exceptions.ValidationError({'query': ['This field required']})
+            raise exceptions.ValidationError(
+                {'query': ['This field required']})
 
         # This is загрушка
         response = {
