@@ -27,7 +27,8 @@
       [class.selected]="isSelected(i)"
       *ngFor="let suggest of suggests; let i = index"
       (mouseenter)="onMouseenter(i)"
-      (click)="useSuggest(suggest)"
-      [innerHTML]="suggest.html"></li>
+      (click)="useSuggest(suggest)">
+        <span class="search-field-suggests-suggest" [innerHTML]="suggest.html"></span><span class="search-field-suggests-qa" *ngIf="suggest.quick_ans"><i class="fa fa-long-arrow-right"></i>{{suggest.quick_ans}}</span>
+      </li>
     </ul>
 </form>

@@ -15,6 +15,7 @@
   justify-content: space-between;
 
   &-input {
+    min-width: 30px;
     border: 0;
     flex-grow: 2;
     outline: 0;
@@ -66,10 +67,10 @@
   &-suggests {
     z-index: 100000;
     width: 100%;
-    top: 50px;
+    top: 52px;
     left: 0;
     margin: 0;
-    padding: @indent - 5 0;
+    padding: @indent - 5 15px;
     list-style: none;
     position: absolute;
     background-color: @bg-color-2;
@@ -78,13 +79,28 @@
     box-shadow: @box-shadow;
 
     li {
-      color: lighten(@text-color-bl, 10%);
+      display: flex;
+      flex-flow: row nowrap;
+      overflow: hidden;
+      color: lighten(@text-color-bl, 2%);
       cursor: pointer;
-      padding: 0 @indent 0;
       line-height: 30px;
+      white-space: nowrap;
 
       /deep/ b {
         color: @text-color-bl;
+      }
+    }
+
+    &-qa {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: inherit;
+      color: lighten(@text-color-bl, 40%);
+
+      i {
+        font-size: 10px;
+        margin: 0 7px;
       }
     }
 
