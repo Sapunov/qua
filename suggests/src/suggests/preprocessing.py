@@ -24,6 +24,9 @@ def _preprocess(item):
 
     query = query.lower().strip()
 
+    if quick_answer:
+        quick_answer = quick_answer.lower().strip()
+
     # Replace some substrings
     for pattern, to in conf['replacements']:
         query = query.replace(pattern, to)

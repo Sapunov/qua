@@ -179,9 +179,16 @@ class TernarySearchTree:
         for i in range(lstring):
             # If this is the last letter -> pass rating
             if i == lstring - 1:
-                self._insert(node, string[i], rating, payload, also)
+                self._insert(
+                    node, string[i],
+                    rating=rating,
+                    payload=payload,
+                    also=also)
             else:
-                node = self._insert(node, string[i], payload, also)
+                node = self._insert(
+                    node, string[i],
+                    payload=payload,
+                    also=also)
 
         # Adding also values
 
