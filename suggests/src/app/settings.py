@@ -26,6 +26,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'qua.rest.middleware.LoggingMiddleware'
 ]
 
 if DEBUG:
@@ -73,6 +74,48 @@ RQ_QUEUES = {
         'HOST': qua_settings.REDIS['host'],
         'PORT': qua_settings.REDIS['port'],
         'DB': qua_settings.REDIS['db_cache']
+    },
+}
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': True,
+    'formatters': {
+        'verbose': {
+            'format': '%(asctime)s %(filename)s:'
+                      '%(funcName)s:%(lineno)s '
+                      '%(levelname)s: %(message)s'
+        },
+        'simple': {
+            'format': '%(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'qua': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(qua_settings.LOGS_DIR, APP_NAME + '.log'),
+            'formatter': 'verbose'
+        },
+        'requests': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(
+                qua_settings.LOGS_DIR, APP_NAME + '.requests.log'),
+            'formatter': 'simple'
+        }
+    },
+    'loggers': {
+        'qua': {
+            'handlers': ['qua'],
+            'level': 'DEBUG',
+            'propagate': True
+        },
+        'qua.requests': {
+            'handlers': ['requests'],
+            'level': 'INFO',
+            'propagate': False
+        }
     },
 }
 
