@@ -70,7 +70,7 @@
     top: 52px;
     left: 0;
     margin: 0;
-    padding: @indent - 5 15px;
+    padding: @indent - 5 0;
     list-style: none;
     position: absolute;
     background-color: @bg-color-2;
@@ -79,9 +79,6 @@
     box-shadow: @box-shadow;
 
     li {
-      display: flex;
-      flex-flow: row nowrap;
-      overflow: hidden;
       color: lighten(@text-color-bl, 2%);
       cursor: pointer;
       line-height: 30px;
@@ -90,6 +87,13 @@
       /deep/ b {
         color: @text-color-bl;
       }
+    }
+
+    &-wrapper {
+      display: flex;
+      flex-flow: row nowrap;
+      overflow: hidden;
+      padding: 0 @indent;
     }
 
     &-qa {
