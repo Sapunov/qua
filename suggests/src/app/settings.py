@@ -29,23 +29,20 @@ MIDDLEWARE = [
 ]
 
 if DEBUG:
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(qua_settings.DATA_DIR, APP_NAME + '.sqlite3'),
-        }
-    }
+    DATABASE_HOST = '127.0.0.1'
 else:
-    DATABASES = {
-        'default': {
-            'ENGINE': qua_settings.POSTGRESQL['engine'],
-            'NAME': APP_NAME.replace('.', '_'),
-            'HOST': qua_settings.POSTGRESQL['host'],
-            'PORT': qua_settings.POSTGRESQL['port'],
-            'USER': qua_settings.POSTGRESQL['user'],
-            'PASSWORD': qua_settings.POSTGRESQL['password']
-        }
+    DATABASE_HOST = qua_settings.POSTGRESQL['host']
+
+DATABASES = {
+    'default': {
+        'ENGINE': qua_settings.POSTGRESQL['engine'],
+        'NAME': APP_NAME.replace('.', '_'),
+        'HOST': DATABASE_HOST,
+        'PORT': qua_settings.POSTGRESQL['port'],
+        'USER': qua_settings.POSTGRESQL['user'],
+        'PASSWORD': qua_settings.POSTGRESQL['password']
     }
+}
 
 ROOT_URLCONF = 'app.urls'
 

@@ -65,7 +65,7 @@ def suggest(prefix, limit):
     if TREE:
         results = TREE.common_prefix(prefix, limit)
 
-        if not results:
+        if not results and len(prefix) > 1:
             prefix = misc.keyboard_layout_inverse(prefix)
             results = TREE.common_prefix(prefix, limit)
 
