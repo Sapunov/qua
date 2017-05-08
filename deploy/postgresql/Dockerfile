@@ -1,4 +1,4 @@
-FROM onjin/alpine-postgres:9.6
+FROM onjin/alpine-postgres:9.5
 
 RUN mkdir -p /docker-entrypoint-initdb.d
 
