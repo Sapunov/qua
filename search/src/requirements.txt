@@ -1,0 +1,9 @@
+appdirs==1.4.3
+click==6.7
+croniter==0.3.16
+packaging==16.8
+pyparsing==2.2.0
+python-dateutil==2.6.0
+pytz==2017.2
+six==1.10.0
+elasticsearch==5.3.0
