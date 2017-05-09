@@ -125,11 +125,11 @@ class TernarySearchTree:
                     self._traverse(leaves[i], prefix, buffer)
 
         if node.rating is not None:
-            buffer.append((node.rating, prefix + node.data, node.payload))
-
             if len(node.also) > 0:
                 for als in node.also:
                     buffer.append((node.rating, als, node.payload))
+            else:
+                buffer.append((node.rating, prefix + node.data, node.payload))
 
     def _prefixes(self, string):
 

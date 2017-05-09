@@ -1,5 +1,4 @@
 import pickle
-import string
 
 from django.conf import settings
 
@@ -23,7 +22,7 @@ def _preprocess(item):
     if len(query) < conf['min_query_len'] or last > conf['max_last']:
         raise ValueError
 
-    deny_first = '"$%&\'()*,.;<>?[\\]^_`{|}~'
+    deny_first = '"%&\'()*,.;<>?[\\]^_`{|}~'
 
     if query[0] in deny_first:
         raise ValueError
