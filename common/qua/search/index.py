@@ -1,6 +1,7 @@
 import logging
 
 from django.conf import settings
+from rest_framework.exceptions import NotFound
 
 from qua import elasticsearch
 from qua import settings as qua_settings
@@ -52,6 +53,35 @@ def index_item(ext_id, title, text, keywords, is_external, resource):
     log.debug('New index item with item_id=%s', item_id)
 
     return item_id
+
+
+def get_item(item_id):
+
+    try:
+        item = esclient.get(
+            index=qua_settings.ES_SEARCH_INDEX,
+            doc_type=qua_settings.ES_DOCTYPE,
+            id=item_id)
+    except elasticsearch.exceptions.NotFoundError:
+        raise NotFound
+
+    item['_source']['item_id'] = item['_id']
+
+    return item['_source']
+
+
+def update_item(item_id, data):
+
+    try:
+        esclient.update(
+            index=qua_settings.ES_SEARCH_INDEX,
+            doc_type=qua_settings.ES_DOCTYPE,
+            id=item_id,
+            body={'doc': data})
+    except elasticsearch.exceptions.NotFoundError:
+        raise NotFound
+
+    return get_item(item_id)
 
 
 def delete_item(item_id):

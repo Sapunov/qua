@@ -40,3 +40,12 @@ class IndexRequest(serializers.Serializer):
     keywords = serializers.ListField(child=serializers.CharField(), default=[])
     is_external = serializers.BooleanField(default=False)
     resource = serializers.CharField(default=None, allow_null=True)
+
+
+class ItemUpdate(serializers.Serializer):
+
+    keywords = serializers.ListField(
+        child=serializers.CharField(), required=False)
+    resource = serializers.CharField(required=False)
+    text = serializers.CharField(required=False)
+    title = serializers.CharField(required=False)

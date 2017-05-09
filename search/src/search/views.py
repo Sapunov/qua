@@ -52,11 +52,17 @@ class Items(APIView):
 
     def get(self, request, item_id):
 
-        pass
+        item = search_index.get_item(item_id)
+
+        return QuaApiResponse(item)
 
     def put(self, request, item_id):
 
-        pass
+        req_serializer = deserialize(serializers.ItemUpdate, request.data)
+
+        item = search_index.update_item(item_id, req_serializer.data)
+
+        return QuaApiResponse(item)
 
     def delete(self, request, item_id):
 

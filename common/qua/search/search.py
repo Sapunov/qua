@@ -182,9 +182,6 @@ def search_items(query, limit, offset):
         suggested_query = None
 
     words = extend_query(words)
-
-    log.debug('Extended query: %s', words)
-
     es_query = create_query(words)
 
     log.debug('ES query: %s', json.dumps(es_query, indent=2))
