@@ -92,3 +92,8 @@ LOGGING = {
         }
     },
 }
+
+if DEBUG:
+    ES_HOSTS = ['127.0.0.1']
+else:
+    ES_HOSTS = qua_settings.ELASTICSEARCH['hosts']

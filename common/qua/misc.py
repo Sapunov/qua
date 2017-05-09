@@ -142,3 +142,13 @@ def sign(string, secret_key, length=20):
 def is_sign_ok(input_sign, string, secret_key, length=20):
 
     return input_sign == sign(string, secret_key, length=length)
+
+
+def int2hex_id(integer):
+
+    return hex(integer)[2:].zfill(8)
+
+
+def hex_id2int(hex_id):
+
+    return int(hex_id, 16)
