@@ -6,3 +6,4 @@ dist/
 staff/
 .cache
 .venv
+.vscode/
