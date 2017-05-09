@@ -55,8 +55,7 @@
             "english_stop",
             "english_stemmer",
             "english_stemmer",
-            "russian_stemmer",
-            "custom_edge_ngram"
+            "russian_stemmer"
           ]
         }
       }

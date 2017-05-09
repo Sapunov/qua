@@ -1,4 +1,5 @@
 import logging
+import json
 import time
 
 from django.conf import settings
@@ -8,6 +9,7 @@ from qua import misc
 from qua import settings as qua_settings
 from qua.search import snippets
 from qua.search import utils
+from qua.search.stopwords import STOPWORDS
 from qua.translation import translate
 
 
@@ -119,6 +121,10 @@ def extend_query(words):
         else:
             word = words[i][0]
 
+        if word in STOPWORDS:
+            words[i] = None
+            continue
+
         words[i].append(misc.keyboard_layout_inverse(word))
         words[i].append(misc.translit(word))
 
@@ -128,31 +134,21 @@ def extend_query(words):
 
         words[i] = list(set(words[i]))
 
-    log.debug('Extended query: %s', words)
-
-    return words
+    return [w for w in words if w is not None]
 
 
 def create_query(words):
 
     must = []
 
-    for word in words:
-        should = []
-
-        for variant in word:
-            should.append(
-                {
-                    'multi_match': {
-                        'query': variant,
-                        'fields': qua_settings.SEARCH_FIELDS,
-                        'operator': 'and',
-                        'type': 'cross_fields'
-                    }
-                }
-            )
-
-        must.append(utils.boolean_query(should, policy='should'))
+    for terms in words:
+        must.append({
+            'multi_match': {
+                'query': ' '.join(terms),
+                'fields': qua_settings.SEARCH_FIELDS,
+                'operator': 'or'
+            }
+        })
 
     query = utils.boolean_query(must, policy='must')
 
@@ -185,8 +181,13 @@ def search_items(query, limit, offset):
     else:
         suggested_query = None
 
-    extend_query(words)
+    words = extend_query(words)
+
+    log.debug('Extended query: %s', words)
+
     es_query = create_query(words)
+
+    log.debug('ES query: %s', json.dumps(es_query, indent=2))
 
     total, took, results = utils.query(
         index=qua_settings.ES_SEARCH_INDEX,
