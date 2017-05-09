@@ -4,9 +4,9 @@ import { Component, OnInit, OnDestroy, Input, ElementRef, ViewChild, AfterViewIn
 import { Router, NavigationExtras, ActivatedRoute, Params } from '@angular/router';
 
 import { SearchService } from '../../services/search.service';
-import { ISearchInfo } from '../../interfaces/search-hits.interface';
+import { ISearchInfo, ISuggest } from '../../interfaces/search-hits.interface';
 
-import { MIN_CHARS_FOR_SEARCH, SEARCH_DELAY } from '../../../environments/const';
+import { MIN_CHARS_FOR_SEARCH, LIMIT_FOR_SUGGESTS } from '../../../environments/const';
 
 @Component({
   selector: 'app-search',
@@ -17,10 +17,14 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
   @ViewChild('inputSearch') private searchField: ElementRef;
   @Input() focusOnSf: Subject<boolean>;
   @Input() sfHide: boolean;
+
+  suggests: ISuggest[];
   subs: Subscription[];
   query: string;
+  lastQuery: string;
   timer: number;
   searchInfo: ISearchInfo;
+  currentSuggest: number;
 
   constructor(
     private router: Router,
@@ -28,37 +32,113 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
     private searchService: SearchService
     ) {
       this.query = '';
+      this.lastQuery = '';
       this.subs = [];
       this.searchInfo = null;
+      this.suggests = [];
+      this.currentSuggest = -1;
     }
 
 
-  getResults(query: string) {
-    if (!query || this.query.length < MIN_CHARS_FOR_SEARCH) {
-      return;
-    }
+  getResults(query: string): void {
     let params: NavigationExtras = {
       queryParams: {
         query: query
       }
     };
+
+    this.suggests = [];
     this.router.navigate(['/search'], params);
   }
 
-  keyup(event: KeyboardEvent) {
+  highlightSuggests(suggests: ISuggest[]): ISuggest[] {
+    return suggests.map(suggest => {
+      suggest.html = suggest.text.replace(suggest.prefix, `<b style="color: #2b2f33">${suggest.prefix}</b>`);
+      return suggest;
+    });
+  }
+
+  getSuggests(query: string): void {
+    if (!query) {
+      return;
+    }
+
+    if (this.lastQuery === query && this.suggests.length !== 0) {
+      return;
+    };
+
+    this.lastQuery = query;
+    this.currentSuggest = -1;
+    this.searchService.getSuggests({
+      query: query,
+      limit: LIMIT_FOR_SUGGESTS
+    })
+      .then(suggests => this.suggests = this.highlightSuggests(suggests))
+      .catch(err => null);
+  }
+
+  useSuggest(suggest: ISuggest): void {
+    this.query = suggest.text;
+    this.suggests = [];
+    this.getResults(this.query);
+  }
+
+  onMouseenter(index): void {
+    this.currentSuggest = index;
+  }
+
+  upDownArrowHandler(code): void {
+    if (code === 38) {
+      this.currentSuggest -= 1;
+
+      if (this.currentSuggest < 0) {
+        this.currentSuggest = this.suggests.length - 1
+      }
+    }
+
+    if (code === 40) {
+      this.currentSuggest += 1;
+
+      if (this.currentSuggest > this.suggests.length - 1) {
+        this.currentSuggest = 0
+      }
+    }
+
+    if (code === 40 || code === 38) {
+      this.query = this.suggests[this.currentSuggest].text;
+    }
+  }
+
+  isSelected(index: number): boolean {
+    return index === this.currentSuggest;
+  }
+
+  clearSuggests(event): void {
+    if (event.target.nodeName === 'LI' || event.target.nodeName === 'INPUT') {
+      return;
+    } else {
+      this.suggests = [];
+    }
+  }
+
+  keyup(event: KeyboardEvent): void {
+    if (
+      event.keyCode === 37 ||
+      event.keyCode === 38 ||
+      event.keyCode === 39 ||
+      event.keyCode === 40 ||
+      event.keyCode === 13
+    ) {
+      this.upDownArrowHandler(event.keyCode);
+      return;
+    }
+
     if (this.query.length < MIN_CHARS_FOR_SEARCH) {
+      this.suggests = [];
       return;
     }
-    if (event.code === 'Enter' || event.key === 'Enter' || event.which === 13) {
-      clearTimeout(this.timer);
-      return;
-    }
-    if (this.timer) {
-      clearTimeout(this.timer);
-    }
-    this.timer = window.setTimeout(() => {
-      this.getResults(this.query);
-    }, SEARCH_DELAY);
+
+    this.getSuggests(this.query);
   }
 
   ngOnInit() {

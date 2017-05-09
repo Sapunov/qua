@@ -11,7 +11,7 @@ import { AuthService } from './services/auth.service';
   styleUrls: ['./app.component.less'],
 })
 export class AppComponent implements OnInit, OnDestroy {
-  focusOnSf: Subject<boolean> = new Subject();
+  focusOnSf: Subject<{}> = new Subject();
   isAuth: boolean;
   sfHide: boolean;
   sub: Subscription;

@@ -8,7 +8,7 @@
       "root": "src",
       "outDir": "dist",
       "assets": [],
-      "deployUrl": "static/wi",
+      "deployUrl": "/static/",
       "index": "index.html",
       "main": "main.ts",
       "test": "test.ts",
@@ -19,8 +19,8 @@
         "styles.less"
       ],
       "scripts": [],
+      "environmentSource": "environments/environment.ts",
       "environments": {
-        "source": "environments/environment.ts",
         "dev": "environments/environment.ts",
         "prod": "environments/environment.prod.ts"
       }
@@ -33,6 +33,11 @@
       "config": "./protractor.conf.js"
     }
   },
+  "lint": [
+    {
+      "project": "src/tsconfig.json"
+    }
+  ],
   "test": {
     "karma": {
       "config": "./karma.conf.js"

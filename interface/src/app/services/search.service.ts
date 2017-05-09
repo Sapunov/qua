@@ -7,7 +7,7 @@ import 'rxjs/add/operator/toPromise';
 
 import { ErrorService } from './error.service';
 
-import { ISearchResult, ISearchInfo, ISearchParams } from '../interfaces/search-hits.interface';
+import { ISearchResult, ISearchInfo, ISearchParams, ISuggest, IGetSuggests } from '../interfaces/search-hits.interface';
 import { IResponse } from '../interfaces/response.interface';
 
 @Injectable()
@@ -20,6 +20,32 @@ export class SearchService {
     private http: Http
   ) {
 
+  }
+
+  getSuggests(params: IGetSuggests): Promise<ISuggest[] | null> {
+    let query = params.query || '';
+
+    if (query.length < MIN_CHARS_FOR_SEARCH) {
+      this.searchInfo.next(null);
+      return Promise.resolve(null);
+    }
+
+    let options = this.makeOptions();
+    let param: URLSearchParams = new URLSearchParams;
+
+    param.set('query', query);
+    param.set('limit', params.limit);
+
+    options.search = param;
+
+    return this.http.get(`${URLS.suggests}`, options)
+      .toPromise()
+      .then(this.promiseHandler)
+      .then((result: ISuggest[]) => {
+
+        return result;
+      })
+      .catch(this.errorHandler);
   }
 
   goSearch(params: ISearchParams): Promise<ISearchResult | null> {
