@@ -1,5 +1,5 @@
 cluster.name: qua
-node.name: qua-es01
+node.name: qua-esserver
 
 transport.host: 127.0.0.1
 http.host: 0.0.0.0

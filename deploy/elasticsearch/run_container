@@ -1,0 +1,7 @@
+#!/bin/bash
+
+sudo docker run --name esserver \
+	-v qua-esdata:/usr/share/elasticsearch/data \
+	-v qua-esconfig:/usr/share/elasticsearch/config \
+	-p 9200:9200 \
+	-d qua-elasticsearch:latest
