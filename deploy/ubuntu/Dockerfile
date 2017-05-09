@@ -41,6 +41,9 @@ RUN export LANG=en_US.UTF-8 \
 		requests==2.13.0 \
 		rq==0.7.1 \
 		rq-scheduler==0.7.0 \
+		elasticsearch==5.3.0 \
+		lxml==3.7.3 \
+		urllib3==1.21.1 \
 
 	&& apt-get autoremove -y ${BUILD_DEPS} \
 	&& apt-get clean \
