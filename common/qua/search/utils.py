@@ -1,3 +1,4 @@
+import logging
 import lxml.html
 import re
 
@@ -6,26 +7,12 @@ from qua import settings
 from qua.elasticsearch import get_client
 
 
-def boolean_query(query_body, policy='should', query_type='match'):
+log = logging.getLogger(settings.APP_NAME + '.' + __name__)
 
-    clause = []
 
-    for key, values in query_body.items():
-        if isinstance(values, (list, tuple, set)):
-            for value in values:
-                clause.append({
-                    query_type: {
-                        key: value
-                    }
-                })
-        else:
-            clause.append({
-                query_type: {
-                    key: values
-                }
-            })
+def boolean_query(queries, policy='should'):
 
-    return {policy: clause}
+    return {'bool': {policy: queries}}
 
 
 def query(index, doc_type, body, **kwargs):
@@ -42,17 +29,14 @@ def query(index, doc_type, body, **kwargs):
         doc_type=doc_type,
         body=body, **kwargs)
 
-    took = round(results['took'] / 1000, 3)
     total = results['hits']['total']
+    out_results = []
 
     if total > 0:
-        out_results = [
-            (res['_score'], res['_source']) for res in results['hits']['hits']
-        ]
-    else:
-        out_results = None
+        for res in results['hits']['hits']:
+            out_results.append((res['_score'], res['_id'], res['_source']))
 
-    return (total, took, out_results)
+    return (total, results['took'], out_results)
 
 
 def _html2text(node, forbidden_tags):
@@ -92,23 +76,7 @@ def html2text(html, forbidden_tags=['script', 'style', 'noscript', 'img']):
     }
 
 
-def get_next_item_id():
+def generate_item_id(ext_id, is_external):
 
-    esclient = get_client()
-
-    response = esclient.search(
-        index=settings.ES_SEARCH_INDEX,
-        doc_type=settings.ES_DOCTYPE,
-        sort='_uid:desc',
-        size=1)
-
-    if response['hits']['total'] > 0:
-        next_id = misc.int2hex_id(
-            misc.hex_id2int(
-                response['hits']['hits'][0]['_id']
-            ) + 1
-        )
-    else:
-        next_id = misc.int2hex_id(0)
-
-    return next_id
+    return '{0}-{1}'.format(
+        'e' if is_external else 'i', misc.int2hex_id(ext_id))

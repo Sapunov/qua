@@ -17,7 +17,8 @@
       "properties": {
         "text": {
           "type": "text",
-          "analyzer": "spelling_analyzer"
+          "analyzer": "spelling_analyzer",
+          "search_analyzer": "spelling_analyzer"
         }
       },
       "_source": {

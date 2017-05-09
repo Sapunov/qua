@@ -46,3 +46,5 @@ ES_DOCTYPE = 'main'
 ES_SEARCH_INDEX = PROGRAM_NAME + '_search'
 
 ES_SPELLING_INDEX = PROGRAM_NAME + '_spelling'
+
+SEARCH_FIELDS = ['title^4', 'keywords^2', 'text']

@@ -26,6 +26,10 @@
           "type": "edge_ngram",
           "min_gram": 2,
           "max_gram": 50
+        },
+        "custom_delimiter": {
+          "type": "word_delimiter",
+          "preserve_original": true
         }
       },
       "analyzer": {
@@ -34,6 +38,7 @@
           "tokenizer": "whitespace",
           "filter": [
             "lowercase",
+            "custom_delimiter",
             "russian_stop",
             "english_stop",
             "english_stemmer",
@@ -45,10 +50,10 @@
           "tokenizer": "whitespace",
           "filter": [
             "lowercase",
+            "custom_delimiter",
             "russian_stop",
             "english_stop",
             "english_stemmer",
-            "russian_stemmer",
             "english_stemmer",
             "russian_stemmer",
             "custom_edge_ngram"

@@ -39,7 +39,7 @@ def index_item(ext_id, title, text, keywords, is_external, resource):
         'resource': resource
     }
 
-    item_id = utils.get_next_item_id()
+    item_id = utils.generate_item_id(ext_id, is_external)
 
     esclient.index(
         index=qua_settings.ES_SEARCH_INDEX,

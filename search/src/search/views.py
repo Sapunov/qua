@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from qua.rest.response import QuaApiResponse
 from qua.rest.serializers import serialize, deserialize
 from qua.search import index as search_index
+from qua.search import search
 from search import serializers
 
 
@@ -14,7 +15,14 @@ class Search(APIView):
             serializers.SearchRequest,
             request.query_params)
 
-        return QuaApiResponse(req_serializer.data)
+        search_results = search.search_items(
+            query=req_serializer.data['query'],
+            limit=req_serializer.data['limit'],
+            offset=req_serializer.data['offset'])
+
+        resp_serializer = serialize(serializers.SearchResponse, search_results)
+
+        return QuaApiResponse(resp_serializer.data)
 
 
 class Index(APIView):
