@@ -127,8 +127,6 @@ JWT_AUTH = {
     'JWT_RESPONSE_PAYLOAD_HANDLER': 'qua.rest.response.jwt_response_payload_handler',
 }
 
-PAGE_SIZE = 10
-
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
