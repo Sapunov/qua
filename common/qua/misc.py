@@ -142,3 +142,35 @@ def sign(string, secret_key, length=20):
 def is_sign_ok(input_sign, string, secret_key, length=20):
 
     return input_sign == sign(string, secret_key, length=length)
+
+
+def int2hex_id(integer):
+
+    return hex(integer)[2:].zfill(8)
+
+
+def hex_id2int(hex_id):
+
+    return int(hex_id, 16)
+
+
+def translit(string):
+
+    dic = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e',
+        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'j', 'к': 'k', 'л': 'l', 'м': 'm',
+        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+        'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
+        'ь': '', 'ы': 'y', 'ъ': '', 'э': 'e', 'ю': 'ju', 'я': 'ja', 'a': 'а',
+        'b': 'б', 'c': 'ц', 'd': 'д', 'e': 'е', 'f': 'ф', 'g': 'г', 'h': 'х',
+        'i': 'и', 'j': 'й', 'k': 'к', 'l': 'л', 'm': 'м', 'n': 'н', 'o': 'о',
+        'p': 'п', 'q': 'q', 'r': 'р', 's': 'с', 't': 'т', 'u': 'у', 'v': 'в',
+        'w': 'w', 'x': 'x', 'y': 'ы', 'z': 'з'
+    }
+
+    result = ''
+
+    for letter in string:
+        result += dic.get(letter, letter)
+
+    return result

@@ -27,19 +27,9 @@
           "min_gram": 2,
           "max_gram": 50
         },
-        "custom_word_delimiter": {
+        "custom_delimiter": {
           "type": "word_delimiter",
-          "generate_word_parts": true,
-          "generate_number_parts": true,
-          "protected_words_path": "qua_protected_words.txt"
-        },
-        "synonym": {
-          "type": "synonym",
-          "synonyms_path": "qua_synonyms.txt"
-        },
-        "protectedwords": {
-          "type": "keyword_marker",
-          "keywords_path": "qua_protected_words.txt"
+          "preserve_original": true
         }
       },
       "analyzer": {
@@ -48,13 +38,11 @@
           "tokenizer": "whitespace",
           "filter": [
             "lowercase",
-            "custom_word_delimiter",
+            "custom_delimiter",
             "russian_stop",
             "english_stop",
-            "protectedwords",
             "english_stemmer",
-            "russian_stemmer",
-            "custom_edge_ngram"
+            "russian_stemmer"
           ]
         },
         "app_search_analyzer": {
@@ -62,13 +50,10 @@
           "tokenizer": "whitespace",
           "filter": [
             "lowercase",
-            "custom_word_delimiter",
+            "custom_delimiter",
             "russian_stop",
             "english_stop",
-            "protectedwords",
             "english_stemmer",
-            "russian_stemmer",
-            "synonym",
             "english_stemmer",
             "russian_stemmer"
           ]
@@ -77,7 +62,7 @@
     }
   },
   "mappings": {
-    "questions": {
+    "main": {
       "properties": {
         "title": {
           "type": "text",
@@ -94,10 +79,17 @@
           "analyzer": "app_analyzer",
           "search_analyzer": "app_search_analyzer"
         },
-        "external_content": {
-          "type": "text",
-          "analyzer": "app_analyzer",
-          "search_analyzer": "app_search_analyzer"
+        "is_external": {
+          "type": "boolean"
+        },
+        "when_created": {
+          "type": "date"
+        },
+        "ext_id": {
+          "type": "integer"
+        },
+        "resource": {
+          "type": "text"
         }
       }
     }
