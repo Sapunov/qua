@@ -41,10 +41,7 @@ export class SearchService {
     return this.http.get(`${URLS.suggests}`, options)
       .toPromise()
       .then(this.promiseHandler)
-      .then((result: ISuggest[]) => {
-
-        return result;
-      })
+      .then((result: ISuggest[]) => result)
       .catch(this.errorHandler);
   }
 
