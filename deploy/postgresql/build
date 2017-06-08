@@ -1,0 +1,9 @@
+#!/bin/bash
+
+echo -n "Database password: " && read -s PASSWORD && echo ""
+
+sed -i "s/somestrongdbpassword/$PASSWORD/g" docker-entrypoint-initdb.d/init.sql
+
+sudo docker build -t qua-postgres:latest .
+
+sed -i "s/$PASSWORD/somestrongdbpassword/g" docker-entrypoint-initdb.d/init.sql

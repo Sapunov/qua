@@ -1,6 +1,9 @@
 from datetime import datetime
 from hashlib import sha1
+from importlib import import_module
+from urllib.parse import urlparse
 import os
+import tempfile
 
 
 def sha1_hash(string):
@@ -44,6 +47,125 @@ def keyboard_layout_inverse(string):
         'g': 'п', 'h': 'р', 'j': 'о', 'k': 'л', 'l': 'д', ';': 'ж', '\'': 'э',
         'z': 'я', 'x': 'ч', 'c': 'с', 'v': 'м', 'b': 'и', 'n': 'т', 'm': 'ь',
         ',': 'б', '.': 'ю', '`': 'ё'
+    }
+
+    result = ''
+
+    for letter in string:
+        result += dic.get(letter, letter)
+
+    return result
+
+
+def remove_empty_values(data):
+
+    if isinstance(data, dict):
+        clear_dict = {}
+
+        for key, value in data.items():
+            cleared_value = remove_empty_values(value)
+            if cleared_value:
+                clear_dict[key] = cleared_value
+
+        return clear_dict
+    elif isinstance(data, list):
+        clear_list = []
+
+        for item in data:
+            cleared_value = remove_empty_values(item)
+            if cleared_value:
+                clear_list.append(cleared_value)
+
+        return clear_list
+    else:
+        return data if data else False
+
+
+def url_part(url, part_name):
+
+    parsed = urlparse(url)
+
+    if hasattr(parsed, part_name):
+        return getattr(parsed, part_name)
+
+
+def extract_domain(url):
+
+    netloc = url_part(url, 'netloc')
+
+    return netloc if netloc else None
+
+
+def import_module_class(name):
+
+    module_name, class_name = name.rsplit('.', 1)
+
+    module = import_module(module_name)
+
+    try:
+        class_ = getattr(module, class_name)
+    except AttributeError:
+        raise ImportError('No class <%s> in %s' % (class_name, module))
+
+    return class_
+
+
+def word_normalize(phrase):
+
+    words = [word.strip().lower() for word in phrase.split(' ')]
+
+    return ' '.join([word for word in words if word])
+
+
+def temp_file(data, suffix='', prefix='', binary=False):
+
+    filepath = tempfile.mktemp(suffix=suffix, prefix=prefix)
+
+    mode = 'wb' if binary else 'w'
+
+    with open(filepath, mode) as fd:
+        fd.write(data)
+
+    return filepath
+
+
+def h6(string):
+
+    return sha1_hash(string)[:6]
+
+
+def sign(string, secret_key, length=20):
+
+    return sha1_hash(string + secret_key)[0:length]
+
+
+def is_sign_ok(input_sign, string, secret_key, length=20):
+
+    return input_sign == sign(string, secret_key, length=length)
+
+
+def int2hex_id(integer):
+
+    return hex(integer)[2:].zfill(8)
+
+
+def hex_id2int(hex_id):
+
+    return int(hex_id, 16)
+
+
+def translit(string):
+
+    dic = {
+        'а': 'a', 'б': 'b', 'в': 'v', 'г': 'g', 'д': 'd', 'е': 'e', 'ё': 'e',
+        'ж': 'zh', 'з': 'z', 'и': 'i', 'й': 'j', 'к': 'k', 'л': 'l', 'м': 'm',
+        'н': 'n', 'о': 'o', 'п': 'p', 'р': 'r', 'с': 's', 'т': 't', 'у': 'u',
+        'ф': 'f', 'х': 'h', 'ц': 'ts', 'ч': 'ch', 'ш': 'sh', 'щ': 'sch',
+        'ь': '', 'ы': 'y', 'ъ': '', 'э': 'e', 'ю': 'ju', 'я': 'ja', 'a': 'а',
+        'b': 'б', 'c': 'ц', 'd': 'д', 'e': 'е', 'f': 'ф', 'g': 'г', 'h': 'х',
+        'i': 'и', 'j': 'й', 'k': 'к', 'l': 'л', 'm': 'м', 'n': 'н', 'o': 'о',
+        'p': 'п', 'q': 'q', 'r': 'р', 's': 'с', 't': 'т', 'u': 'у', 'v': 'в',
+        'w': 'w', 'x': 'x', 'y': 'ы', 'z': 'з'
     }
 
     result = ''

@@ -1,0 +1,97 @@
+{
+  "settings": {
+    "analysis": {
+      "filter": {
+        "russian_stop": {
+          "type": "stop",
+          "stopwords": "_russian_"
+        },
+        "russian_stemmer": {
+          "type": "stemmer",
+          "language": "russian"
+        },
+        "english_stop": {
+          "type": "stop",
+          "stopwords": "_english_"
+        },
+        "english_stemmer": {
+          "type": "stemmer",
+          "language": "english"
+        },
+        "english_possessive_stemmer": {
+          "type": "stemmer",
+          "language": "possessive_english"
+        },
+        "custom_edge_ngram": {
+          "type": "edge_ngram",
+          "min_gram": 2,
+          "max_gram": 50
+        },
+        "custom_delimiter": {
+          "type": "word_delimiter",
+          "preserve_original": true
+        }
+      },
+      "analyzer": {
+        "app_analyzer": {
+          "type": "custom",
+          "tokenizer": "whitespace",
+          "filter": [
+            "lowercase",
+            "custom_delimiter",
+            "russian_stop",
+            "english_stop",
+            "english_stemmer",
+            "russian_stemmer"
+          ]
+        },
+        "app_search_analyzer": {
+          "type": "custom",
+          "tokenizer": "whitespace",
+          "filter": [
+            "lowercase",
+            "custom_delimiter",
+            "russian_stop",
+            "english_stop",
+            "english_stemmer",
+            "english_stemmer",
+            "russian_stemmer"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "main": {
+      "properties": {
+        "title": {
+          "type": "text",
+          "analyzer": "app_analyzer",
+          "search_analyzer": "app_search_analyzer"
+        },
+        "keywords": {
+          "type": "text",
+          "analyzer": "app_analyzer",
+          "search_analyzer": "app_search_analyzer"
+        },
+        "text": {
+          "type": "text",
+          "analyzer": "app_analyzer",
+          "search_analyzer": "app_search_analyzer"
+        },
+        "is_external": {
+          "type": "boolean"
+        },
+        "when_created": {
+          "type": "date"
+        },
+        "ext_id": {
+          "type": "integer"
+        },
+        "resource": {
+          "type": "text"
+        }
+      }
+    }
+  }
+}

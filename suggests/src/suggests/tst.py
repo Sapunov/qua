@@ -125,11 +125,11 @@ class TernarySearchTree:
                     self._traverse(leaves[i], prefix, buffer)
 
         if node.rating is not None:
-            buffer.append((node.rating, prefix + node.data, node.payload))
-
             if len(node.also) > 0:
                 for als in node.also:
                     buffer.append((node.rating, als, node.payload))
+            else:
+                buffer.append((node.rating, prefix + node.data, node.payload))
 
     def _prefixes(self, string):
 
@@ -179,9 +179,16 @@ class TernarySearchTree:
         for i in range(lstring):
             # If this is the last letter -> pass rating
             if i == lstring - 1:
-                self._insert(node, string[i], rating, payload, also)
+                self._insert(
+                    node, string[i],
+                    rating=rating,
+                    payload=payload,
+                    also=also)
             else:
-                node = self._insert(node, string[i], payload, also)
+                node = self._insert(
+                    node, string[i],
+                    payload=payload,
+                    also=also)
 
         # Adding also values
 
@@ -222,17 +229,21 @@ class TernarySearchTree:
 
         buffer = []
         self._traverse(child, prefix[0:-1], buffer, full_traverse)
-        buffer.sort(key=lambda it: it[0], reverse=True)
 
         # Removing also duplicates
         uniq_buffer = []
         dup = set([])
         for item in buffer:
             if item[1] not in dup:
-                uniq_buffer.append(item)
+                # Recalc rate by substract len
+                new_rate = item[0] - len(item[1])
+
+                uniq_buffer.append((new_rate, item[1], item[2]))
                 dup.add(item[1])
 
         buffer = uniq_buffer[:limit]
+
+        buffer.sort(key=lambda it: it[0], reverse=True)
 
         if not with_payload:
             buffer = [(it[0], it[1]) for it in buffer]

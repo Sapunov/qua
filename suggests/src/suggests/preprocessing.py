@@ -22,7 +22,15 @@ def _preprocess(item):
     if len(query) < conf['min_query_len'] or last > conf['max_last']:
         raise ValueError
 
+    deny_first = '"%&\'()*,.;<>?[\\]^_`{|}~'
+
+    if query[0] in deny_first:
+        raise ValueError
+
     query = query.lower().strip()
+
+    if quick_answer:
+        quick_answer = quick_answer.lower().strip()
 
     # Replace some substrings
     for pattern, to in conf['replacements']:

@@ -1,7 +1,7 @@
-from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from qua.common import serialize, deserialize
+from qua.rest.serializers import serialize, deserialize
+from qua.rest.response import QuaApiResponse
 from suggests import models
 from suggests import serializers
 from suggests import tree
@@ -18,7 +18,7 @@ class Accumulate(APIView):
 
         models.AccumulateQueue.add(req_serializer.data)
 
-        return Response()
+        return QuaApiResponse()
 
 
 class Suggest(APIView):
@@ -36,4 +36,4 @@ class Suggest(APIView):
                 req_serializer.data['limit']),
             many=True)
 
-        return Response(resp_serializer.data)
+        return QuaApiResponse(resp_serializer.data)

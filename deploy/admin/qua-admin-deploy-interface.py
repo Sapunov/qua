@@ -3,7 +3,6 @@
 import argparse
 import errno
 import os
-import re
 import shutil
 import sys
 
@@ -30,21 +29,6 @@ def delete_files(directory):
 
         if os.path.isfile(file_path):
             os.unlink(file_path)
-
-
-def replace_static_paths(filename):
-
-    with open(filename, 'r+') as opened:
-        html = opened.read()
-
-        html = re.sub(r'(href|src)="([a-z]{2,})', r'\1="/static/\2', html)
-        html = re.sub(r'<title>(\w)+</title>', r'<title>QUA</title>', html)
-
-        opened.seek(0)
-        opened.write(html)
-        opened.truncate()
-
-    print('Staticfiles paths replaces. File saved in: {0}'.format(filename))
 
 
 def copy_index(filename):
@@ -118,8 +102,6 @@ def main():
     dist_directory = os.path.abspath(args.dist)
 
     index_html = os.path.join(dist_directory, 'index.html')
-
-    replace_static_paths(index_html)
 
     copy_index(index_html)
     copy_staticfiles(dist_directory)

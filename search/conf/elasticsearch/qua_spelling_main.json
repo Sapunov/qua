@@ -1,0 +1,29 @@
+{
+  "settings": {
+    "analysis": {
+      "analyzer": {
+        "spelling_analyzer": {
+          "type": "custom",
+          "tokenizer": "whitespace",
+          "filter": [
+            "lowercase"
+          ]
+        }
+      }
+    }
+  },
+  "mappings": {
+    "main": {
+      "properties": {
+        "text": {
+          "type": "text",
+          "analyzer": "spelling_analyzer",
+          "search_analyzer": "spelling_analyzer"
+        }
+      },
+      "_source": {
+        "enabled": false
+      }
+    }
+  }
+}

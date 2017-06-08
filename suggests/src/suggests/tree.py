@@ -14,11 +14,12 @@ REQUESTS_COUNT = 0
 
 class SuggestItem:
 
-    def __init__(self, text, rate, quick_ans):
+    def __init__(self, text, rate, quick_ans, prefix):
 
         self.text = text
         self.rate = rate
         self.quick_ans = quick_ans
+        self.prefix = prefix
 
 
 def load_or_create():
@@ -55,6 +56,8 @@ def load_tree():
 
 def suggest(prefix, limit):
 
+    prefix = prefix.lower()
+
     ans = []
 
     load_tree()
@@ -62,12 +65,13 @@ def suggest(prefix, limit):
     if TREE:
         results = TREE.common_prefix(prefix, limit)
 
-        if not results:
-            results = TREE.common_prefix(
-                misc.keyboard_layout_inverse(prefix), limit)
+        if not results and len(prefix) > 1:
+            prefix = misc.keyboard_layout_inverse(prefix)
+            results = TREE.common_prefix(prefix, limit)
 
         if results:
             for result in results:
-                ans.append(SuggestItem(result[1], result[0], result[2]))
+                ans.append(
+                    SuggestItem(result[1], result[0], result[2], prefix))
 
     return ans
