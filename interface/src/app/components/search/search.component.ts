@@ -73,8 +73,13 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       query: query,
       limit: LIMIT_FOR_SUGGESTS
     })
-      .then(suggests => this.suggests = this.highlightSuggests(suggests))
-      .catch(err => null);
+      .then(suggests => {
+        if (suggests.length === 0) {
+          return this.suggests = suggests;
+        } else if (this.query === suggests[0].prefix) {
+          return this.suggests = this.highlightSuggests(suggests);
+        }
+      });
   }
 
   useSuggest(suggest: ISuggest): void {
@@ -92,7 +97,7 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentSuggest -= 1;
 
       if (this.currentSuggest < 0) {
-        this.currentSuggest = this.suggests.length - 1
+        this.currentSuggest = this.suggests.length - 1;
       }
     }
 
@@ -100,7 +105,7 @@ export class SearchComponent implements OnInit, OnDestroy, AfterViewInit {
       this.currentSuggest += 1;
 
       if (this.currentSuggest > this.suggests.length - 1) {
-        this.currentSuggest = 0
+        this.currentSuggest = 0;
       }
     }
 
