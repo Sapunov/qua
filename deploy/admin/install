@@ -1,0 +1,6 @@
+#!/bin/bash
+
+for f in $(ls qua-admin*);
+do
+	cp $f /bin/$(echo $f | awk -F '.' '{ print $1 }')
+done;
