@@ -4,7 +4,7 @@ import datetime
 from qua import settings as qua_settings
 
 
-APP_NAME = qua_settings.PROGRAM_NAME + '.api'
+APP_NAME = qua_settings.PROGRAM_NAME + '.ext'
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -182,3 +182,5 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(qua_settings.DATA_DIR, 'static')
+
+PAGE_SIZE = 10
