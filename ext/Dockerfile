@@ -21,6 +21,6 @@ WORKDIR /var/www/qua-ext
 
 RUN nginx -t \
 	&& python3 -c 'import compileall, os; compileall.compile_dir(os.curdir, force=1)' > /dev/null \
-	&& ./manage.py collectstatic --settings=app.settings --no-input -v0
+	&& python3 manage.py collectstatic
 
 CMD ["/usr/bin/supervisord"]
