@@ -63,7 +63,7 @@ sed -i "s/somestrongdjangokey/$(qua-admin-keygen)/g" src/app/settings.py
 #
 echo "Start building docker image"
 
-sudo docker build -t qua-api:latest .
+sudo docker build -t qua-ext:latest .
 
 
 #
