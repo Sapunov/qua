@@ -19,6 +19,7 @@ STATICFILES_FINDERS = (
 
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
+    'retriever.apps.RetrieverConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
