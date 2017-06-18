@@ -185,3 +185,11 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(qua_settings.DATA_DIR, 'static')
 
 PAGE_SIZE = 10
+
+SERVICES = {
+    'search': {
+        'main': {
+            'hosts': []
+        }
+    }
+}

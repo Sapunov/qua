@@ -174,3 +174,20 @@ def translit(string):
         result += dic.get(letter, letter)
 
     return result
+
+
+def resolve_dots(url, target_dict):
+
+    name, path = url.split('/', 1)
+
+    current_value = target_dict
+
+    for part in name.split('.'):
+        current_value = current_value[part]
+
+    hosts = current_value['hosts']
+
+    if not isinstance(hosts, (list, tuple)):
+        hosts = [hosts]
+
+    return [os.path.join(host, path) for host in hosts]

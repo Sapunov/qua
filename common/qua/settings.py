@@ -48,3 +48,8 @@ ES_SEARCH_INDEX = PROGRAM_NAME + '_search'
 ES_SPELLING_INDEX = PROGRAM_NAME + '_spelling'
 
 SEARCH_FIELDS = ['title^4', 'keywords^2', 'text']
+
+# If one service doesn't respond within this timeout, qua trying to
+# request another if exists
+# By default - 1 sec
+SERVICES_TIMEOUT = 1
