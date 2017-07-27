@@ -86,12 +86,16 @@ def spelling_correction(
 
     result = esclient.suggest(index=index, body=body)
 
-    for suggest in result['spelling']:
-        if len(suggest['options']) > 0 and not corrected:
-            corrected = True
-            output.append([suggest['text'], suggest['options'][0]['text']])
-        else:
-            output.append([suggest['text']])
+    # Funny thing: when es index has no items .suggest method returns dict
+    # without any field (`spelling` in this case) but when index not empty and
+    # there is not suggestions method returns dict with `spelling` field
+    if 'spelling' in result:
+        for suggest in result['spelling']:
+            if len(suggest['options']) > 0 and not corrected:
+                corrected = True
+                output.append([suggest['text'], suggest['options'][0]['text']])
+            else:
+                output.append([suggest['text']])
 
     return (corrected, output)
 
