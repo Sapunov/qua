@@ -176,18 +176,35 @@ def translit(string):
     return result
 
 
-def resolve_dots(url, target_dict):
+def resolve_dots(url, services_dict):
+    '''Search dot separated name in the settings dict.
+
+    For example: services = {
+        'search': {
+            'main': {
+                'host': 'localhost'
+            }
+        }
+    }
+
+    if you call resolve_dots('search_main') this function returns:
+        localhost
+
+    '''
 
     name, path = url.split('/', 1)
 
-    current_value = target_dict
+    current_value = services_dict
 
     for part in name.split('.'):
         current_value = current_value[part]
 
-    hosts = current_value['hosts']
+    host = current_value['host']
 
-    if not isinstance(hosts, (list, tuple)):
-        hosts = [hosts]
+    return os.path.join(host, path)
 
-    return [os.path.join(host, path) for host in hosts]
+
+def create_query(query_dict):
+    '''Convert dict to the url string after ?.'''
+
+    return '&'.join(['{0}={1}'.format(k, v) for k, v in query_dict.items()])

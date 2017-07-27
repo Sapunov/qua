@@ -1,6 +1,12 @@
 import random
 import requests
 
+# All services in current state is django-based, because of that
+# variable `settings` is service specific, that's why if microservice
+# wants to use this module it MUST specify SERVICES in their settings module
+# otherwise exception will raise
+#
+# A good idea to make a separate service that responsible for service discovery
 from django.conf import settings
 
 from qua import misc
@@ -13,19 +19,15 @@ assert hasattr(settings, 'SERVICES'), 'You must specify SERVICES'
 
 def _request(method, name, **kwargs):
 
-    # Each service may contains many instances
-    hosts = misc.resolve_dots(name, settings.SERVICES)
-    random.shuffle(hosts)
+    host = misc.resolve_dots(name, settings.SERVICES)
 
     kwargs['timeout'] = kwargs.get('timeout', qua_settings.SERVICES_TIMEOUT)
 
-    for host in hosts:
-        try:
-            return requests.api.request(method, host, **kwargs)
-        except requests.exceptions.RequestException as e:
-            continue
-
-    raise exceptions.InterconnectionError('No service can respond')
+    try:
+        return requests.api.request(method, host, **kwargs)
+    except requests.exceptions.RequestException:
+        raise exceptions.InterconnectionError(
+            'Service `{0}` on `{1}` cannot respond'.format(name, host))
 
 
 def get(name, **kwargs):
