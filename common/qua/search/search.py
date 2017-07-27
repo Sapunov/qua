@@ -70,6 +70,10 @@ class SearchResults:
 
 def spelling_correction(
         query, index=qua_settings.ES_SPELLING_INDEX, field='text'):
+        '''Returns tuple (was_corrected, suggests).
+
+        Suggests - list of suggested texts which suggests engine decided to fix
+        '''
 
     query = query.strip().lower()
 

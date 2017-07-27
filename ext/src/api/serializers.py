@@ -148,3 +148,10 @@ class SearchSerializer(serializers.Serializer):
     query_was_corrected = serializers.BooleanField()
     used_query = serializers.CharField()
     took = serializers.FloatField()
+
+
+class SearchRequest(serializers.Serializer):
+
+    query = serializers.CharField()
+    limit = serializers.IntegerField(default=settings.PAGE_SIZE)
+    offset = serializers.IntegerField(default=0)

@@ -189,7 +189,13 @@ PAGE_SIZE = 10
 SERVICES = {
     'search': {
         'main': {
-            'hosts': []
+            'host': 'http://localhost:9002'
+        },
+        'roles': {
+            'host': 'http://localhost:5000'
         }
+    },
+    'suggests': {
+        'host': 'http://localhost:9001'
     }
 }
