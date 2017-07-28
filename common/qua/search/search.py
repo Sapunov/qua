@@ -22,7 +22,7 @@ class SearchHit:
 
     def __init__(
         self, item_id, ext_id, title, keywords, is_external, resource,
-        score, snippet=None
+        score, type_, snippet
     ):
 
         self.item_id = item_id
@@ -34,6 +34,7 @@ class SearchHit:
         self.score = score
         self.snippet = snippet
         self.image = None
+        self.type = type_
 
 
 class SearchResults:
@@ -42,6 +43,7 @@ class SearchResults:
             self, query, total, took, results=None,
             suggested_query=None, query_words=None):
 
+        # For making `took` field
         start = time.time()
 
         self.query = query
@@ -49,9 +51,14 @@ class SearchResults:
 
         self.total = total
         self.hits = []
+        self.max_score = results[0][0] if self.total > 0 else 0
+        self.min_score = results[0][0] if self.total > 0 else 0
 
         if self.total > 0:
             for score, item_id, source in results:
+                self.max_score = max(self.max_score, score)
+                self.min_score = min(self.min_score, score)
+
                 self.hits.append(
                     SearchHit(
                         item_id,
@@ -61,6 +68,7 @@ class SearchResults:
                         source['is_external'],
                         source['resource'],
                         score,
+                        source.get('type', 'main'),
                         snippets.generate_snippet(source['text'], query_words)
                     )
                 )
@@ -70,10 +78,6 @@ class SearchResults:
 
 def spelling_correction(
         query, index=qua_settings.ES_SPELLING_INDEX, field='text'):
-        '''Returns tuple (was_corrected, suggests).
-
-        Suggests - list of suggested texts which suggests engine decided to fix
-        '''
 
     query = query.strip().lower()
 

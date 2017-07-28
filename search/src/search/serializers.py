@@ -21,6 +21,7 @@ class SearchHit(serializers.Serializer):
     score = serializers.FloatField()
     snippet = serializers.CharField()
     image = serializers.CharField(allow_null=True)
+    type = serializers.CharField()
 
 
 class SearchResponse(serializers.Serializer):
@@ -30,6 +31,8 @@ class SearchResponse(serializers.Serializer):
     hits = SearchHit(many=True)
     suggested_query = serializers.CharField()
     took = serializers.FloatField()
+    max_score = serializers.FloatField()
+    min_score = serializers.FloatField()
 
 
 class IndexRequest(serializers.Serializer):

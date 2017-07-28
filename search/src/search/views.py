@@ -1,3 +1,4 @@
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from qua.rest.response import QuaApiResponse
@@ -22,7 +23,9 @@ class Search(APIView):
 
         resp_serializer = serialize(serializers.SearchResponse, search_results)
 
-        return QuaApiResponse(resp_serializer.data)
+        # For simplify search microservices development there is just
+        # standard rest_framework serializer
+        return Response(resp_serializer.data)
 
 
 class Index(APIView):
