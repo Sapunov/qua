@@ -23,20 +23,10 @@ class SearchView(APIView):
             serializers.SearchRequest,
             request.query_params)
 
-        # This is загрушка
-        response = {
-            'query': req_serializer.data['query'],
-            'total': 0,
-            'hits': [],
-            'query_was_corrected': False,
-            'used_query': req_serializer.data['query'],
-            'took': 0
-        }
-
-        # response = search.search_async(
-        #     req_serializer.data['query'],
-        #     req_serializer.data['limit'],
-        #     req_serializer.data['offset']
-        # )
+        response = search.search_async(
+            req_serializer.data['query'],
+            req_serializer.data['limit'],
+            req_serializer.data['offset']
+        )
 
         return QuaApiResponse(response)

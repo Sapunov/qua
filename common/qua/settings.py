@@ -53,3 +53,13 @@ SEARCH_FIELDS = ['title^4', 'keywords^2', 'text']
 # request another if exists
 # By default - 1 sec
 SERVICES_TIMEOUT = 1
+
+MAIN_SEARCH_SERVICE_NAME = 'qua_main'
+
+MAIN_SEARCH_SERP_LOCATION = 'middle'
+
+SERP_MIDDLE_BLOCK_SIZE = SERP_SIZE
+
+SERP_TOP_BLOCK_SIZE = 1
+
+SERP_RIGHT_BLOCK_SIZE = 3

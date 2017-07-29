@@ -4,6 +4,7 @@ from importlib import import_module
 from urllib.parse import urlparse
 import os
 import tempfile
+import time
 
 
 def sha1_hash(string):
@@ -208,3 +209,9 @@ def create_query(query_dict):
     '''Convert dict to the url string after ?.'''
 
     return '&'.join(['{0}={1}'.format(k, v) for k, v in query_dict.items()])
+
+
+def time_elapsed(start_time):
+    '''This function suggest that start_time is time.time() call'''
+
+    return round(time.time() - start_time, 3)

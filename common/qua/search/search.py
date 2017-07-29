@@ -22,29 +22,29 @@ class SearchHit:
 
     def __init__(
         self, item_id, ext_id, title, keywords, is_external, resource,
-        score, type_, snippet
+        score, type_, loc, snippet
     ):
 
-        self.item_id = item_id
+        # Internal fields
+        self._item_id = item_id
+        self._score = score
+        self._type = type_
+        self._loc = loc
+
         self.ext_id = ext_id
         self.title = title
         self.keywords = keywords
         self.is_external = is_external
         self.resource = resource
-        self.score = score
         self.snippet = snippet
         self.image = None
-        self.type = type_
 
 
 class SearchResults:
 
     def __init__(
-            self, query, total, took, results=None,
+            self, query, total, results=None,
             suggested_query=None, query_words=None):
-
-        # For making `took` field
-        start = time.time()
 
         self.query = query
         self.suggested_query = suggested_query
@@ -68,12 +68,11 @@ class SearchResults:
                         source['is_external'],
                         source['resource'],
                         score,
-                        source.get('type', 'main'),
+                        source.get('_type', qua_settings.MAIN_SEARCH_SERVICE_NAME),
+                        source.get('_loc', qua_settings.MAIN_SEARCH_SERP_LOCATION),
                         snippets.generate_snippet(source['text'], query_words)
                     )
                 )
-
-        self.took = round((took + (time.time() - start)) / 1000, 3)
 
 
 def spelling_correction(
@@ -198,10 +197,10 @@ def search_items(query, limit, offset):
 
     log.debug('ES query: %s', json.dumps(es_query, indent=2))
 
-    total, took, results = utils.query(
+    total, _, results = utils.query(
         index=qua_settings.ES_SEARCH_INDEX,
         doc_type=qua_settings.ES_DOCTYPE,
         body=es_query,
         size=limit, from_=offset)
 
-    return SearchResults(query, total, took, results, suggested_query, words)
+    return SearchResults(query, total, results, suggested_query, words)

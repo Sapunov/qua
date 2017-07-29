@@ -12,16 +12,17 @@ class SearchRequest(serializers.Serializer):
 
 class SearchHit(serializers.Serializer):
 
-    item_id = serializers.CharField()
+    _item_id = serializers.CharField()
+    _type = serializers.CharField()
+    _score = serializers.FloatField()
+    _loc = serializers.CharField()
     ext_id = serializers.IntegerField()
     title = serializers.CharField()
     keywords = serializers.ListField(child=serializers.CharField())
     is_external = serializers.BooleanField()
     resource = serializers.CharField(allow_null=True)
-    score = serializers.FloatField()
     snippet = serializers.CharField()
     image = serializers.CharField(allow_null=True)
-    type = serializers.CharField()
 
 
 class SearchResponse(serializers.Serializer):
@@ -30,7 +31,6 @@ class SearchResponse(serializers.Serializer):
     total = serializers.IntegerField()
     hits = SearchHit(many=True)
     suggested_query = serializers.CharField()
-    took = serializers.FloatField()
     max_score = serializers.FloatField()
     min_score = serializers.FloatField()
 

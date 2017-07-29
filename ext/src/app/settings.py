@@ -184,12 +184,14 @@ STATIC_URL = '/static/'
 
 STATIC_ROOT = os.path.join(qua_settings.DATA_DIR, 'static')
 
-PAGE_SIZE = 10
+PAGE_SIZE = qua_settings.SERP_SIZE
+
+MAIN_SEARCH_SERVICE_NAME = qua_settings.MAIN_SEARCH_SERVICE_NAME
 
 SERVICES = {
     'search': {
-        'main': {
-            'host': 'http://localhost:9002'
+        MAIN_SEARCH_SERVICE_NAME: {
+            'host': 'http://localhost:8000'
         },
         'roles': {
             'host': 'http://localhost:5000'
