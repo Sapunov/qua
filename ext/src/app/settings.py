@@ -188,16 +188,12 @@ PAGE_SIZE = qua_settings.SERP_SIZE
 
 MAIN_SEARCH_SERVICE_NAME = qua_settings.MAIN_SEARCH_SERVICE_NAME
 
+# If we use docker environment and inside container application runs on port 80
+# than there we must specify port 80 because of container interconnection
 SERVICES = {
     'search': {
         MAIN_SEARCH_SERVICE_NAME: {
-            'host': 'http://localhost:8000'
-        },
-        'roles': {
-            'host': 'http://localhost:5000'
+            'host': 'http://qua-search'
         }
-    },
-    'suggests': {
-        'host': 'http://localhost:9001'
     }
 }
