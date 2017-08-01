@@ -9,7 +9,6 @@ from qua import misc
 from qua import settings as qua_settings
 from qua.search import snippets
 from qua.search import utils
-from qua.search.stopwords import STOPWORDS
 from qua.translation import translate
 
 
@@ -75,12 +74,19 @@ class SearchResults:
                 )
 
 
-def spelling_correction(
-        query, index=qua_settings.ES_SPELLING_INDEX, field='text'):
+def es_spelling_correction(
+        query,
+        index=qua_settings.ES_SPELLING_INDEX,
+        field='text'
+):
+    '''Trying to correct only one word in user query.
 
-    query = query.strip().lower()
+    Gets a user query and return query with only 1 corrected word if it exists.
+    '''
 
     corrected = False
+    corrected_word = None
+    # Now it is a list but we return string by joining list items
     output = []
     body = {
         'spelling': {
@@ -98,71 +104,105 @@ def spelling_correction(
     # there is not suggestions method returns dict with `spelling` field
     if 'spelling' in result:
         for suggest in result['spelling']:
-            if len(suggest['options']) > 0 and not corrected:
+            # Only first corrected word makes sense. All words after
+            # first corrected appends as they are in user query.
+            if suggest['options'] and not corrected:
                 corrected = True
-                output.append([suggest['text'], suggest['options'][0]['text']])
+                # As a second param we use first ES.SEGGEST option because
+                # this option has highest score
+                output.append(suggest['options'][0]['text'])
+
+                # We cannot highlight corrected word here but we should do it
+                # in future, corrected_word = word to highlight
+                corrected_word = output[-1]
             else:
-                output.append([suggest['text']])
+                output.append(suggest['text'])
 
-    return (corrected, output)
+    log.debug('Query after typos correction: %s', output)
 
-
-def get_suggested_query(words, highlight=True):
-
-    res = []
-
-    for i in range(len(words)):
-        if len(words[i]) == 2:
-            if highlight:
-                res.append('<em>{0}</em>'.format(words[i][1]))
-            else:
-                res.append(words[i][1])
-        else:
-            res.append(words[i][0])
-
-    return ' '.join(res)
+    return (corrected, ' '.join(output), corrected_word)
 
 
-def extend_query(words):
+def check_keyboard_layout_error(query):
+    '''Trying to determine whether user query makes sense.
 
-    for i in range(len(words)):
-        # if spelling correction
-        if len(words[i]) == 2:
-            word = words[i][1]
-        else:
-            word = words[i][0]
+    Function counts number of results for user query and keyboard layout
+        inverted user query and make decision based on counts.
+    '''
 
-        if word in STOPWORDS:
-            words[i] = None
-            continue
+    get_query = lambda query: {'query': utils.multimatch_builder(query)}
 
-        words[i].append(misc.keyboard_layout_inverse(word))
-        words[i].append(misc.translit(word))
+    corrected = False
+    inverted_query = misc.keyboard_layout_inverse(query)
 
-        trans = translate(word)
-        if trans:
-            words[i].append(trans)
+    count_query, *_ = utils.search_query(get_query(query))
+    count_inverted_query, *_ = utils.search_query(get_query(inverted_query))
 
-        words[i] = list(set(words[i]))
+    log.debug('Normal query results - %s, inverted_layout results - %s',
+        count_query, count_inverted_query)
 
-    return [w for w in words if w is not None]
+    if not count_query and count_inverted_query:
+        corrected = True
+        query = inverted_query
+
+    return (corrected, query)
+
+
+def spelling_correction(query):
+    '''Trying to make 2 types of spelling correction:
+        - keyboard inverse
+        - typos
+
+    Returns: tuple - (whether query corrected, corrected_query, corrected_word)
+    '''
+
+    # First: check keyboard layout
+    corrected, corrected_query = check_keyboard_layout_error(query)
+
+    if corrected:
+        return (True, corrected_query, None)
+
+    # Second: check for typos
+    corrected, corrected_query, corrected_word = es_spelling_correction(query)
+
+    if corrected:
+        return (True, corrected_query, corrected_word)
+
+    # If query OK return it as it is
+    return (False, None, None)
+
+
+def extend_query(query):
+    '''Returns list of lists with extended words for every word in query.
+    '''
+
+    words = query.split(' ')
+    output = []
+
+    for word in words:
+        temp = [word]
+
+        translation = translate(word)
+
+        if translation:
+            temp.append(translation)
+
+        output.append(utils.delete_duplicates(temp))
+
+    return output
 
 
 def create_query(words):
+    '''Create query in form of ES syntax.'''
 
     must = []
 
     for terms in words:
-        must.append({
-            'multi_match': {
-                'query': ' '.join(terms),
-                'fields': qua_settings.SEARCH_FIELDS,
-                'operator': 'or'
-            }
-        })
+        must.append(utils.multimatch_builder(' '.join(terms)))
 
-    query = utils.boolean_query(must, policy='must')
+    query = utils.create_boolean_query(must, policy='must')
 
+    # TODO: make code below as a separate function
     func_query = {
         'query': {
             'function_score': {
@@ -180,27 +220,29 @@ def create_query(words):
     return func_query
 
 
-def search_items(query, limit, offset):
+def search_items(query, limit, offset, spelling=True):
+    '''Main search functions for calling from any place.'''
 
     log.debug('Query: %s', query)
 
-    # And first processing here too
-    corrected, words = spelling_correction(query)
+    query = utils.preprocess_user_query(query)
 
-    if corrected:
-        suggested_query = get_suggested_query(words)
-    else:
-        suggested_query = None
+    corrected = False
+    corrected_query = None
 
-    words = extend_query(words)
+    if spelling:
+        corrected, corrected_query, corrected_word = spelling_correction(query)
+
+    words = extend_query(corrected_query if corrected else query)
+
     es_query = create_query(words)
 
     log.debug('ES query: %s', json.dumps(es_query, indent=2))
 
-    total, _, results = utils.query(
-        index=qua_settings.ES_SEARCH_INDEX,
-        doc_type=qua_settings.ES_DOCTYPE,
-        body=es_query,
-        size=limit, from_=offset)
+    total, _, results = utils.search_query(es_query, size=limit, from_=offset)
 
-    return SearchResults(query, total, results, suggested_query, words)
+    # Before send to user we need to highlight wrong word(s)
+    if corrected:
+        corrected_query = utils.highlight_words(corrected_query, corrected_word)
+
+    return SearchResults(query, total, results, corrected_query, words)

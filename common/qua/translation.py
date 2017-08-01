@@ -1,3 +1,3 @@
 def translate(word):
 
-    return word
+    return None

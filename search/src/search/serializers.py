@@ -8,6 +8,7 @@ class SearchRequest(serializers.Serializer):
     query = serializers.CharField()
     limit = serializers.IntegerField(default=qua_settings.SERP_SIZE)
     offset = serializers.IntegerField(default=0)
+    spelling = serializers.BooleanField(default=True)
 
 
 class SearchHit(serializers.Serializer):

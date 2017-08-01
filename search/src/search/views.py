@@ -1,7 +1,6 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from qua.rest.response import QuaApiResponse
 from qua.rest.serializers import serialize, deserialize
 from qua.search import index as search_index
 from qua.search import search
@@ -19,12 +18,11 @@ class Search(APIView):
         search_results = search.search_items(
             query=req_serializer.data['query'],
             limit=req_serializer.data['limit'],
-            offset=req_serializer.data['offset'])
+            offset=req_serializer.data['offset'],
+            spelling=req_serializer.data['spelling'])
 
         resp_serializer = serialize(serializers.SearchResponse, search_results)
 
-        # For simplify search microservices development there is just
-        # standard rest_framework serializer
         return Response(resp_serializer.data)
 
 
@@ -42,13 +40,13 @@ class Index(APIView):
             is_external=req_serializer.data['is_external'],
             resource=req_serializer.data['resource'])
 
-        return QuaApiResponse({'item_id': item_id})
+        return Response({'item_id': item_id})
 
     def delete(self, request):
 
         search_index.clear_index()
 
-        return QuaApiResponse()
+        return Response()
 
 
 class Items(APIView):
@@ -57,7 +55,7 @@ class Items(APIView):
 
         item = search_index.get_item(item_id)
 
-        return QuaApiResponse(item)
+        return Response(item)
 
     def put(self, request, item_id):
 
@@ -65,10 +63,10 @@ class Items(APIView):
 
         item = search_index.update_item(item_id, req_serializer.data)
 
-        return QuaApiResponse(item)
+        return Response(item)
 
     def delete(self, request, item_id):
 
         search_index.delete_item(item_id)
 
-        return QuaApiResponse()
+        return Response()
