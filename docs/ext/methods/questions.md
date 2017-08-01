@@ -1,4 +1,5 @@
-### Вопросы
+## /questions
+
 
 - GET **/questions** - список всех вопросов
 - POST **/questions** - создание нового вопроса
@@ -6,137 +7,187 @@
 - PUT **/questions/&lt;int:question_id&gt;** - обновление данных в вопросе `question_id`
 - DELETE **/questions/&lt;int:question_id&gt;** - архивирование вопроса `question_id`
 
-Формат выходных данных при запросе одного вопроса
 
-`GET` **/api/questions/1**
+### `GET` /questions
 
-```
+Без параметров метод возвращает 10 вопросов в порядке убывания рейтинга.
+
+**Параметры**:
+- **limit** - количество вопросов для вывода (по умолчанию: 10)
+- **offset** - сдвиг относительно первого вопроса в порядке убывания рейтинга (по умолчанию: 0)
+- **keyword** - при заданном ключевом слове будут выведены только те вопросы, в которых есть данное ключевое слово
+
+
+**Формат ответа**:
+
+```json
 {
-    "ok": 1,
-    "response": {
-        "answer": {
-            "created_at": "2017-01-08T00:14:45.323298Z",
-            "created_by": {
-                "first_name": "",
-                "id": 1,
-                "last_name": "",
-                "username": "nsapunov"
-            },
-            "html": "<p>првиет</p>",
-            "id": 1,
-            "raw": "првиет",
-            "snippet": "фывафыва",
-            "answer_exists": true,
-            "updated_at": "2017-01-08T00:14:45.323372Z",
-            "updated_by": {
-                "first_name": "",
-                "id": 1,
-                "last_name": "",
-                "username": "nsapunov"
-            },
-            "version": 1
-        },
-        "created_at": "2017-01-07T22:47:48.373734Z",
-        "created_by": {
-            "first_name": "",
-            "id": 1,
-            "last_name": "",
-            "username": "nsapunov"
-        },
-        "id": 1,
-        "keywords": [],
-        "title": "Привет тебе друг",
-        "updated_at": "2017-01-11T22:17:42.385153Z",
-        "updated_by": {
-            "first_name": "",
-            "id": 1,
-            "last_name": "",
-            "username": "nsapunov"
-        }
-    }
+	"items": [],
+	"total": <int>,
+	"pagination": {}
+}
+```
+
+Каждый *item* имеет следующие поля:
+
+```json
+{
+	"answer_exists": <bool>,
+	"created_at": <string>"2017-01-14T09:51:52.428555Z",
+	"created_by": {
+		"first_name": <string>,
+		"id": <int>,
+		"last_name": <string>,
+		"username": <string>
+	},
+	"id": <int>,
+	"keywords": [<string>, <string>, ...],
+	"title": <string>,
+	"updated_at": <string>"2017-01-14T09:51:52.428555Z",
+	"updated_by": {
+		"first_name": <string>,
+		"id": <int>,
+		"last_name": <string>,
+		"username": <string>
+	}
 }
 
 ```
 
-Формат выходных данных при запросе списка вопросов.
+Объект *pagination* содержит 2 ссылки:
 
-Вместо поля `answer` выдается `answer_exists` с булевым значением есть ответ на вопрос или нет.
-
-`GET` **/api/questions**
-    - limit - сколько результатов должно быть получено
-    - offset - сдвиг относительно начала набора результатов
-
-```
+```json
 {
-    "ok":1,
-    "response":{
-        "items":[
-            {
-                "answer_exists":true,
-                "created_at":"2017-01-14T09:51:52.428555Z",
-                "created_by":{
-                    "first_name":"",
-                    "id":1,
-                    "last_name":"",
-                    "username":"nsapunov"
-                },
-                "id":49,
-                "keywords":[
-                    "привет",
-                    "nikita",
-                    "слон"
-                ],
-                "title":"привет",
-                "updated_at":"2017-01-14T09:51:52.451319Z",
-                "updated_by":{
-                    "first_name":"",
-                    "id":1,
-                    "last_name":"",
-                    "username":"nsapunov"
-                }
-            },
-            {
-                "answer_exists":false,
-                "created_at":"2017-01-14T10:36:54.865758Z",
-                "created_by":{
-                    "first_name":"",
-                    "id":1,
-                    "last_name":"",
-                    "username":"nsapunov"
-                },
-                "id":50,
-                "keywords":[
-                    "слон"
-                ],
-                "title":"Джигурда",
-                "updated_at":"2017-01-14T10:36:54.884780Z",
-                "updated_by":{
-                    "first_name":"",
-                    "id":1,
-                    "last_name":"",
-                    "username":"nsapunov"
-                }
-            },
-            ...
-        ],
-        "total":22,
-        "pagination":{
-            "next":"/api/questions?offset=20&limit=10",
-            "prev":"/api/questions?offset=10&limit=10"
-        }
-    }
+	"next":"/api/questions?offset=20&limit=10",
+    "prev":"/api/questions?offset=10&limit=10"
 }
 ```
 
 
-Формат данных для добавления/изменения вопроса
+### `POST` /questions
 
-```
+У данного метода нет параметров.
+
+
+**Формат данных для добавления вопроса:**:
+
+```json
 {
-    "title": "some title",
-    "keywords": ["one", "two", "three"],
-    "answers": {"raw": "some markdown"}
+    "title": <string>,
+    "keywords": [<string>, <string>, ...],
+    "answer": {"raw": <string>}
 }
 ```
 
-При добавлении обязательным элементом является `title`, при изменении все поля необязательные и будет изменено только то поле, которое указано.
+Обязательное поле - **title**. Все остальные поля необязательные.
+Если вопрос создается без ответа, то будет создан неотвеченный вопрос с
+соответствующей логикой. Если вопрос создаётся сразу с ответом, то это будет полноценная запись с вопросом и ответом, которая будет присутствовать в поисковой выдаче. Неотвеченные вопросы не участвуют в поиске.
+
+В качестве **raw** может быть передан *markdown*, который будет отрендерен.
+
+
+**Формат ответа**:
+
+В качестве ответа на данный запрос вернется полноценный вопрос со всеми полями. Список всех полей можно увидеть в части [/questions/&lt;int:question_id&gt;](#`get`-/questions/&lt;int:question_id&gt;)
+Статус ответа в случае успешного сохранения вопроса будет *200*.
+
+
+### `GET` /questions/&lt;int:question_id&gt;
+
+У данного метода нет параметров
+
+
+**Формат ответа(вопрос со всеми полями)**:
+
+```json
+{
+	"answer": {
+		"created_at": <string>"2017-01-14T09:51:52.428555Z",
+		"created_by": {
+			"first_name": <string>,
+			"id": <int>,
+			"last_name": <string>,
+			"username": <string>
+		},
+		"html": <string>,
+		"id": <int>,
+		"raw": <string>,
+		"answer_exists": <bool>,
+		"updated_at": <string>"2017-01-14T09:51:52.428555Z",
+		"updated_by": {
+			"first_name": <string>,
+			"id": <int>,
+			"last_name": <string>,
+			"username": <string>
+		},
+		"version": <int>
+	},
+	"created_at": <string>"2017-01-14T09:51:52.428555Z",
+	"created_by": {
+		"first_name": <string>,
+		"id": <int>,
+		"last_name": <string>,
+		"username": <string>
+	},
+	"id": <int>,
+	"keywords": [<string>, <string>, ...],,
+	"title": <string>,
+	"updated_at": <string>"2017-01-14T09:51:52.428555Z",
+	"updated_by": {
+		"first_name": <string>,
+		"id": <int>,
+		"last_name": <string>,
+		"username": <string>
+	},
+}
+```
+
+
+### `PUT` /questions/&lt;int:question_id&gt;
+
+У данного метода нет параметров
+
+
+**Формат данных для изменения вопроса:**
+
+```json
+{
+    "title": <string>,
+    "keywords": [<string>, <string>, ...],
+    "answer": {"raw": <string>}
+}
+```
+
+Ни одно из полей не является обязательным. Будет изменено только то поле,
+которое было передано. Изменения будут применены только в том случае,
+если новая версия данных отличается от старой. Например, если передается
+тот же заголовок, что и был ранее, то никаких изменений вопроса не
+произойдет.
+
+
+**Формат ответа:**
+
+В качестве ответа на данный запрос вернется полноценный вопрос со всеми полями. Список всех полей можно увидеть в части [/questions/&lt;int:question_id&gt;](#`get`-/questions/&lt;int:question_id&gt;)
+Статус ответа в случае успешного сохранения вопроса будет *200*.
+
+
+### `DELETE` /questions/&lt;int:question_id&gt;
+
+У данного метода нет параметров
+
+
+**Формат ответа:**
+
+При успешном выполнении запроса вернется *200* ответ сервера.
+Данный метод ничего не возвращает, то есть, если посмотреть на ответ сервера, то будет вот так:
+
+```json
+{
+	"ok": 1,
+	"response": null
+}
+```
+
+**Внимание! ** В данном примере приведен именно ответ сервера, а не
+формат ответа метода. Поля *ok* и *response* имеются у любого ответа
+сервиса *ext*. Больше информации об ответе микросервиса - [response](../response.md).
