@@ -9,3 +9,4 @@
     1. [search](methods/search.md)
     2. [index](methods/index.md)
     3. [items](methods/items.md)
+3. [Исправление ошибок](spelling_correction.md)
