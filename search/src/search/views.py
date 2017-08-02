@@ -1,10 +1,11 @@
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from qua.rest.serializers import serialize, deserialize
-from qua.search import index as search_index
-from qua.search import search
+from search.engine import index as engine_index
+from search.engine import search
+
 from search import serializers
+from search.serializers import serialize, deserialize
 
 
 class Search(APIView):
@@ -32,7 +33,7 @@ class Index(APIView):
 
         req_serializer = deserialize(serializers.IndexRequest, request.data)
 
-        item_id = search_index.index_item(
+        item_id = engine_index.index_item(
             ext_id=req_serializer.data['ext_id'],
             title=req_serializer.data['title'],
             text=req_serializer.data['text'],
@@ -44,7 +45,7 @@ class Index(APIView):
 
     def delete(self, request):
 
-        search_index.clear_index()
+        engine_index.clear_index()
 
         return Response()
 
@@ -53,7 +54,7 @@ class Items(APIView):
 
     def get(self, request, item_id):
 
-        item = search_index.get_item(item_id)
+        item = engine_index.get_item(item_id)
 
         return Response(item)
 
@@ -61,12 +62,12 @@ class Items(APIView):
 
         req_serializer = deserialize(serializers.ItemUpdate, request.data)
 
-        item = search_index.update_item(item_id, req_serializer.data)
+        item = engine_index.update_item(item_id, req_serializer.data)
 
         return Response(item)
 
     def delete(self, request, item_id):
 
-        search_index.delete_item(item_id)
+        engine_index.delete_item(item_id)
 
         return Response()
