@@ -4,7 +4,7 @@ import pickle
 
 from django.conf import settings
 
-from qua import misc
+from suggests import misc
 from suggests.preprocessing import create_tst
 
 

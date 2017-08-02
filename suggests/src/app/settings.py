@@ -1,10 +1,23 @@
 import os
 
-from qua import constants
-from qua import settings as qua_settings
+from suggests import constants
 
 
-APP_NAME = qua_settings.PROGRAM_NAME + '.suggests'
+PROGRAM_NAME = 'qua'
+
+APP_NAME = PROGRAM_NAME + '.suggests'
+
+VAR = '/var'
+
+VAR_LIB = os.path.join(VAR, 'lib')
+
+VAR_LOG = os.path.join(VAR, 'log')
+
+LOGS_DIR = os.path.join(VAR_LOG, PROGRAM_NAME)
+
+DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,22 +39,17 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'qua.rest.middleware.LoggingMiddleware'
+    'app.middleware.LoggingMiddleware'
 ]
-
-if DEBUG:
-    DATABASE_HOST = '127.0.0.1'
-else:
-    DATABASE_HOST = qua_settings.POSTGRESQL['host']
 
 DATABASES = {
     'default': {
-        'ENGINE': qua_settings.POSTGRESQL['engine'],
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': APP_NAME.replace('.', '_'),
-        'HOST': DATABASE_HOST,
-        'PORT': qua_settings.POSTGRESQL['port'],
-        'USER': qua_settings.POSTGRESQL['user'],
-        'PASSWORD': qua_settings.POSTGRESQL['password']
+        'HOST': '127.0.0.1' if DEBUG else 'postgresserver',
+        'PORT': 5432,
+        'USER': 'quauser',
+        'PASSWORD': 'somestrongdbpassword'
     }
 }
 
@@ -66,14 +74,14 @@ REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     ),
-    'EXCEPTION_HANDLER': 'qua.rest.exceptions.api_exception_handler',
+    'EXCEPTION_HANDLER': 'app.exceptions.api_exception_handler',
 }
 
 RQ_QUEUES = {
     APP_NAME: {
-        'HOST': qua_settings.REDIS['host'],
-        'PORT': qua_settings.REDIS['port'],
-        'DB': qua_settings.REDIS['db_cache']
+        'HOST': '127.0.0.1' if DEBUG else 'redisserver',
+        'PORT': 6379,
+        'DB': 0
     },
 }
 
@@ -94,14 +102,13 @@ LOGGING = {
         'qua': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(qua_settings.LOGS_DIR, APP_NAME + '.log'),
+            'filename': os.path.join(LOGS_DIR, APP_NAME + '.log'),
             'formatter': 'verbose'
         },
         'requests': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(
-                qua_settings.LOGS_DIR, APP_NAME + '.requests.log'),
+            'filename': os.path.join(LOGS_DIR, APP_NAME + '.requests.log'),
             'formatter': 'simple'
         }
     },
@@ -133,7 +140,7 @@ SUGGESTS_DEFAULT_LIMIT = 10
 # Tree file properties
 SUGGESTS_TREE_PREFIX = APP_NAME + '.suggests_tree'
 
-SUGGESTS_TREE_PATH = os.path.join(qua_settings.DATA_DIR, SUGGESTS_TREE_PREFIX)
+SUGGESTS_TREE_PATH = os.path.join(DATA_DIR, SUGGESTS_TREE_PREFIX)
 
 # Check new data and recreate tree every such interval
 SUGGESTS_UPDATE_INTERVAL = 2 * constants.MINUTE

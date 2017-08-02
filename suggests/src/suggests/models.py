@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.db import models
 
-from qua import constants
+from suggests import constants
 
 
 class AccumulateQueue(models.Model):

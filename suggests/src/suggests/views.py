@@ -1,10 +1,10 @@
 from rest_framework.views import APIView
 
-from qua.rest.serializers import serialize, deserialize
-from qua.rest.response import QuaApiResponse
+from app.response import QuaApiResponse
 from suggests import models
 from suggests import serializers
 from suggests import tree
+from suggests.serializers import serialize, deserialize
 
 
 class Accumulate(APIView):
