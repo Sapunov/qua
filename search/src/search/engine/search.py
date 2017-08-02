@@ -5,7 +5,7 @@ import time
 from django.conf import settings
 
 from search import elasticsearch
-from search.engine import misc
+from search import misc
 from search.engine import snippets
 from search.engine import utils
 from search.engine.translation import translate

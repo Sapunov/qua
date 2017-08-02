@@ -4,7 +4,7 @@ import re
 
 from django.conf import settings
 
-from search.engine import misc
+from search import misc
 
 from search import elasticsearch
 from search.engine import stopwords
