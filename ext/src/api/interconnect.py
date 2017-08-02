@@ -9,9 +9,8 @@ import requests
 # A good idea to make a separate service that responsible for service discovery
 from django.conf import settings
 
-from qua import misc
-from qua import settings as qua_settings
-from qua import exceptions
+from api import exceptions
+from api import misc
 
 
 assert hasattr(settings, 'SERVICES'), 'You must specify SERVICES'
@@ -21,7 +20,7 @@ def _request(method, name, **kwargs):
 
     host = misc.resolve_dots(name, settings.SERVICES)
 
-    kwargs['timeout'] = kwargs.get('timeout', qua_settings.SERVICES_TIMEOUT)
+    kwargs['timeout'] = kwargs.get('timeout', settings.SERVICES_TIMEOUT)
 
     try:
         return requests.api.request(method, host, **kwargs)

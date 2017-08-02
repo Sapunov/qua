@@ -1,4 +1,5 @@
 import hashlib
+import os
 import time
 
 
@@ -34,3 +35,31 @@ def time_elapsed(start_time):
     '''This function suggest that start_time is time.time() call'''
 
     return round(time.time() - start_time, 3)
+
+
+def resolve_dots(url, services_dict):
+    '''Search dot separated name in the settings dict.
+
+    For example: services = {
+        'search': {
+            'main': {
+                'host': 'localhost'
+            }
+        }
+    }
+
+    if you call resolve_dots('search_main') this function returns:
+        localhost
+
+    '''
+
+    name, path = url.split('/', 1)
+
+    current_value = services_dict
+
+    for part in name.split('.'):
+        current_value = current_value[part]
+
+    host = current_value['host']
+
+    return os.path.join(host, path)

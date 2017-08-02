@@ -215,3 +215,8 @@ SERVICES = {
         }
     }
 }
+
+# If one service doesn't respond within this timeout, qua trying to
+# request another if exists
+# By default - 1 sec
+SERVICES_TIMEOUT = 1
