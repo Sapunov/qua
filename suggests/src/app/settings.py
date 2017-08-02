@@ -19,8 +19,6 @@ DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 SECRET_KEY = 'somestrongdjangokey'
 
 DEBUG = True

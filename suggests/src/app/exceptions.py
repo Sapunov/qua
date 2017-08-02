@@ -4,8 +4,6 @@ from django.conf import settings
 from rest_framework import exceptions as r_exceptions
 from rest_framework.views import exception_handler
 
-from suggests import misc
-
 
 log = logging.getLogger(settings.APP_NAME + __name__)
 
@@ -23,6 +21,30 @@ class ExitDecoratorError(QuaException):
     pass
 
 
+def _remove_empty_values(data):
+
+    if isinstance(data, dict):
+        clear_dict = {}
+
+        for key, value in data.items():
+            cleared_value = _remove_empty_values(value)
+            if cleared_value:
+                clear_dict[key] = cleared_value
+
+        return clear_dict
+    elif isinstance(data, list):
+        clear_list = []
+
+        for item in data:
+            cleared_value = _remove_empty_values(item)
+            if cleared_value:
+                clear_list.append(cleared_value)
+
+        return clear_list
+    else:
+        return data if data else False
+
+
 def api_exception_handler(exc, context):
 
     response = exception_handler(exc, context)
@@ -33,7 +55,7 @@ def api_exception_handler(exc, context):
             response.status_code,
             response.data)
 
-        response.data = misc.remove_empty_values(response.data)
+        response.data = _remove_empty_values(response.data)
 
         if len(response.data) == 1:
             key = list(response.data.keys())[0]
