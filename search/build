@@ -42,7 +42,7 @@ done
 echo "Set django key and debug = False"
 
 sed -i "s/DEBUG = True/DEBUG = False/g" src/app/settings.py
-sed -i "s/somestrongdjangokey/$(qua-admin-keygen)/g" src/app/settings.py
+sed -i "s/somestrongdjangokey/$(qua-admin-keystore djangokey)/g" src/app/settings.py
 
 
 #

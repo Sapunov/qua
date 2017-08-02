@@ -3,7 +3,8 @@
 BUILD_DIR=docker_build
 SERVICE_NAME=qua-suggests
 
-echo -n "Database password: " && read -s PASSWORD && echo ""
+PASSWORD=$(qua-admin-keystore dbkey) \
+	|| { echo "!! No database password specified"; exit; }
 
 #
 # CREATE BUILD DIRECTORY
@@ -43,7 +44,7 @@ done
 echo "Set django key and debug = False"
 
 sed -i "s/DEBUG = True/DEBUG = False/g" src/app/settings.py
-sed -i "s/somestrongdjangokey/$(qua-admin-keygen)/g" src/app/settings.py
+sed -i "s/somestrongdjangokey/$(qua-admin-keystore djangokey)/g" src/app/settings.py
 
 
 #
