@@ -8,9 +8,8 @@ import time
 
 from django.conf import settings
 
-from qua import constants
-from qua import misc
-from qua import settings as qua_settings
+from api import constants
+from api import misc
 
 
 log = logging.getLogger(settings.APP_NAME + __name__)
@@ -74,9 +73,9 @@ def merge_results(list_of_results):
     locations = defaultdict(lambda: [])
     locations_count = defaultdict(lambda: 0)
     loc_sizes = {
-        constants.SERP_MIDDLE_BLOCK: qua_settings.SERP_MIDDLE_BLOCK_SIZE,
-        constants.SERP_TOP_BLOCK: qua_settings.SERP_TOP_BLOCK_SIZE,
-        constants.SERP_RIGHT_BLOCK: qua_settings.SERP_RIGHT_BLOCK_SIZE
+        constants.SERP_MIDDLE_BLOCK: settings.SERP_MIDDLE_BLOCK_SIZE,
+        constants.SERP_TOP_BLOCK: settings.SERP_TOP_BLOCK_SIZE,
+        constants.SERP_RIGHT_BLOCK: settings.SERP_RIGHT_BLOCK_SIZE
     }
 
     for service, result in list_of_results:
@@ -88,7 +87,7 @@ def merge_results(list_of_results):
             locations[hit['_loc']].append(hit)
 
         # Make some usefull staff
-        if service == qua_settings.MAIN_SEARCH_SERVICE_NAME and result['total'] > 0:
+        if service == settings.MAIN_SEARCH_SERVICE_NAME and result['total'] > 0:
             # Search engine blend corrected queries to the query and already
             # shows results respect to suggests. But if no results found than
             # suggests is unusable

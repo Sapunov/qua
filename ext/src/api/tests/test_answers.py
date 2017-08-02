@@ -1,8 +1,8 @@
-from django.test import tag
 from django.contrib.auth.models import User
+from django.test import tag
 
-from api.tests.common import BaseQuaTestCase
 from api.models import Answer, Question
+from api.tests.common import BaseQuaTestCase
 
 
 @tag('answers')

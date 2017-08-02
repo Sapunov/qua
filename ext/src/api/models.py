@@ -7,8 +7,8 @@ from django.core.cache import cache
 from django.db import models
 from rest_framework import exceptions
 
-from qua import constants
-from qua import misc
+from api import constants
+from api import misc
 
 
 log = logging.getLogger(settings.APP_NAME + __name__)

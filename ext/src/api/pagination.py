@@ -3,15 +3,13 @@ import logging
 from django.conf import settings
 from rest_framework.utils.urls import remove_query_param, replace_query_param
 
-from qua import settings as qua_settings
-
 
 log = logging.getLogger(settings.APP_NAME + __name__)
 
 
 LIMIT_QUERY_PARAM = 'limit'
 OFFSET_QUERY_PARAM = 'offset'
-DEFAULT_LIMIT = qua_settings.SERP_SIZE
+DEFAULT_LIMIT = settings.PAGE_SIZE
 
 
 def _positive_int(integer_string):

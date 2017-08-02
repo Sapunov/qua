@@ -3,8 +3,8 @@ import logging
 from django.conf import settings
 from django.utils import timezone
 
-from qua import misc
-from qua.rest.exceptions import ExitDecoratorError
+from api import misc
+from app.exceptions import ExitDecoratorError
 from api.models import SearchHistory, Question, ExternalResource
 
 
@@ -53,6 +53,7 @@ def search_tracker(params, external=False):
         history_record.save()
 
 
+# TODO: make in decorator better with functools
 def trackable(func):
 
     def wrapper(self, request, *args, **kwargs):

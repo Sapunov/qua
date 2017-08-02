@@ -1,10 +1,22 @@
 import os
 import datetime
 
-from qua import settings as qua_settings
 
+PROGRAM_NAME = 'qua'
 
-APP_NAME = qua_settings.PROGRAM_NAME + '.ext'
+APP_NAME = PROGRAM_NAME + '.ext'
+
+VAR = '/var'
+
+VAR_LIB = os.path.join(VAR, 'lib')
+
+VAR_LOG = os.path.join(VAR, 'log')
+
+LOGS_DIR = os.path.join(VAR_LOG, PROGRAM_NAME)
+
+DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 SECRET_KEY = 'somestrongdjangokey'
 
@@ -37,7 +49,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'qua.rest.middleware.LoggingMiddleware',
+    'app.middleware.LoggingMiddleware',
 ]
 
 APPEND_SLASH = False
@@ -62,32 +74,31 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'app.wsgi.application'
 
-if DEBUG:
-    DATABASE_HOST = '127.0.0.1'
-    REDIS_HOST = '127.0.0.1'
-else:
-    DATABASE_HOST = qua_settings.POSTGRESQL['host']
-    REDIS_HOST = qua_settings.REDIS['host']
-
 DATABASES = {
     'default': {
-        'ENGINE': qua_settings.POSTGRESQL['engine'],
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': APP_NAME.replace('.', '_'),
-        'HOST': DATABASE_HOST,
-        'PORT': qua_settings.POSTGRESQL['port'],
-        'USER': qua_settings.POSTGRESQL['user'],
-        'PASSWORD': qua_settings.POSTGRESQL['password']
+        'HOST': '127.0.0.1' if DEBUG else 'postgresserver',
+        'PORT': 5432,
+        'USER': 'quauser',
+        'PASSWORD': 'somestrongdbpassword'
     }
+}
+
+REDIS = {
+    'host': '127.0.0.1' if DEBUG else 'redisserver',
+    'port': 6379,
+    'db_cache': 0,
+    'db_persistent': 1
 }
 
 CACHES = {
     'default': {
         'BACKEND': 'django_redis.cache.RedisCache',
         'LOCATION': 'redis://{0}:{1}/{2}'.format(
-            REDIS_HOST,
-            qua_settings.REDIS['port'],
-            qua_settings.REDIS['db_cache']
-        ),
+            REDIS['host'],
+            REDIS['port'],
+            REDIS['db_cache']),
         'OPTIONS': {
             'CLIENT_CLASS': 'django_redis.client.DefaultClient'
         },
@@ -117,7 +128,7 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
     ),
-    'EXCEPTION_HANDLER': 'qua.rest.exceptions.api_exception_handler',
+    'EXCEPTION_HANDLER': 'app.exceptions.api_exception_handler',
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
     )
@@ -125,7 +136,7 @@ REST_FRAMEWORK = {
 
 JWT_AUTH = {
     'JWT_EXPIRATION_DELTA': datetime.timedelta(days=7),
-    'JWT_RESPONSE_PAYLOAD_HANDLER': 'qua.rest.response.jwt_response_payload_handler',
+    'JWT_RESPONSE_PAYLOAD_HANDLER': 'app.response.jwt_response_payload_handler',
 }
 
 LOGGING = {
@@ -145,14 +156,13 @@ LOGGING = {
         'qua': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(qua_settings.LOGS_DIR, APP_NAME + '.log'),
+            'filename': os.path.join(LOGS_DIR, APP_NAME + '.log'),
             'formatter': 'verbose'
         },
         'requests': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(
-                qua_settings.LOGS_DIR, APP_NAME + '.requests.log'),
+            'filename': os.path.join(LOGS_DIR, APP_NAME + '.requests.log'),
             'formatter': 'simple'
         }
     },
@@ -182,11 +192,19 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(qua_settings.DATA_DIR, 'static')
+STATIC_ROOT = os.path.join(DATA_DIR, 'static')
 
-PAGE_SIZE = qua_settings.SERP_SIZE
+PAGE_SIZE = 10
 
-MAIN_SEARCH_SERVICE_NAME = qua_settings.MAIN_SEARCH_SERVICE_NAME
+MAIN_SEARCH_SERVICE_NAME = 'qua_main'
+
+MAIN_SEARCH_SERP_LOCATION = 'middle'
+
+SERP_MIDDLE_BLOCK_SIZE = PAGE_SIZE
+
+SERP_TOP_BLOCK_SIZE = 1
+
+SERP_RIGHT_BLOCK_SIZE = 3
 
 # If we use docker environment and inside container application runs on port 80
 # than there we must specify port 80 because of container interconnection

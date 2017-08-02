@@ -1,6 +1,6 @@
+from django.contrib.auth.models import User
 from django.test import tag
 from rest_framework.test import APIClient
-from django.contrib.auth.models import User
 
 from api.tests.common import BaseQuaTestCase
 

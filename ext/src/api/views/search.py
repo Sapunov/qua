@@ -7,8 +7,8 @@ from rest_framework.views import APIView
 from api import search
 from api import serializers
 from api.pagination import paginate
-from qua.rest.response import QuaApiResponse
-from qua.rest.serializers import serialize, deserialize
+from api.serializers import serialize, deserialize
+from app.response import QuaApiResponse
 
 
 log = logging.getLogger(settings.APP_NAME + __name__)
