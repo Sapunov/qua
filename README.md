@@ -14,7 +14,7 @@
 
 ### Архитектура и состав сервиса
 
-Сервис состоит из [backend](https://github.com/Sapunov/qua), написанного на python и отдельного [фронтенда](https://github.com/dexig/<blah>), который написан с использованием Angular4 и TypeScript.
+Сервис состоит из [backend](https://github.com/Sapunov/qua), написанного на python и отдельного [фронтенда](https://github.com/Dexig/qua-ui), который написан с использованием Angular4 и TypeScript.
 
 
 ![архитектура сервиса](docs/img/architecture2.png)
