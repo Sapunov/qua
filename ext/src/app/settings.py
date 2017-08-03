@@ -211,7 +211,7 @@ SERP_RIGHT_BLOCK_SIZE = 3
 SERVICES = {
     'search': {
         MAIN_SEARCH_SERVICE_NAME: {
-            'host': 'http://qua-search'
+            'host': 'http://localhost:9002'
         }
     }
 }

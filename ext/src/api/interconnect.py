@@ -1,5 +1,8 @@
 import random
 import requests
+from json import JSONDecodeError
+
+from django.conf import settings
 
 # All services in current state is django-based, because of that
 # variable `settings` is service specific, that's why if microservice
@@ -7,13 +10,19 @@ import requests
 # otherwise exception will raise
 #
 # A good idea to make a separate service that responsible for service discovery
-from django.conf import settings
 
 from api import exceptions
 from api import misc
 
-
 assert hasattr(settings, 'SERVICES'), 'You must specify SERVICES'
+
+
+class InterconnectionResponse():
+
+    def __init__(self, requests_response):
+
+        self.status_code = requests_response.status_code
+        self.data = requests_response.json()
 
 
 def _request(method, name, **kwargs):
@@ -23,10 +32,12 @@ def _request(method, name, **kwargs):
     kwargs['timeout'] = kwargs.get('timeout', settings.SERVICES_TIMEOUT)
 
     try:
-        return requests.api.request(method, host, **kwargs)
-    except requests.exceptions.RequestException:
+        req = requests.api.request(method, host, **kwargs)
+    except requests.exceptions.RequestException as exc:
         raise exceptions.InterconnectionError(
             'Service `{0}` on `{1}` cannot respond'.format(name, host))
+
+    return InterconnectionResponse(req)
 
 
 def get(name, **kwargs):
