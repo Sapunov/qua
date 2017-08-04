@@ -12,7 +12,7 @@ log = logging.getLogger(settings.APP_NAME + __name__)
 
 
 def deserialize(serializer_class, data, **kwargs):
-    """Deserialize python dict to rest_framework class"""
+    '''Deserialize python dict to rest_framework class'''
 
     serializer = serializer_class(data=data, **kwargs)
     serializer.is_valid(raise_exception=True)
@@ -21,7 +21,7 @@ def deserialize(serializer_class, data, **kwargs):
 
 
 def serialize(serializer_class, instance, data=None, **kwargs):
-    """Serialize rest_framework class to python dict"""
+    '''Serialize rest_framework class to python dict'''
 
     if data is None:
         serializer = serializer_class(instance, **kwargs)
@@ -93,6 +93,7 @@ class AnswerSerializer(DynamicFieldsModelSerializer):
 
 
 class QuestionSerializer(DynamicFieldsModelSerializer):
+    '''Serialize question'''
 
     title = serializers.CharField(max_length=300, required=False)
     keywords = AutoUpdatePrimaryKeyRelatedField(
@@ -105,6 +106,7 @@ class QuestionSerializer(DynamicFieldsModelSerializer):
     updated_by = UserSerializer(read_only=True)
 
     def create(self, validated_data):
+        '''Create new question from validated_data'''
 
         if 'title' not in validated_data:
             raise ValidationError({'title': ['This field is required.']})
@@ -127,6 +129,7 @@ class QuestionSerializer(DynamicFieldsModelSerializer):
         return question
 
     def update(self, instance, validated_data):
+        '''Update existing question by validated_data'''
 
         instance.update(
             validated_data['user'],

@@ -15,6 +15,7 @@ log = logging.getLogger(settings.APP_NAME + __name__)
 
 
 class Base(models.Model):
+    '''Base abstract class with common fields'''
 
     created_by = models.ForeignKey(
         User, on_delete=models.PROTECT, related_name='+')
@@ -29,15 +30,16 @@ class Base(models.Model):
 
 
 class Keyword(models.Model):
+    '''Qua keywords'''
 
     text = models.CharField(max_length=50, primary_key=True)
 
     @classmethod
     def get_or_create(cls, words):
-        """Return QuesrySet of keywords. Create if not exists
+        '''Return QuesrySet of keywords. Create if not exists
 
         :words: list (or one word) of words (not normalized)
-        """
+        '''
         if isinstance(words, str):
             words = [words]
 
@@ -60,6 +62,7 @@ class Keyword(models.Model):
 
 
 class QuestionListRepr:
+    '''Helpful class for simplify pagination logic'''
 
     def __init__(self, queryset, total):
 
@@ -68,6 +71,7 @@ class QuestionListRepr:
 
 
 class Question(Base):
+    '''Qua question'''
 
     title = models.CharField(max_length=300)
     keywords = models.ManyToManyField(Keyword)
@@ -80,6 +84,7 @@ class Question(Base):
 
     @classmethod
     def get(cls, pk=None, **kwargs):
+        '''Returns list of questions or specific question'''
 
         offset = kwargs.pop('offset', 0)
         limit = kwargs.pop('limit', None)
@@ -99,6 +104,7 @@ class Question(Base):
 
     @classmethod
     def create(cls, title, user, keywords=None):
+        '''Create question without creating answer'''
 
         log.debug(
             'Creating question with title: %s, keywords: %s by %s',
@@ -117,6 +123,7 @@ class Question(Base):
         return question
 
     def update(self, user, title=None, keywords=None):
+        '''Update specific question fields'''
 
         log.debug(
             'Updating %s with title: %s, keywords: %s by %s',
@@ -140,6 +147,7 @@ class Question(Base):
             self.save()
 
     def archive(self, user):
+        '''Check deleted flag. Using when user delete question'''
 
         log.debug('Archiving %s by %s', self, user)
 
@@ -147,6 +155,7 @@ class Question(Base):
         self.save()
 
     def restore(self, user):
+        '''Check off deleted flag'''
 
         log.debug('Restoring %s by %s', self, user)
 
@@ -155,19 +164,23 @@ class Question(Base):
 
     @property
     def answer_exists(self):
+        '''Returns whether answer of this question exists'''
 
         return hasattr(self, 'answer')
 
     class Meta:
+
         ordering = ('-answer', '-id')
 
 
 class ExternalResource(Base):
+    '''Qua external resourse'''
 
     url = models.URLField(unique=True)
 
     @classmethod
     def create(cls, url, user):
+        '''Create external resource'''
 
         log.debug('Creating external resource: %s by %s', url, user)
 
@@ -183,6 +196,7 @@ class ExternalResource(Base):
 
 
 class SearchHistory(models.Model):
+    '''Qua search history'''
 
     query = models.TextField()
     user = models.ForeignKey(User, on_delete=models.PROTECT, related_name='+')
@@ -210,6 +224,7 @@ class SearchHistory(models.Model):
 
 
 class Answer(Base):
+    '''Qua question answer'''
 
     raw = models.TextField()
     question = models.OneToOneField(
@@ -223,6 +238,7 @@ class Answer(Base):
 
     @classmethod
     def create(cls, raw, user, question):
+        '''Create answer for a specific question'''
 
         if raw == '':
             return None
@@ -238,6 +254,7 @@ class Answer(Base):
         return answer
 
     def update(self, raw, user):
+        '''Update specific answer'''
 
         if self.raw != raw:
             log.debug('Updating <%s>', self.name)
@@ -251,6 +268,7 @@ class Answer(Base):
             cache.set(self.name, mistune.markdown(self.raw), constants.MONTH)
 
     def delete(self):
+        '''Delete specific answer'''
 
         log.debug('Deleting <%s>', self.name)
 
@@ -259,11 +277,13 @@ class Answer(Base):
 
     @property
     def name(self):
+        '''Answer name with id'''
 
         return 'answer-%s' % self.id
 
     @property
     def html(self):
+        '''Returns compiled html from markdown'''
 
         html = cache.get(self.name)
 

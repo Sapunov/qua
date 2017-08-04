@@ -18,6 +18,7 @@ class QuestionListView(APIView):
 
     @paginate
     def get(self, request, limit=settings.PAGE_SIZE, offset=0):
+        '''Get list of questions'''
 
         questions = Question.get(limit=limit, offset=offset)
         serializer = serialize(QuestionListSerializer, questions)
@@ -25,6 +26,7 @@ class QuestionListView(APIView):
         return QuaApiResponse(serializer.data)
 
     def post(self, request):
+        '''Create new question'''
 
         serializer = deserialize(QuestionSerializer, data=request.data)
         serializer.save(user=request.user)
@@ -36,6 +38,7 @@ class QuestionView(APIView):
 
     @trackable
     def get(self, request, question_id):
+        '''Get question by question_id'''
 
         question = Question.get(pk=question_id)
         serializer = serialize(QuestionSerializer, question)
@@ -43,6 +46,7 @@ class QuestionView(APIView):
         return QuaApiResponse(serializer.data)
 
     def put(self, request, question_id):
+        '''Update question information'''
 
         question = Question.get(pk=question_id)
         serializer = serialize(QuestionSerializer, question, data=request.data)
@@ -52,6 +56,7 @@ class QuestionView(APIView):
         return QuaApiResponse(serializer.data)
 
     def delete(self, request, question_id):
+        '''Delete the specific question'''
 
         question = Question.get(pk=question_id)
         question.archive(user=request.user)
