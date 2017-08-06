@@ -47,7 +47,7 @@ class Index(APIView):
 
         engine_index.clear_index()
 
-        return Response()
+        return Response({})
 
 
 class Items(APIView):
@@ -70,4 +70,4 @@ class Items(APIView):
 
         engine_index.delete_item(item_id)
 
-        return Response()
+        return Response({})
