@@ -44,6 +44,7 @@ RUN export LANG=en_US.UTF-8 \
 		elasticsearch==5.3.0 \
 		lxml==3.7.3 \
 		urllib3==1.21.1 \
+		pycrypto==2.6.1 \
 
 	&& apt-get autoremove -y ${BUILD_DEPS} \
 	&& apt-get clean \
