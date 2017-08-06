@@ -1,3 +1,5 @@
+from urllib.parse import urlparse
+from urltools import normalize as utool_normalize
 import hashlib
 import lxml.html
 import os
@@ -134,3 +136,47 @@ def html2text(html, forbidden_tags=('script', 'style', 'noscript', 'img')):
     text = deduplicate_spaces(_html2text(tree, forbidden_tags))
 
     return {'title': title, 'text': text}
+
+
+def url_part(url, part_name):
+    '''Returns value of the part_name of the specific url'''
+
+    parsed = urlparse(url)
+
+    if hasattr(parsed, part_name):
+        return getattr(parsed, part_name)
+
+
+def extract_hostname(url):
+    '''Returns value of hostname as part of the specified url'''
+
+    hostname = url_part(url, 'hostname')
+
+    return hostname if hostname else None
+
+
+def urlsep(url):
+    '''Separate url by scheme and hostname with path and query params'''
+
+    scheme = url_part(url, 'scheme')
+    hostname = url_part(url, 'hostname')
+
+    return scheme, url[url.index(hostname):]
+
+
+def ensure_scheme(url, add_scheme='http'):
+    '''Add http of user specified scheme if not exist'''
+
+    if not url_part(url, 'scheme'):
+        # ensure that url does not start with //
+        url = url.lstrip('/')
+
+        url = '{0}://{1}'.format(add_scheme, url)
+
+    return url
+
+
+def normalize_url(url):
+    '''Normalize url'''
+
+    return ensure_scheme(utool_normalize(url))

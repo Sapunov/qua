@@ -228,3 +228,14 @@ SERVICES = {
 # request another if exists
 # By default - 1 sec
 SERVICES_TIMEOUT = 1
+
+
+# urlnormalize uses public sufficses which downloads every time lib import.
+# That is why we need to set env variable `PUBLIC_SUFFIX_LIST` with path
+# to the local copy of this list.
+PUBLIC_SUFFIX_LIST_PATH = os.path.join(DATA_DIR, 'effective_tld_names.dat')
+
+# this file must be delivered here while installation
+assert os.path.exists(PUBLIC_SUFFIX_LIST_PATH), 'PUBLIC_SUFFIX_LIST does not exist'
+
+os.environ['PUBLIC_SUFFIX_LIST'] = PUBLIC_SUFFIX_LIST_PATH

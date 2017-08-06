@@ -12,6 +12,8 @@ RUN mkdir -p /var/lib/qua/data/static /var/log/qua \
 	&& pip3 install --no-cache-dir -r /var/www/qua-ext/requirements.txt \
 	&& chown -R www-data:www-data /var/www/qua-ext /var/lib/qua /var/log/qua
 
+COPY conf/effective_tld_names.dat /var/lib/qua/data/
+
 VOLUME /var/lib/qua/data
 
 WORKDIR /var/www/qua-ext

@@ -1,4 +1,4 @@
-'''Interconnection methods for search service'''
+'''Interconnection methods for search microservice'''
 
 import logging
 

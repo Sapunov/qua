@@ -5,6 +5,8 @@ import logging
 from django.conf import settings
 
 from api import misc
+from api import models
+from api import retriever
 from api import search
 
 
@@ -16,7 +18,34 @@ def index_external_resources(link_or_links):
 
     # Ensure list of links
     if isinstance(link_or_links, str):
-        link_or_links = [link_or_links]
+        links = [link_or_links]
+    else:
+        links = link_or_links
+
+    for url in links:
+        url = misc.normalize_url(url)
+        ext_resource, created = models.ExternalResource.create(url)
+
+        log.debug('%s. Was created: %s', ext_resource, created)
+
+        if created or ext_resource.se_id is None:
+            html = retriever.retrieve_url(url)
+
+            if not html:
+                log.error('Cannot index external resource. Deleting...')
+                ext_resource.delete()
+            else:
+                title_text = misc.html2text(html)
+
+                item_id = search.index_item(
+                    ext_resource.id,
+                    title_text['title'],
+                    title_text['text'],
+                    is_external=True,
+                    resource=url)
+
+                ext_resource.se_id = item_id
+                ext_resource.save()
 
 
 def index_question(question_obj):
@@ -53,7 +82,7 @@ def reindex_question(question_obj):
         return index_question(question_obj)
 
     # if user delete item
-    if not question_obj.answer_exists and question_obj.se_id in not None:
+    if not question_obj.answer_exists and question_obj.se_id is not None:
         search.delete_item(question_obj.se_id)
     else:
         html = question_obj.answer.html

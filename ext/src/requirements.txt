@@ -13,4 +13,5 @@ pyparsing==2.2.0
 python-dateutil==2.6.0
 pytz==2017.2
 six==1.10.0
+urltools==0.3.2
 yarl==0.12.0

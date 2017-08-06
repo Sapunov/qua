@@ -21,9 +21,9 @@ class Base(models.Model):
     '''Base abstract class with common fields'''
 
     created_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='+')
+        User, on_delete=models.PROTECT, related_name='+', blank=True, null=True)
     updated_by = models.ForeignKey(
-        User, on_delete=models.PROTECT, related_name='+')
+        User, on_delete=models.PROTECT, related_name='+', blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -181,7 +181,7 @@ class Question(Base):
     def get_keywords_text_only(self):
         '''Returns queryset of question keywords in text format'''
 
-        return self.keywords.values_list('text', flat=True)
+        return list(self.keywords.values_list('text', flat=True))
 
     class Meta:
 
@@ -191,19 +191,35 @@ class Question(Base):
 class ExternalResource(Base):
     '''Qua external resourse'''
 
-    url = models.URLField(unique=True)
+    scheme = models.CharField(max_length=10)
+    hostname = models.URLField()
+    _url = models.URLField(unique=True)
+    update_interval = models.IntegerField(default=1)
+    se_id = models.CharField(max_length=10, blank=True, null=True)
 
     @classmethod
-    def create(cls, url, user):
+    def create(cls, url, user=None):
         '''Create external resource'''
 
-        log.debug('Creating external resource: %s by %s', url, user)
+        url = misc.normalize_url(url)
+
+        hostname = misc.extract_hostname(url)
+        scheme, url = misc.urlsep(url)
 
         resource, created = cls.objects.get_or_create(
-            url=url, created_by=user, updated_by=user
-        )
+            scheme=scheme,
+            hostname=hostname,
+            _url=url,
+            created_by=user,
+            updated_by=user)
 
         return resource, created
+
+    @property
+    def url(self):
+        '''Concat scheme and _url and returns good url address'''
+
+        return '{0}://{1}'.format(self.scheme, self._url)
 
     def __str__(self):
 
