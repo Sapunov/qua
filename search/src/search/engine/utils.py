@@ -42,47 +42,6 @@ def search_query(
     return (total, results['took'], out_results)
 
 
-def _html2text(node, forbidden_tags):
-
-    children = node.getchildren()
-
-    if children:
-        text = ''
-
-        for child in children:
-            text += ' %s ' % _html2text(child, forbidden_tags)
-
-        return text
-    else:
-        if node.tag not in forbidden_tags and \
-                not isinstance(node, lxml.html.HtmlComment):
-            return ' %s ' % node.text if node.text else ''
-        else:
-            return ''
-
-
-def deduplicate_spaces(text):
-    '''Delete duplicated spaces and new lines.'''
-
-    return re.sub('(\s)+', ' ', text).strip()
-
-
-def html2text(html, forbidden_tags=('script', 'style', 'noscript', 'img')):
-    '''Extract only text from raw html.'''
-
-    tree = lxml.html.fromstring(html)
-    title = tree.find(".//title")
-    body = tree.find('.//body')
-
-    if body is None or title is None:
-        return ''
-
-    return {
-        'title': title.text,
-        'text': deduplicate_spaces(_html2text(body, forbidden_tags))
-    }
-
-
 def generate_item_id(ext_id, is_external):
     '''Generate search engine internal id for item.'''
 
