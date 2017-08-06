@@ -1,10 +1,21 @@
+from Crypto.Cipher import AES
+from importlib import import_module
 from urllib.parse import urlparse
 from urltools import normalize as utool_normalize
 import hashlib
 import lxml.html
+import math
 import os
 import re
 import time
+
+from django.conf import settings
+
+
+class NotInitialized:
+    '''Class shows that variable not initialized. Use it when cannot use None'''
+
+    pass
 
 
 def sha1_hash(string):
@@ -180,3 +191,95 @@ def normalize_url(url):
     '''Normalize url'''
 
     return ensure_scheme(utool_normalize(url))
+
+
+def _prepare_keys():
+    '''Prepare encryption key and init vector for aes'''
+
+    secret_key = settings.SECRET_KEY.zfill(48)
+
+    return secret_key[:32], secret_key[-16:]
+
+
+def aes_encrypt(plaintext):
+    '''AES-256 encryption using django SECRET_KEY'''
+
+    key, ivector = _prepare_keys()
+
+    suite = AES.new(key, AES.MODE_CBC, ivector)
+
+    plaintext = plaintext.encode('utf-8')
+
+    # plaintext must be a multiple of 16 in length
+    if len(plaintext) / 16 != 0:
+        border_length = math.ceil(len(plaintext) / 16) * 16
+        plaintext = plaintext.center(border_length)
+
+    return suite.encrypt(plaintext)
+
+
+def aes_decrypt(encrypted):
+    '''AES-256 decryption using django SECRET_KEY'''
+
+    key, ivector = _prepare_keys()
+
+    suite = AES.new(key, AES.MODE_CBC, ivector)
+
+    plaintext = suite.decrypt(encrypted)
+
+    return plaintext.decode('utf-8').strip()
+
+
+def is_valid_hostname(hostname):
+    '''Checks whether hostname valid or not.
+
+    Ensures that each segment:
+     - contains at least one character and a maximum of 63 characters;
+     - consists only of allowed characters;
+     - doesn't begin or end with a hyphen.
+
+    Reference: https://stackoverflow.com/questions/2532053/validate-a-hostname-string
+    '''
+
+    if len(hostname) > 255:
+        return False
+
+    # Strip exactly one dot from the right, if present
+    if hostname[-1] == ".":
+        hostname = hostname[:-1]
+
+    allowed = re.compile("(?!-)[A-Z\d-]{1,63}(?<!-)$", re.IGNORECASE)
+
+    return all(allowed.match(x) for x in hostname.split("."))
+
+
+def hostname2camelcase(hostname):
+    '''Converts hostname to the camelcase string.
+
+    Example: vk.com -> VkCom
+    '''
+
+    domains = hostname.split('.')
+
+    return ''.join(domain.capitalize() for domain in domains)
+
+
+def removedots(input_string):
+    '''Returns input string with removed dots'''
+
+    return ''.join(input_string.split('.'))
+
+
+def import_module_class(path_to_class):
+    '''Import class from any module'''
+
+    module_name, class_name = path_to_class.rsplit('.', 1)
+
+    module = import_module(module_name)
+
+    try:
+        class_ = getattr(module, class_name)
+    except AttributeError:
+        raise ImportError('No class <%s> in %s' % (class_name, module))
+
+    return class_

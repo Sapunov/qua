@@ -327,3 +327,66 @@ class Answer(Base):
             log.debug('Returning %s html from cache', self.name)
 
         return html
+
+
+class ExternalResourceSettings(models.Model):
+    '''Settings of user specified external resources'''
+
+    scheme = models.CharField(max_length=10)
+    hostname = models.URLField(unique=True)
+    _login = models.BinaryField(blank=True, null=True)
+    _password = models.BinaryField(blank=True, null=True)
+
+    @classmethod
+    def create(cls, hostname, scheme='http', login=None, password=None):
+        '''Create new resource with the specific settings'''
+
+        if login is not None and password is not None:
+            login = misc.aes_encrypt(login)
+            password = misc.aes_encrypt(password)
+
+        obj = cls.objects.create(
+            scheme=scheme,
+            hostname=hostname,
+            _login=login,
+            _password=password)
+
+        return obj
+
+    @property
+    def login(self):
+        '''Returns decrypted login'''
+
+        if isinstance(self._login, memoryview):
+            login = self._login.tobytes()
+        else:
+            login = self._login
+
+        return misc.aes_decrypt(login)
+
+    @login.setter
+    def login(self, new_login):
+
+        self._login = misc.aes_encrypt(new_login)
+        self.save()
+
+    @property
+    def password(self):
+        '''Returns decrypted password'''
+
+        if isinstance(self._password, memoryview):
+            password = self._password.tobytes()
+        else:
+            password = self._password
+
+        return misc.aes_decrypt(password)
+
+    @password.setter
+    def password(self, new_password):
+
+        self._password = misc.aes_encrypt(new_password)
+        self.save()
+
+    def __str__(self):
+
+        return '<ExternalResourceSettings: ({0}) {1}>'.format(self.id, self.hostname)
