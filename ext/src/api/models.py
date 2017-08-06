@@ -6,12 +6,15 @@ from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import models
 from rest_framework import exceptions
+import django_rq
 
 from api import constants
 from api import misc
+from api import tasks
 
 
 log = logging.getLogger(settings.APP_NAME + __name__)
+queue = django_rq.get_queue(settings.APP_NAME)
 
 
 class Base(models.Model):
@@ -76,6 +79,7 @@ class Question(Base):
     title = models.CharField(max_length=300)
     keywords = models.ManyToManyField(Keyword)
     deleted = models.BooleanField(default=False)
+    se_id = models.CharField(max_length=10, blank=True, null=True)
     # answer field in Answer
 
     def __str__(self):
@@ -154,6 +158,9 @@ class Question(Base):
         self.deleted = True
         self.save()
 
+        # delete from search index
+        queue.enqueue(tasks.delete_from_index, self)
+
     def restore(self, user):
         '''Check off deleted flag'''
 
@@ -162,11 +169,19 @@ class Question(Base):
         self.deleted = False
         self.save()
 
+        # index question to make in searchable
+        queue.enqueue(tasks.index_question, self)
+
     @property
     def answer_exists(self):
         '''Returns whether answer of this question exists'''
 
         return hasattr(self, 'answer')
+
+    def get_keywords_text_only(self):
+        '''Returns queryset of question keywords in text format'''
+
+        return self.keywords.values_list('text', flat=True)
 
     class Meta:
 

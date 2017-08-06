@@ -45,6 +45,7 @@ def index_item(
 
 
 def clear_index():
+    '''Delete all items from search index'''
 
     req = interconnect.delete(
         'search.{0}/index'.format(settings.MAIN_SEARCH_SERVICE_NAME))
@@ -58,6 +59,7 @@ def clear_index():
 
 
 def get_item(item_id):
+    '''Returns search engine item specified by id'''
 
     req = interconnect.get(
         'search.{0}/items/{1}'.format(settings.MAIN_SEARCH_SERVICE_NAME, item_id))
@@ -73,6 +75,7 @@ def get_item(item_id):
 
 
 def update_item(item_id, title=None, text=None, keywords=None, resource=None):
+    '''Update search item via elasticsearch update call'''
 
     data = {}
 
@@ -103,6 +106,7 @@ def update_item(item_id, title=None, text=None, keywords=None, resource=None):
 
 
 def delete_item(item_id):
+    '''Delete item from search index'''
 
     req = interconnect.delete(
         'search.{0}/items/{1}'.format(settings.MAIN_SEARCH_SERVICE_NAME, item_id))

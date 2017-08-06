@@ -4,11 +4,14 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
+import django_rq
 
+from api import tasks
 from api.models import Question, Keyword, Answer
 
 
 log = logging.getLogger(settings.APP_NAME + __name__)
+queue = django_rq.get_queue(settings.APP_NAME)
 
 
 def deserialize(serializer_class, data, **kwargs):
@@ -124,7 +127,8 @@ class QuestionSerializer(DynamicFieldsModelSerializer):
                 question
             )
 
-        # TODO: index question
+        # Send question to the search microservice via message queue
+        queue.enqueue(tasks.index_question, question)
 
         return question
 
@@ -160,14 +164,15 @@ class QuestionSerializer(DynamicFieldsModelSerializer):
 
         instance.save()
 
-        # TODO: reindex question
+        # Send question to the search microservice via message queue
+        queue.enqueue(tasks.reindex_question, instance)
 
         return instance
 
     class Meta:
 
         model = Question
-        exclude = ('deleted',)
+        exclude = ('deleted', 'se_id')
 
 
 class QuestionListSerializer(serializers.Serializer):

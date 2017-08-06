@@ -31,14 +31,14 @@ STATICFILES_FINDERS = (
 
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
-    'retriever.apps.RetrieverConfig',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.admin',
-    'rest_framework'
+    'rest_framework',
+    'django_rq'
 ]
 
 MIDDLEWARE = [
@@ -104,6 +104,14 @@ CACHES = {
         },
         'KEY_PREFIX': APP_NAME
     }
+}
+
+RQ_QUEUES = {
+    APP_NAME: {
+        'HOST': REDIS['host'],
+        'PORT': REDIS['port'],
+        'DB': REDIS['db_cache']
+    },
 }
 
 AUTH_PASSWORD_VALIDATORS = [
