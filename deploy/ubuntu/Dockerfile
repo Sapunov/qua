@@ -2,11 +2,9 @@ FROM ubuntu:16.04
 
 MAINTAINER Sapunov Nikita
 
-RUN export LANG=en_US.UTF-8 \
-	&& export LANGUAGE=en_US:en \
-	&& LC_ALL=en_US:en \
+ENV LANG='en_US.UTF-8' LANGUAGE='en_US:en' LC_ALL='en_US.UTF-8'
 
-	&& sed -i 's,http://archive.ubuntu.com/ubuntu/,mirror://mirrors.ubuntu.com/mirrors.txt,' /etc/apt/sources.list \
+RUN sed -i 's,http://archive.ubuntu.com/ubuntu/,mirror://mirrors.ubuntu.com/mirrors.txt,' /etc/apt/sources.list \
 	&& apt-get update -qq \
 	&& apt-get upgrade -qq \
 
