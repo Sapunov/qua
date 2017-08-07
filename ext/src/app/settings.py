@@ -221,7 +221,7 @@ SERP_RIGHT_BLOCK_SIZE = 3
 SERVICES = {
     'search': {
         MAIN_SEARCH_SERVICE_NAME: {
-            'host': 'qua-search'
+            'host': 'http://qua-search'
         }
     }
 }

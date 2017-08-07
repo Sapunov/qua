@@ -27,7 +27,6 @@ VOLUME /var/lib/qua/data
 WORKDIR /var/www/qua-ext
 
 RUN nginx -t \
-	&& python3 -c 'import compileall, os; compileall.compile_dir(os.curdir, force=1)' > /dev/null \
-	&& python3 manage.py collectstatic
+	&& python3 -c 'import compileall, os; compileall.compile_dir(os.curdir, force=1)' > /dev/null
 
 CMD ["/usr/bin/supervisord"]
