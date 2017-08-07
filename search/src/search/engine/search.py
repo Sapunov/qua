@@ -1,6 +1,4 @@
-import json
 import logging
-import time
 
 from django.conf import settings
 
@@ -17,6 +15,7 @@ log = logging.getLogger(settings.APP_NAME + '.' + __name__)
 
 
 class SearchHit:
+    '''Only one search result - hit'''
 
     def __init__(
         self, item_id, ext_id, title, keywords, is_external, resource,
@@ -39,6 +38,7 @@ class SearchHit:
 
 
 class SearchResults:
+    '''Create a list of search results'''
 
     def __init__(
             self, query, total, results=None,
@@ -98,6 +98,9 @@ def es_spelling_correction(
 
     result = esclient.suggest(index=index, body=body)
 
+    log.debug('Answer from elasticsearch suggest by query body: %s: %s',
+              body, result)
+
     # Funny thing: when es index has no items .suggest method returns dict
     # without any field (`spelling` in this case) but when index not empty and
     # there is not suggestions method returns dict with `spelling` field
@@ -138,7 +141,7 @@ def check_keyboard_layout_error(query):
     count_inverted_query, *_ = utils.search_query(get_query(inverted_query))
 
     log.debug('Normal query results - %s, inverted_layout results - %s',
-        count_query, count_inverted_query)
+              count_query, count_inverted_query)
 
     if not count_query and count_inverted_query:
         corrected = True
@@ -182,6 +185,7 @@ def extend_query(query):
         temp = [word]
 
         translation = translate(word)
+        log.debug('Translation of %s : %s', word, translation)
 
         if translation:
             temp.append(translation)
@@ -222,9 +226,12 @@ def create_query(words):
 def search_items(query, limit, offset, spelling=True):
     '''Main search functions for calling from any place.'''
 
-    log.debug('Query: %s', query)
+    log.debug('User query: %s, limit=%s, offset=%s, spelling=%s',
+              query, limit, offset, spelling)
 
     query = utils.preprocess_user_query(query)
+
+    log.debug('Query after first preprocessing: %s', query)
 
     corrected = False
     corrected_query = None
@@ -232,16 +239,25 @@ def search_items(query, limit, offset, spelling=True):
     if spelling:
         corrected, corrected_query, corrected_word = spelling_correction(query)
 
+        log.debug('Spelling activated. Was query corrected: %s, ' \
+                  'corrected query: %s, corrected_word: %s',
+                  corrected, corrected_query, corrected_word)
+
     words = extend_query(corrected_query if corrected else query)
+
+    log.debug('Words with extended query: %s', words)
 
     es_query = create_query(words)
 
-    log.debug('ES query: %s', json.dumps(es_query, indent=2))
+    log.debug('Elasticsearch query: %s', es_query)
 
     total, _, results = utils.search_query(es_query, size=limit, from_=offset)
+
+    log.debug('Total results found: %s, results: %s', total, results)
 
     # Before send to user we need to highlight wrong word(s)
     if corrected:
         corrected_query = utils.highlight_words(corrected_query, corrected_word)
+        log.debug('Highlighted corrected query: %s', corrected_query)
 
     return SearchResults(query, total, results, corrected_query, words)

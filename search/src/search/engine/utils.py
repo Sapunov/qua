@@ -1,21 +1,17 @@
-import logging
 import lxml.html
 import re
 
 from django.conf import settings
 
-from search import misc
-
 from search import elasticsearch
+from search import misc
 from search.engine import stopwords
 
 
-log = logging.getLogger(settings.APP_NAME + '.' + __name__)
-
-
 def create_boolean_query(queries, policy='should'):
+    '''Return ES specific formed dict for boolean query'''
 
-    return { 'bool': { policy: queries } }
+    return {'bool': {policy: queries}}
 
 
 def search_query(

@@ -9,13 +9,17 @@ from search.engine import utils
 
 esclient = elasticsearch.get_client()
 
-log = logging.getLogger(settings.APP_NAME + __name__)
+log = logging.getLogger(settings.APP_NAME + '.' + __name__)
 
 
 def add_to_spelling_db(*args):
+    '''Add some text to the spelling index'''
+
+    log.debug('Trying to add data in spelling index: %s', args)
 
     for data in args:
         if not isinstance(data, str):
+            log.debug('Cannot add %s to the spelling index: not str', data)
             continue
 
         esclient.index(
@@ -27,6 +31,7 @@ def add_to_spelling_db(*args):
 
 
 def index_item(ext_id, title, text, keywords, is_external, resource):
+    '''Save some item in ES database'''
 
     log.debug('Indexing question with ext_id=%s', ext_id)
 
@@ -39,7 +44,11 @@ def index_item(ext_id, title, text, keywords, is_external, resource):
         'resource': resource
     }
 
+    log.debug('Data to store in database: %s', data)
+
     item_id = utils.generate_item_id(ext_id, is_external)
+
+    log.debug('New item_id for item: %s', item_id)
 
     esclient.index(
         index=settings.ES_SEARCH_INDEX,
@@ -49,12 +58,15 @@ def index_item(ext_id, title, text, keywords, is_external, resource):
 
     add_to_spelling_db(title, text, ' '.join(keywords))
 
-    log.debug('New index item with item_id=%s', item_id)
+    log.debug('Item with item_id=%s saved to index', item_id)
 
     return item_id
 
 
 def get_item(item_id):
+    '''Get es item by item_id'''
+
+    log.debug('Trying to return item with item_id=%s', item_id)
 
     try:
         item = esclient.get(
@@ -62,6 +74,7 @@ def get_item(item_id):
             doc_type=settings.ES_DOCTYPE,
             id=item_id)
     except elasticsearch.exceptions.NotFoundError:
+        log.info('Item with item_id=%s not found!', item_id)
         raise NotFound
 
     item['_source']['item_id'] = item['_id']
@@ -70,6 +83,9 @@ def get_item(item_id):
 
 
 def update_item(item_id, data):
+    '''Update some item'''
+
+    log.debug('Updating item with item_id=%s by data=%s', item_id, data)
 
     try:
         esclient.update(
@@ -80,10 +96,13 @@ def update_item(item_id, data):
     except elasticsearch.exceptions.NotFoundError:
         raise NotFound
 
+    log.debug('Item with item_id=%s was updated', item_id)
+
     return get_item(item_id)
 
 
 def delete_item(item_id):
+    '''Delete item by item_id'''
 
     log.debug('Deleting item with item_id=%s', item_id)
 
@@ -97,6 +116,7 @@ def delete_item(item_id):
 
 
 def clear_index():
+    '''Clearing search index'''
 
     log.debug(
         'Clearing `%s` index with %s items',

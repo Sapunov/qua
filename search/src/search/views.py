@@ -1,11 +1,16 @@
+import logging
+
+from django.conf import settings
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from search import serializers
 from search.engine import index as engine_index
 from search.engine import search
-
-from search import serializers
 from search.serializers import serialize, deserialize
+
+
+log = logging.getLogger(settings.APP_NAME + '.' + __name__)
 
 
 class Search(APIView):
@@ -15,6 +20,8 @@ class Search(APIView):
         req_serializer = deserialize(
             serializers.SearchRequest,
             request.query_params)
+
+        log.debug('Serialized user query_params: %s', req_serializer.data)
 
         search_results = search.search_items(
             query=req_serializer.data['query'],
@@ -32,6 +39,8 @@ class Index(APIView):
     def post(self, request):
 
         req_serializer = deserialize(serializers.IndexRequest, request.data)
+
+        log.debug('Serialized user query_params: %s', req_serializer.data)
 
         item_id = engine_index.index_item(
             ext_id=req_serializer.data['ext_id'],
@@ -61,6 +70,8 @@ class Items(APIView):
     def put(self, request, item_id):
 
         req_serializer = deserialize(serializers.ItemUpdate, request.data)
+
+        log.debug('Serialized user query_params: %s', req_serializer.data)
 
         item = engine_index.update_item(item_id, req_serializer.data)
 

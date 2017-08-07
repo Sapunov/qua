@@ -22,24 +22,27 @@ class Elasticsearch(EsParent):
 
         try:
             return super().search(*args, **kwargs)
-        except exceptions.ElasticsearchException as exp:
-            log.exception(exp)
+        except exceptions.ElasticsearchException as exc:
+            if not isinstance(exc, exceptions.NotFoundError):
+                log.exception(exc)
             raise
 
     def index(self, *args, **kwargs):
 
         try:
             return super().index(*args, **kwargs)
-        except exceptions.ElasticsearchException as exp:
-            log.exception(exp)
+        except exceptions.ElasticsearchException as exc:
+            if not isinstance(exc, exceptions.NotFoundError):
+                log.exception(exc)
             raise
 
     def get(self, *args, **kwargs):
 
         try:
             return super().get(*args, **kwargs)
-        except exceptions.ElasticsearchException as exp:
-            log.exception(exp)
+        except exceptions.ElasticsearchException as exc:
+            if not isinstance(exc, exceptions.NotFoundError):
+                log.exception(exc)
             raise
 
 

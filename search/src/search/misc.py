@@ -20,6 +20,7 @@ def delete_duplicates(list_of_items):
 
 
 def keyboard_layout_inverse(string):
+    '''Returns string with inverted keyboard layout: russian <-> us'''
 
     dic = {
         'й': 'q', 'ц': 'w', 'у': 'e', 'к': 'r', 'е': 't', 'н': 'y', 'г': 'u',
