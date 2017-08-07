@@ -257,7 +257,7 @@ def search_items(query, limit, offset, spelling=True):
 
     total, _, results = utils.search_query(es_query, size=limit, from_=offset)
 
-    log.debug('Total results found: %s, results: %s', total, results)
+    log.debug('Total results found: %s', total)
 
     # Before send to user we need to highlight wrong word(s)
     if corrected:
