@@ -283,3 +283,10 @@ def import_module_class(path_to_class):
         raise ImportError('No class <%s> in %s' % (class_name, module))
 
     return class_
+
+
+def truncate_string(string, truncate_len=100,
+                    end_msg='...<the rest of the text is truncated>'):
+    '''Truncate string i.e. for logging purposes'''
+
+    return '{0}{1}'.format(string[:truncate_len], end_msg)

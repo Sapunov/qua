@@ -1,6 +1,8 @@
 import os
 import datetime
 
+from api import constants
+
 
 PROGRAM_NAME = 'qua'
 
@@ -219,7 +221,7 @@ SERP_RIGHT_BLOCK_SIZE = 3
 SERVICES = {
     'search': {
         MAIN_SEARCH_SERVICE_NAME: {
-            'host': 'http://localhost:9002'
+            'host': 'qua-search'
         }
     }
 }
@@ -239,3 +241,7 @@ PUBLIC_SUFFIX_LIST_PATH = os.path.join(DATA_DIR, 'effective_tld_names.dat')
 assert os.path.exists(PUBLIC_SUFFIX_LIST_PATH), 'PUBLIC_SUFFIX_LIST does not exist'
 
 os.environ['PUBLIC_SUFFIX_LIST'] = PUBLIC_SUFFIX_LIST_PATH
+
+MAX_UPDATE_INTERVAL = 10
+
+SCHEDULER_UPDATE_RESOURCES_INTERVAL = 60 * constants.MINUTE

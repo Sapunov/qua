@@ -5,11 +5,15 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.cache import cache
 from django.db import models
+from django.utils import timezone
 from rest_framework import exceptions
+import datetime
 import django_rq
 
 from api import constants
 from api import misc
+from api import retriever
+from api import search
 from api import tasks
 
 
@@ -193,9 +197,11 @@ class ExternalResource(Base):
 
     scheme = models.CharField(max_length=10)
     hostname = models.URLField()
-    _url = models.URLField(unique=True)
     update_interval = models.IntegerField(default=1)
     se_id = models.CharField(max_length=10, blank=True, null=True)
+    title = models.CharField(max_length=1000)
+    _content_hash = models.CharField(max_length=40, default='')
+    _url = models.URLField(unique=True)
 
     @classmethod
     def create(cls, url, user=None):
@@ -220,6 +226,60 @@ class ExternalResource(Base):
         '''Concat scheme and _url and returns good url address'''
 
         return '{0}://{1}'.format(self.scheme, self._url)
+
+    @property
+    def need_update(self):
+        '''Return whether this resource need to be updated'''
+
+        now = timezone.now()
+        interval = datetime.timedelta(days=self.update_interval)
+
+        return self.updated_at + interval <= now
+
+    def index_resource(self):
+        '''Index external resource with search service'''
+
+        html = retriever.retrieve_url(self.url)
+
+        log.debug('HTML for updating %s: %s', self, misc.truncate_string(html))
+
+        if not html:
+            return False
+
+        html_hash = misc.sha1_hash(html)
+        title_text = misc.html2text(html)
+
+        # index if it never indexed
+        if self.se_id is None:
+            item_id = search.index_item(
+                self.id,
+                title_text['title'],
+                title_text['text'],
+                is_external=True,
+                resource=self.url)
+
+            log.debug('Index %s for the first time. Search engine id=%s',
+                      self, item_id)
+
+            self.se_id = item_id
+            self.title = title_text['title']
+            self._content_hash = html_hash
+        elif self._content_hash != html_hash:
+            log.debug('Update %s because of new content', self)
+            search.update_item(
+                self.se_id,
+                title=title_text['title'],
+                text=title_text['text'])
+
+            self._content_hash = html_hash
+        elif self.update_interval < settings.MAX_UPDATE_INTERVAL:
+            self.update_interval += 1
+            log.debug('No new content for %s. Setting update_interval to %s',
+                      self, self.update_interval)
+
+        self.save()
+
+        return True
 
     def __str__(self):
 
