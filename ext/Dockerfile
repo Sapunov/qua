@@ -9,8 +9,16 @@ RUN mkdir -p /var/lib/qua/data/static /var/log/qua \
 	&& rm /etc/nginx/sites-enabled/default \
 	&& ln -s /etc/nginx/sites-available/qua-ext.conf /etc/nginx/sites-enabled/qua-ext.conf \
 	&& echo "daemon off;" >> /etc/nginx/nginx.conf \
-	&& pip3 install --no-cache-dir -r /var/www/qua-ext/requirements.txt \
-	&& chown -R www-data:www-data /var/www/qua-ext /var/lib/qua /var/log/qua
+
+	&& BUILD_DEPS='build-essential python3-dev' \
+	&& apt-get update && apt-get install -y --no-install-recommends ${BUILD_DEPS} \
+
+	&& pip3 install --no-cache-dir -I -r /var/www/qua-ext/requirements.txt \
+	&& chown -R www-data:www-data /var/www/qua-ext /var/lib/qua /var/log/qua \
+
+	&& apt-get autoremove -y ${BUILD_DEPS} \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 COPY conf/effective_tld_names.dat /var/lib/qua/data/
 
