@@ -74,16 +74,33 @@ def multimatch_builder(query, fields=settings.ES_SEARCH_FIELDS, operator='or'):
     }
 
 
-def highlight_words(string, word):
+def highlight_words(query_terms, highlight_all=False):
     '''Return string with word surrounded by <em> tags
 
     If word is None the whole string will be surrounded.
     '''
 
-    if word is None:
-        return '<em>{0}</em>'.format(string)
+    format_str = '<em>{0}</em>'
 
-    words = string.split(' ')
-    words[words.index(word)] = '<em>{0}</em>'.format(word)
+    if highlight_all:
+        return format_str.format(' '.join(term[0] for term in query_terms))
+
+    words = []
+    for user_term, suggested_term in query_terms:
+        if suggested_term is not None:
+            words.append(format_str.format(suggested_term))
+        else:
+            words.append(user_term)
 
     return ' '.join(words)
+
+
+def string2terms(string):
+    '''Create query terms from string split it by space'''
+
+    query_terms = []
+
+    for word in string.split(' '):
+        query_terms.append((word, None))
+
+    return query_terms
