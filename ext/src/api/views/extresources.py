@@ -2,8 +2,10 @@ import logging
 
 from django.conf import settings
 from rest_framework.views import APIView
+import django_rq
 
 from api import serializers
+from api import tasks
 from api.models import ExternalResource
 from api.pagination import paginate
 from api.serializers import serialize, deserialize
@@ -11,6 +13,7 @@ from app.response import QuaApiResponse
 
 
 log = logging.getLogger(settings.APP_NAME + __name__)
+queue = django_rq.get_queue(settings.APP_NAME)
 
 
 class ExtResources(APIView):
@@ -50,3 +53,29 @@ class ExtResource(APIView):
         extresource.delete()
 
         return QuaApiResponse()
+
+
+class ExtResourceBulk(APIView):
+
+    def post(self, request):
+        '''Creates many external resources at a time'''
+
+        serializer = deserialize(
+            serializers.ExtResource, data=request.data, many=True)
+
+        ans = []
+        resources_list = []
+
+        for resource in serializer.validated_data:
+            tmp = {'url': resource['url'], 'status': 'queued'}
+
+            if ExternalResource.is_exists(resource['url']):
+                tmp['status'] = 'exists'
+            else:
+                resources_list.append(resource['url'])
+
+            ans.append(tmp)
+
+        queue.enqueue(tasks.index_external_resources, resources_list)
+
+        return QuaApiResponse(ans)

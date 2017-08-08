@@ -14,4 +14,5 @@ urlpatterns = [
     url(r'^extresources$', views.ExtResources.as_view()),
     url(r'^extresources/(?P<extresource_id>[0-9]{1,10})$',
         views.ExtResource.as_view()),
+    url(r'^extresources/bulk$', views.ExtResourceBulk.as_view()),
 ]

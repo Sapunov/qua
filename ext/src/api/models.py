@@ -257,6 +257,20 @@ class ExternalResource(Base):
 
         super(ExternalResource, self).delete()
 
+    @classmethod
+    def is_exists(cls, url):
+        '''Check whether url already exists'''
+
+        url = misc.normalize_url(url)
+        scheme, url = misc.urlsep(url)
+
+        try:
+            cls.objects.get(_url=url)
+        except cls.DoesNotExist:
+            return False
+
+        return True
+
     @property
     def url(self):
         '''Concat scheme and _url and returns good url address'''
