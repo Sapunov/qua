@@ -192,6 +192,15 @@ class Question(Base):
         ordering = ('-answer', '-id')
 
 
+class ExternalResourceListRepr:
+    '''Helpful class for simplify pagination logic'''
+
+    def __init__(self, queryset, total):
+
+        self.items = queryset
+        self.total = total
+
+
 class ExternalResource(Base):
     '''Qua external resourse'''
 
@@ -202,6 +211,26 @@ class ExternalResource(Base):
     title = models.CharField(max_length=1000)
     _content_hash = models.CharField(max_length=40, default='')
     _url = models.URLField(unique=True)
+
+    @classmethod
+    def get(cls, pk=None, **kwargs):
+        '''Returns list of external resources or specific resource'''
+
+        offset = kwargs.pop('offset', 0)
+        limit = kwargs.pop('limit', None)
+
+        if pk is not None:
+            try:
+                return cls.objects.get(pk=pk, **kwargs)
+            except cls.DoesNotExist:
+                raise exceptions.NotFound
+
+        results = cls.objects.all(**kwargs)
+
+        total = results.count()
+        limit = limit if limit is not None else total
+
+        return ExternalResourceListRepr(results[offset:offset + limit], total)
 
     @classmethod
     def create(cls, url, user=None):
@@ -220,6 +249,13 @@ class ExternalResource(Base):
             updated_by=user)
 
         return resource, created
+
+    def delete(self):
+        '''Delete external resource with deleting it from search index'''
+
+        search.delete_item(self.se_id)
+
+        super(ExternalResource, self).delete()
 
     @property
     def url(self):
