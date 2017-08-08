@@ -11,4 +11,5 @@
 4. Методы
 	1. [search](methods/search.md)
 	2. [questions](methods/questions.md)
+	3. [external](methods/external.md)
 5. [Расширение функционала](extend.md)
