@@ -234,7 +234,8 @@ class ExtResource(DynamicFieldsModelSerializer):
 
     def create(self, validated_data):
         '''Create new external resource by valudated_data'''
-        ext_resource, created = ExternalResource.create(validated_data['url'])
+        ext_resource, created = ExternalResource.create(
+            validated_data['url'], validated_data['user'])
 
         if created:
             if not ext_resource.index_resource():

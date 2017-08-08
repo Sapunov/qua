@@ -13,7 +13,7 @@ from api import search
 log = logging.getLogger(settings.APP_NAME + __name__)
 
 
-def index_external_resources(link_or_links):
+def index_external_resources(link_or_links, user=None):
     '''Index extrnal resources'''
 
     # Ensure list of links
@@ -24,7 +24,7 @@ def index_external_resources(link_or_links):
 
     for url in links:
         url = misc.normalize_url(url)
-        ext_resource, created = models.ExternalResource.create(url)
+        ext_resource, created = models.ExternalResource.create(url, user)
 
         log.debug('%s. Was created: %s', ext_resource, created)
 

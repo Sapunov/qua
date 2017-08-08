@@ -76,6 +76,6 @@ class ExtResourceBulk(APIView):
 
             ans.append(tmp)
 
-        queue.enqueue(tasks.index_external_resources, resources_list)
+        queue.enqueue(tasks.index_external_resources, resources_list, request.user)
 
         return QuaApiResponse(ans)
