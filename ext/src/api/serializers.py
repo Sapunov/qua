@@ -7,7 +7,7 @@ from rest_framework.exceptions import ValidationError
 import django_rq
 
 from api import tasks
-from api.models import Question, Keyword, Answer
+from api.models import Question, Keyword, Answer, ExternalResource
 
 
 log = logging.getLogger(settings.APP_NAME + __name__)
@@ -180,8 +180,7 @@ class QuestionListSerializer(serializers.Serializer):
     total = serializers.IntegerField()
     items = QuestionSerializer(many=True, fields=(
         'answer_exists', 'title', 'keywords', 'created_at', 'created_by',
-        'updated_at', 'updated_by', 'id'
-    ))
+        'updated_at', 'updated_by', 'id'))
 
 
 class UrlParamsSerializer(serializers.Serializer):
@@ -221,3 +220,43 @@ class SearchRequest(serializers.Serializer):
     query = serializers.CharField()
     limit = serializers.IntegerField(default=settings.PAGE_SIZE)
     offset = serializers.IntegerField(default=0)
+
+
+class ExtResource(DynamicFieldsModelSerializer):
+    '''External resource serializer'''
+
+    title = serializers.CharField(required=False)
+    scheme = serializers.CharField(required=False)
+    hostname = serializers.CharField(required=False)
+    url = serializers.URLField()
+    created_by = UserSerializer(read_only=True)
+    updated_by = UserSerializer(read_only=True)
+
+    def create(self, validated_data):
+        '''Create new external resource by valudated_data'''
+        ext_resource, created = ExternalResource.create(
+            validated_data['url'], validated_data['user'])
+
+        if created:
+            if not ext_resource.index_resource():
+                ext_resource.delete()
+                raise ValidationError({
+                    'error_msg': 'Cannot index {0}'.format(
+                        validated_data['url'])})
+        else:
+            raise ValidationError({
+                'error_msg': 'Resource {0} already exists'.format(
+                    validated_data['url'])})
+
+        return ext_resource
+
+    class Meta:
+
+        model = ExternalResource
+        exclude = ('se_id', 'update_interval', '_content_hash', '_url')
+
+
+class ExtResourceList(serializers.Serializer):
+
+    total = serializers.IntegerField()
+    items = ExtResource(many=True)

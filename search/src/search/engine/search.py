@@ -4,9 +4,10 @@ from django.conf import settings
 
 from search import elasticsearch
 from search import misc
+from search.engine import constants
 from search.engine import snippets
 from search.engine import utils
-from search.engine.translation import translate
+# from search.engine.translation import translate
 
 
 esclient = elasticsearch.get_client()
@@ -84,9 +85,7 @@ def es_spelling_correction(
     '''
 
     corrected = False
-    corrected_word = None
-    # Now it is a list but we return string by joining list items
-    output = []
+    query_terms = []
     body = {
         'spelling': {
             'text': query,
@@ -112,17 +111,13 @@ def es_spelling_correction(
                 corrected = True
                 # As a second param we use first ES.SEGGEST option because
                 # this option has highest score
-                output.append(suggest['options'][0]['text'])
-
-                # We cannot highlight corrected word here but we should do it
-                # in future, corrected_word = word to highlight
-                corrected_word = output[-1]
+                query_terms.append((suggest['text'], suggest['options'][0]['text']))
             else:
-                output.append(suggest['text'])
+                query_terms.append((suggest['text'], None))
 
-    log.debug('Query after typos correction: %s', output)
+    log.debug('Query after typos correction: %s', query_terms)
 
-    return (corrected, ' '.join(output), corrected_word)
+    return (corrected, query_terms)
 
 
 def check_keyboard_layout_error(query):
@@ -143,11 +138,15 @@ def check_keyboard_layout_error(query):
     log.debug('Normal query results - %s, inverted_layout results - %s',
               count_query, count_inverted_query)
 
+    query_terms = []
+
     if not count_query and count_inverted_query:
         corrected = True
-        query = inverted_query
 
-    return (corrected, query)
+        for word in query.split(' '):
+            query_terms.append((word, misc.keyboard_layout_inverse(word)))
+
+    return (corrected, query_terms)
 
 
 def spelling_correction(query):
@@ -159,36 +158,37 @@ def spelling_correction(query):
     '''
 
     # First: check keyboard layout
-    corrected, corrected_query = check_keyboard_layout_error(query)
+    corrected, query_terms = check_keyboard_layout_error(query)
 
     if corrected:
-        return (True, corrected_query, None)
+        return (corrected, query_terms, constants.KEYBOARD_LAYOUT_SUGGEST_NAME)
 
     # Second: check for typos
-    corrected, corrected_query, corrected_word = es_spelling_correction(query)
+    corrected, query_terms = es_spelling_correction(query)
 
     if corrected:
-        return (True, corrected_query, corrected_word)
+        return (corrected, query_terms, constants.TYPOS_SUGGEST_NAME)
 
-    # If query OK return it as it is
-    return (False, None, None)
+    return (False, None, '')
 
 
-def extend_query(query):
+def extend_query(query_terms):
     '''Returns list of lists with extended words for every word in query.
     '''
 
-    words = query.split(' ')
     output = []
 
-    for word in words:
-        temp = [word]
+    for user_word, suggested_word in query_terms:
+        temp = [user_word]
 
-        translation = translate(word)
-        log.debug('Translation of %s : %s', word, translation)
+        if suggested_word is not None:
+            temp.append(suggested_word)
 
-        if translation:
-            temp.append(translation)
+        # translation = translate(user_word)
+
+        # if translation:
+        #     temp.append(translation)
+        #     log.debug('Translation of %s : %s', word, translation)
 
         output.append(misc.delete_duplicates(temp))
 
@@ -234,16 +234,20 @@ def search_items(query, limit, offset, spelling=True):
     log.debug('Query after first preprocessing: %s', query)
 
     corrected = False
-    corrected_query = None
+    suggested_query = None
+    query_terms = []
 
     if spelling:
-        corrected, corrected_query, corrected_word = spelling_correction(query)
+        corrected, query_terms, correction_type = spelling_correction(query)
 
-        log.debug('Spelling activated. Was query corrected: %s, ' \
-                  'corrected query: %s, corrected_word: %s',
-                  corrected, corrected_query, corrected_word)
+        log.debug('Spelling activated. Was query corrected?: %s, ' \
+                  'query terms: %s', corrected, query_terms)
 
-    words = extend_query(corrected_query if corrected else query)
+    # If not corrected we cannot be sure that query_terms is query terms
+    if not corrected:
+        query_terms = utils.string2terms(query)
+
+    words = extend_query(query_terms)
 
     log.debug('Words with extended query: %s', words)
 
@@ -253,11 +257,14 @@ def search_items(query, limit, offset, spelling=True):
 
     total, _, results = utils.search_query(es_query, size=limit, from_=offset)
 
-    log.debug('Total results found: %s, results: %s', total, results)
+    log.debug('Total results found: %s', total)
 
     # Before send to user we need to highlight wrong word(s)
     if corrected:
-        corrected_query = utils.highlight_words(corrected_query, corrected_word)
-        log.debug('Highlighted corrected query: %s', corrected_query)
+        suggested_query = utils.highlight_words(
+            query_terms,
+            highlight_all=(correction_type == constants.KEYBOARD_LAYOUT_SUGGEST_NAME))
 
-    return SearchResults(query, total, results, corrected_query, words)
+        log.debug('Highlighted corrected query: %s', suggested_query)
+
+    return SearchResults(query, total, results, suggested_query, words)

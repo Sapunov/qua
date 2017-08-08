@@ -37,7 +37,15 @@ class SearchHistoryAdmin(admin.ModelAdmin):
         'external_resource'
     )
 
+class ExternalResourceAdmin(admin.ModelAdmin):
+
+    readonly_fields = (
+        'id', 'scheme', 'hostname', 'update_interval',
+        'se_id', 'created_at', 'updated_at', '_content_hash'
+    )
+    exclude = ('created_by', 'updated_by', '_url')
+
 
 admin.site.register(models.SearchHistory, SearchHistoryAdmin)
 
-admin.site.register(models.ExternalResource)
+admin.site.register(models.ExternalResource, ExternalResourceAdmin)

@@ -1,0 +1,3 @@
+KEYBOARD_LAYOUT_SUGGEST_NAME = 'keyboard'
+
+TYPOS_SUGGEST_NAME = 'typos'

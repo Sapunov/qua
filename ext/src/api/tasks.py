@@ -13,7 +13,7 @@ from api import search
 log = logging.getLogger(settings.APP_NAME + __name__)
 
 
-def index_external_resources(link_or_links):
+def index_external_resources(link_or_links, user=None):
     '''Index extrnal resources'''
 
     # Ensure list of links
@@ -24,28 +24,14 @@ def index_external_resources(link_or_links):
 
     for url in links:
         url = misc.normalize_url(url)
-        ext_resource, created = models.ExternalResource.create(url)
+        ext_resource, created = models.ExternalResource.create(url, user)
 
         log.debug('%s. Was created: %s', ext_resource, created)
 
         if created or ext_resource.se_id is None:
-            html = retriever.retrieve_url(url)
-
-            if not html:
+            if not ext_resource.index_resource():
                 log.error('Cannot index external resource. Deleting...')
                 ext_resource.delete()
-            else:
-                title_text = misc.html2text(html)
-
-                item_id = search.index_item(
-                    ext_resource.id,
-                    title_text['title'],
-                    title_text['text'],
-                    is_external=True,
-                    resource=url)
-
-                ext_resource.se_id = item_id
-                ext_resource.save()
 
 
 def index_question(question_obj):
@@ -107,3 +93,17 @@ def delete_from_index(question_obj):
 
     if item_id is not None:
         search.delete_item(item_id)
+
+
+def update_external_resources():
+    '''Update all external resources by update_interval'''
+
+    resources = models.ExternalResource.objects.all()
+
+    log.debug('There is %s resources to update', resources.count())
+
+    for resource in resources:
+        log.debug('Need to update %s: %s', resource, resource.need_update)
+
+        if resource.need_update:
+            resource.index_resource()
