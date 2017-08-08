@@ -38,18 +38,18 @@ class ExtResources(APIView):
 
 class ExtResource(APIView):
 
-    def get(self, request, extresource_id):
+    def get(self, request, external_id):
         '''Get extresource by extresource_id'''
 
-        extresource = ExternalResource.get(pk=extresource_id)
+        extresource = ExternalResource.get(pk=external_id)
         serializer = serialize(serializers.ExtResource, extresource)
 
         return QuaApiResponse(serializer.data)
 
-    def delete(self, request, extresource_id):
+    def delete(self, request, external_id):
         '''Delete specific external resource'''
 
-        extresource = ExternalResource.get(pk=extresource_id)
+        extresource = ExternalResource.get(pk=external_id)
         extresource.delete()
 
         return QuaApiResponse()
