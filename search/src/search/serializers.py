@@ -44,6 +44,8 @@ class SearchHit(serializers.Serializer):
     resource = serializers.CharField(allow_null=True)
     snippet = serializers.CharField()
     image = serializers.CharField(allow_null=True)
+    # Временное решения для того чтобы работал переход по ссылкам на старом SERP
+    url = serializers.CharField(allow_null=True)
 
 
 class SearchResponse(serializers.Serializer):

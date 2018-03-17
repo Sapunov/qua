@@ -244,7 +244,10 @@ class ExternalResource(Base):
     def delete(self):
         '''Delete external resource with deleting it from search index'''
 
-        search.delete_item(self.se_id)
+        # TODO: Сейчас в это поле попадает False, если нельзя проиндексировать ресурс
+        # Так как поле строковое, вместе boolean записывается 'False' и это условие не проходит
+        if self.se_id:
+            search.delete_item(self.se_id)
 
         super(ExternalResource, self).delete()
 
@@ -282,10 +285,10 @@ class ExternalResource(Base):
 
         html = retriever.retrieve_url(self.url)
 
-        log.debug('HTML for updating %s: %s', self, misc.truncate_string(html))
-
         if not html:
             return False
+
+        log.debug('HTML for updating %s: %s', self, misc.truncate_string(html))
 
         html_hash = misc.sha1_hash(html)
         title_text = misc.html2text(html)

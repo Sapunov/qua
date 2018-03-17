@@ -1,4 +1,4 @@
-from urllib.parse import urljoin
+from urllib.parse import urljoin, quote
 import logging
 import requests
 
@@ -24,6 +24,9 @@ class BaseRetriever:
 
     def retrieve_page(self, url):
         '''Must be implemented in child classes. Calls when retrieving page'''
+        
+        # url = quote(url)
+        log.info('Trying to retrieve: {0}'.format(url))
 
         try:
             req = requests.get(url, timeout=30)
@@ -31,8 +34,17 @@ class BaseRetriever:
             log.exception('Exception while retrieving %s: %s', url, exc)
             return None
 
+        try:
+            # Поменяем кодировку чтобы дальше не было проблем
+            if req.encoding != 'utf-8':
+                req.encoding = 'utf-8'
+        except Exception as e:
+            log.error('Cannot change encoding for %s from %s to utf-8', url, req.encoding)
+            return None
+
+
         if req.status_code != 200:
-            log.error('Return code from %s is %s', url, req.status_code)
+            log.error('Return code from %s is %s. Text: %s', url, req.status_code, req.text)
             return None
 
         return req.text

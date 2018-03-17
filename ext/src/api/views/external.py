@@ -10,6 +10,7 @@ from api.models import ExternalResource
 from api.pagination import paginate
 from api.serializers import serialize, deserialize
 from app.response import QuaApiResponse
+from api import constants
 
 
 log = logging.getLogger(settings.APP_NAME + __name__)
@@ -49,8 +50,11 @@ class ExtResource(APIView):
     def delete(self, request, external_id):
         '''Delete specific external resource'''
 
-        extresource = ExternalResource.get(pk=external_id)
-        extresource.delete()
+        try:
+            extresource = ExternalResource.get(pk=external_id)
+            extresource.delete()
+        except Exception as exc:
+            log.exception(exc)
 
         return QuaApiResponse()
 
@@ -76,6 +80,10 @@ class ExtResourceBulk(APIView):
 
             ans.append(tmp)
 
-        queue.enqueue(tasks.index_external_resources, resources_list, request.user)
+        queue.enqueue(
+            tasks.index_external_resources,
+            resources_list,
+            request.user,
+            timeout=constants.HOUR)
 
         return QuaApiResponse(ans)

@@ -34,6 +34,8 @@ class SearchHit:
         self.keywords = keywords
         self.is_external = is_external
         self.resource = resource
+        # TODO: убрать поле self.url - используется для поддержки старого SERP
+        self.url = resource
         self.snippet = snippet
         self.image = None
 
