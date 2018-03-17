@@ -1,10 +1,10 @@
 #!/bin/bash
 
 sudo docker run -d \
-	--name qua-ext \
+	--name qua-controller \
 	--link postgresserver:postgresserver \
 	--link redisserver:redisserver \
 	--link qua-search:qua-search \
-	-v qua-ext-data:/var/lib/qua/data \
+	-v qua-controller-data:/var/lib/qua/data \
 	-p 9000:80 \
-	qua-ext:latest
+	qua-controller:latest

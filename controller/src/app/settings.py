@@ -6,7 +6,7 @@ from api import constants
 
 PROGRAM_NAME = 'qua'
 
-APP_NAME = PROGRAM_NAME + '.ext'
+APP_NAME = PROGRAM_NAME + '.controller'
 
 VAR = '/var'
 
