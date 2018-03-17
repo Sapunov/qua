@@ -7,3 +7,4 @@ staff/
 .cache
 .venv
 .vscode/
+.DS_Store

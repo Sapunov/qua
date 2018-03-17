@@ -68,7 +68,7 @@ class Keyword(models.Model):
         return self.text
 
 
-class QuestionListRepr:
+class PaginateList:
     '''Helpful class for simplify pagination logic'''
 
     def __init__(self, queryset, total):
@@ -108,7 +108,7 @@ class Question(Base):
         total = results.count()
         limit = limit if limit is not None else total
 
-        return QuestionListRepr(results[offset:offset + limit], total)
+        return PaginateList(results[offset:offset + limit], total)
 
     @classmethod
     def create(cls, title, user, keywords=None):
@@ -192,15 +192,6 @@ class Question(Base):
         ordering = ('-answer', '-id')
 
 
-class ExternalResourceListRepr:
-    '''Helpful class for simplify pagination logic'''
-
-    def __init__(self, queryset, total):
-
-        self.items = queryset
-        self.total = total
-
-
 class ExternalResource(Base):
     '''Qua external resourse'''
 
@@ -230,7 +221,7 @@ class ExternalResource(Base):
         total = results.count()
         limit = limit if limit is not None else total
 
-        return ExternalResourceListRepr(results[offset:offset + limit], total)
+        return PaginateList(results[offset:offset + limit], total)
 
     @classmethod
     def create(cls, url, user=None):
