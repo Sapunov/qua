@@ -53,7 +53,7 @@ def search_tracker(params, external=False):
         history_record.save()
 
 
-# TODO: make in decorator better with functools
+# TODO: make it decorator better with functools
 def trackable(func):
 
     def wrapper(self, request, *args, **kwargs):

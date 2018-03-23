@@ -113,7 +113,7 @@ RQ_QUEUES = {
         'HOST': REDIS['host'],
         'PORT': REDIS['port'],
         'DB': REDIS['db_cache']
-    },
+    }
 }
 
 AUTH_PASSWORD_VALIDATORS = [

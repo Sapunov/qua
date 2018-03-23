@@ -38,6 +38,7 @@ def serialize(serializer_class, instance, data=None, **kwargs):
 class DynamicFieldsModelSerializer(serializers.ModelSerializer):
 
     def __init__(self, *args, **kwargs):
+
         fields = kwargs.pop('fields', None)
 
         super(DynamicFieldsModelSerializer, self).__init__(*args, **kwargs)
