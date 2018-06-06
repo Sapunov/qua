@@ -4,5 +4,6 @@ sudo docker run -d \
 	--name qua-search \
 	--link esserver:esserver \
 	-v qua-search-data:/var/lib/qua/data \
+	-e QUA_ELASTICSEARCH_HOST=esserver \
 	-p 9002:80 \
 	qua-search:latest

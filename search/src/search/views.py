@@ -1,10 +1,16 @@
+import logging
+
+from django.conf import settings
+from rest_framework.response import Response
 from rest_framework.views import APIView
 
-from qua.rest.response import QuaApiResponse
-from qua.rest.serializers import serialize, deserialize
-from qua.search import index as search_index
-from qua.search import search
 from search import serializers
+from search.engine import index as engine_index
+from search.engine import search
+from search.serializers import serialize, deserialize
+
+
+log = logging.getLogger(settings.APP_NAME + '.' + __name__)
 
 
 class Search(APIView):
@@ -15,14 +21,17 @@ class Search(APIView):
             serializers.SearchRequest,
             request.query_params)
 
+        log.debug('Serialized user query_params: %s', req_serializer.data)
+
         search_results = search.search_items(
             query=req_serializer.data['query'],
             limit=req_serializer.data['limit'],
-            offset=req_serializer.data['offset'])
+            offset=req_serializer.data['offset'],
+            spelling=req_serializer.data['spelling'])
 
         resp_serializer = serialize(serializers.SearchResponse, search_results)
 
-        return QuaApiResponse(resp_serializer.data)
+        return Response(resp_serializer.data)
 
 
 class Index(APIView):
@@ -31,7 +40,9 @@ class Index(APIView):
 
         req_serializer = deserialize(serializers.IndexRequest, request.data)
 
-        item_id = search_index.index_item(
+        log.debug('Serialized user query_params: %s', req_serializer.data)
+
+        item_id = engine_index.index_item(
             ext_id=req_serializer.data['ext_id'],
             title=req_serializer.data['title'],
             text=req_serializer.data['text'],
@@ -39,33 +50,35 @@ class Index(APIView):
             is_external=req_serializer.data['is_external'],
             resource=req_serializer.data['resource'])
 
-        return QuaApiResponse({'item_id': item_id})
+        return Response({'item_id': item_id})
 
     def delete(self, request):
 
-        search_index.clear_index()
+        engine_index.clear_index()
 
-        return QuaApiResponse()
+        return Response({})
 
 
 class Items(APIView):
 
     def get(self, request, item_id):
 
-        item = search_index.get_item(item_id)
+        item = engine_index.get_item(item_id)
 
-        return QuaApiResponse(item)
+        return Response(item)
 
     def put(self, request, item_id):
 
         req_serializer = deserialize(serializers.ItemUpdate, request.data)
 
-        item = search_index.update_item(item_id, req_serializer.data)
+        log.debug('Serialized user query_params: %s', req_serializer.data)
 
-        return QuaApiResponse(item)
+        item = engine_index.update_item(item_id, req_serializer.data)
+
+        return Response(item)
 
     def delete(self, request, item_id):
 
-        search_index.delete_item(item_id)
+        engine_index.delete_item(item_id)
 
-        return QuaApiResponse()
+        return Response({})

@@ -1,8 +1,11 @@
 #!/bin/bash
 
 BUILD_DIR=docker_build
+SERVICE_NAME=qua-suggests
 
-echo -n "Database password: " && read -s PASSWORD && echo ""
+PASSWORD=$(qua-admin-keystore dbkey) \
+	|| { echo "!! No database password specified"; exit; }
+
 
 #
 # CREATE BUILD DIRECTORY
@@ -18,19 +21,6 @@ while read line;
 done
 
 cd $BUILD_DIR
-
-
-#
-# PREPARE QUA COMMON LIBRARY
-#
-echo "Prepare qua common library"
-
-mkdir qua_common && \
-	cp -r ../../common/* qua_common/ \
-	&& cd qua_common
-
-sed -i "s/somestrongdbpassword/$PASSWORD/g" qua/settings.py \
-	&& cd ..
 
 
 #
@@ -50,12 +40,13 @@ done
 
 
 #
-# SET DJANGO KEY AND DEGUG = FALSE
+# SET DJANGO KEY AND DEGUG = FALSE AND DBPASSWORD
 #
 echo "Set django key and debug = False"
 
 sed -i "s/DEBUG = True/DEBUG = False/g" src/app/settings.py
-sed -i "s/somestrongdjangokey/$(qua-admin-keygen)/g" src/app/settings.py
+sed -i "s/somestrongdjangokey/$(qua-admin-keystore djangokey)/g" src/app/settings.py
+sed -i "s/somestrongdbpassword/$PASSWORD/g" src/app/settings.py
 
 
 #
@@ -63,7 +54,7 @@ sed -i "s/somestrongdjangokey/$(qua-admin-keygen)/g" src/app/settings.py
 #
 echo "Start building docker image"
 
-sudo docker build -t qua-suggests:latest .
+sudo docker build -t $SERVICE_NAME:latest .
 
 
 #

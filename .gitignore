@@ -1,9 +1,9 @@
-qua.sublime*
 __pycache__/
 *.py[cod]
 *$py.class
 dist/
-staff/
+sandbox/
 .cache
-.venv
+env
 .vscode/
+.DS_Store

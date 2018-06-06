@@ -1,26 +1,51 @@
+from django.conf import settings
 from rest_framework import serializers
 
-from qua import settings as qua_settings
+
+def deserialize(serializer_class, data, **kwargs):
+    '''Deserialize python dict to rest_framework class'''
+
+    serializer = serializer_class(data=data, **kwargs)
+    serializer.is_valid(raise_exception=True)
+
+    return serializer
+
+
+def serialize(serializer_class, instance, data=None, **kwargs):
+    '''Serialize rest_framework class to python dict'''
+
+    if data is None:
+        serializer = serializer_class(instance, **kwargs)
+    else:
+        serializer = serializer_class(instance, data=data, **kwargs)
+        serializer.is_valid(raise_exception=True)
+
+    return serializer
 
 
 class SearchRequest(serializers.Serializer):
 
     query = serializers.CharField()
-    limit = serializers.IntegerField(default=qua_settings.SERP_SIZE)
+    limit = serializers.IntegerField(default=settings.DEFAULT_PAGE_SIZE)
     offset = serializers.IntegerField(default=0)
+    spelling = serializers.BooleanField(default=True)
 
 
 class SearchHit(serializers.Serializer):
 
-    item_id = serializers.CharField()
+    _item_id = serializers.CharField()
+    _type = serializers.CharField()
+    _score = serializers.FloatField()
+    _loc = serializers.CharField()
     ext_id = serializers.IntegerField()
     title = serializers.CharField()
     keywords = serializers.ListField(child=serializers.CharField())
     is_external = serializers.BooleanField()
     resource = serializers.CharField(allow_null=True)
-    score = serializers.FloatField()
     snippet = serializers.CharField()
     image = serializers.CharField(allow_null=True)
+    # Временное решения для того чтобы работал переход по ссылкам на старом SERP
+    url = serializers.CharField(allow_null=True)
 
 
 class SearchResponse(serializers.Serializer):
@@ -29,7 +54,8 @@ class SearchResponse(serializers.Serializer):
     total = serializers.IntegerField()
     hits = SearchHit(many=True)
     suggested_query = serializers.CharField()
-    took = serializers.FloatField()
+    max_score = serializers.FloatField()
+    min_score = serializers.FloatField()
 
 
 class IndexRequest(serializers.Serializer):

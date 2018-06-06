@@ -1,9 +1,19 @@
 import os
 
-from qua import settings as qua_settings
 
+PROGRAM_NAME = 'qua'
 
-APP_NAME = qua_settings.PROGRAM_NAME + '.search'
+APP_NAME = PROGRAM_NAME + '.search'
+
+VAR = '/var'
+
+VAR_LIB = os.path.join(VAR, 'lib')
+
+VAR_LOG = os.path.join(VAR, 'log')
+
+LOGS_DIR = os.path.join(VAR_LOG, PROGRAM_NAME)
+
+DATA_DIR = os.path.join(VAR_LIB, PROGRAM_NAME, 'data')
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -24,7 +34,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'qua.rest.middleware.LoggingMiddleware'
+    'app.middleware.LoggingMiddleware'
 ]
 
 ROOT_URLCONF = 'app.urls'
@@ -47,8 +57,7 @@ REST_FRAMEWORK = {
     'UNAUTHENTICATED_USER': None,
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
-    ),
-    'EXCEPTION_HANDLER': 'qua.rest.exceptions.api_exception_handler',
+    )
 }
 
 LOGGING = {
@@ -68,14 +77,13 @@ LOGGING = {
         'qua': {
             'level': 'DEBUG',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(qua_settings.LOGS_DIR, APP_NAME + '.log'),
+            'filename': os.path.join(LOGS_DIR, APP_NAME + '.log'),
             'formatter': 'verbose'
         },
         'requests': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(
-                qua_settings.LOGS_DIR, APP_NAME + '.requests.log'),
+            'filename': os.path.join(LOGS_DIR, APP_NAME + '.requests.log'),
             'formatter': 'simple'
         }
     },
@@ -93,7 +101,23 @@ LOGGING = {
     },
 }
 
-if DEBUG:
-    ES_HOSTS = ['127.0.0.1']
-else:
-    ES_HOSTS = qua_settings.ELASTICSEARCH['hosts']
+ELASTICSEARCH = {
+    'hosts': ['127.0.0.1' if DEBUG else 'esserver'],
+    'timeout': 30,
+    'max_retries': 10,
+    'retry_on_timeout': True
+}
+
+ES_DOCTYPE = 'main'
+
+ES_SEARCH_INDEX = PROGRAM_NAME + '_search'
+
+ES_SPELLING_INDEX = PROGRAM_NAME + '_spelling'
+
+ES_SEARCH_FIELDS = ('title^4', 'keywords^2', 'text')
+
+DEFAULT_PAGE_SIZE = 10
+
+MAIN_SEARCH_SERVICE_NAME = 'qua_main'
+
+MAIN_SEARCH_SERP_LOCATION = 'middle'
