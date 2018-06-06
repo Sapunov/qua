@@ -1,9 +1,8 @@
-qua.sublime*
 __pycache__/
 *.py[cod]
 *$py.class
 dist/
-staff/
+sandbox/
 .cache
 env
 .vscode/
