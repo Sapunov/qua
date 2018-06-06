@@ -204,14 +204,12 @@ class UserCreationTestCase(APITestCase):
 
         user_data = {
             'username': 'qua_user_2',
-            'email': 'qua_user_2@gmail.com',
-            'send_invite': True
+            'email': 'qua_user_2@gmail.com'
         }
 
         response = self.client.post(self.url, user_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
         self.assertEqual(len(mail.outbox), 1)
 
         invite_mail = mail.outbox[0]
@@ -220,31 +218,23 @@ class UserCreationTestCase(APITestCase):
         self.assertEqual(invite_mail.subject, 'Приглашение в QUA')
         self.assertIsNotNone(token)
 
-
-    def test_default_invite_flag(self):
+    def test_success_output_format(self):
 
         user_data = {
             'username': 'qua_user_2',
             'email': 'qua_user_2@gmail.com'
         }
 
-        response = self.client.post(self.url, user_data)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(mail.outbox), 0)
-
-    def test_dont_send_invite_when_flag_false(self):
-
-        user_data = {
-            'username': 'qua_user_2',
-            'email': 'qua_user_2@gmail.com',
-            'send_invite': False
+        expected_output = {
+            'ok': 1,
+            'response': {}
         }
 
         response = self.client.post(self.url, user_data)
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(mail.outbox), 0)
+        self.assertEqual(expected_output, response.data)
+
 
     def test_method_auth(self):
 

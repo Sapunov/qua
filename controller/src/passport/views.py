@@ -16,7 +16,6 @@ from .models import (User, UserSession)
 log = get_logger(__file__)
 
 
-
 class UsernameExistsView(GenericAPIView):
 
     permission_classes = (AllowAny,)
@@ -70,18 +69,9 @@ class UserView(GenericAPIView):
 
         serializer.save()
 
-        if serializer.validated_data['send_invite']:
-            serializer.instance.send_reset_password_link(request, invite=True)
+        serializer.instance.send_reset_password_link(request, invite=True)
 
-        token = serializer.instance.get_or_create_reset_password_token()
-        reset_link = serializer.instance.generate_reset_password_link(request)
-
-        return QuaAPIResponse(
-            {
-                'reset_password_token': token,
-                'reset_password_link': reset_link
-            },
-            status=status.HTTP_200_OK)
+        return QuaAPIResponse({}, status=status.HTTP_200_OK)
 
 
 class SetPasswordView(GenericAPIView):

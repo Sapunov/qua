@@ -25,7 +25,6 @@ class UserSerializer(serializers.Serializer):
 
     username = serializers.CharField()
     email = serializers.EmailField()
-    send_invite = serializers.BooleanField(default=False)
 
     def validate(self, attrs):
 
