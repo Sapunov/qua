@@ -57,30 +57,56 @@ class UserSerializer(serializers.Serializer):
 
 class SetPasswordSerializer(serializers.Serializer):
 
-    password = serializers.CharField(style={'input_type': 'password'})
-    ensure_password = serializers.CharField(style={'input_type': 'password'})
-    token = serializers.CharField()
+    new_password = serializers.CharField(style={'input_type': 'password'})
+    ensure_new_password = serializers.CharField(style={'input_type': 'password'})
+    reset_password_token = serializers.CharField()
 
     def validate(self, attrs):
 
-        password = attrs.get('password')
-        ensure_password = attrs.get('ensure_password')
-        token = attrs.get('token')
+        new_password = attrs.get('new_password')
+        ensure_new_password = attrs.get('ensure_new_password')
+        reset_password_token = attrs.get('reset_password_token')
 
-        if password != ensure_password:
+        if new_password != ensure_new_password:
             raise ValidationError({
-                'ensure_password': 'Passwords do not match'},
+                'ensure_new_password': 'Passwords do not match'},
                 'password_dont_match')
 
-        invalid_token_msg =  {'token': 'Invalid token'}
+        invalid_token_msg =  {'reset_password_token': 'Invalid token'}
 
         try:
-            user = User.objects.get(_reset_password_token=token)
+            user = User.objects.get(_reset_password_token=reset_password_token)
         except User.DoesNotExist:
             raise ValidationError(invalid_token_msg, 'token_invalid')
 
         if user.is_reset_password_token_expired():
             raise ValidationError(invalid_token_msg, 'token_invalid')
+
+        attrs['user'] = user
+
+        return attrs
+
+
+class SetPasswordAuthorizedSerializer(serializers.Serializer):
+
+    old_password = serializers.CharField(style={'input_type': 'password'})
+    new_password = serializers.CharField(style={'input_type': 'password'})
+    ensure_new_password = serializers.CharField(style={'input_type': 'password'})
+
+    def validate(self, attrs):
+
+        old_password = attrs.get('old_password')
+        new_password = attrs.get('new_password')
+        ensure_new_password = attrs.get('ensure_new_password')
+        user = self.context['request'].user
+
+        if not user.check_password(old_password):
+            raise PermissionDenied({'old_password': ['Wrong old password']})
+
+        if new_password != ensure_new_password:
+            raise ValidationError({
+                'ensure_new_password': 'Passwords do not match'},
+                'password_dont_match')
 
         attrs['user'] = user
 
@@ -103,23 +129,6 @@ class ObtainResetTokenSerializer(serializers.Serializer):
                 'user_does_not_exist')
 
         attrs['user'] = user
-
-        return attrs
-
-
-class ObtainResetTokenAuthorizedSerializer(serializers.Serializer):
-
-    password = serializers.CharField(style={'input_type': 'password'})
-
-    def validate(self, attrs):
-
-        password = attrs.get('password')
-        user = self.context['request'].user
-
-        if not user.check_password(password):
-            raise PermissionDenied({'password': ['Wrong password']})
-
-        attrs['token'] = user.get_or_create_reset_password_token()
 
         return attrs
 

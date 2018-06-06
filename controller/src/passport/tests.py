@@ -254,42 +254,111 @@ class SetPasswordTestCase(APITestCase):
         self.email = 'qua_user@gmail.com'
         self.password = 'qua_password'
         self.user = User.objects.create_user(self.username, self.email, self.password)
+        self.token = UserSession.objects.create(
+            user=self.user,
+            user_agent='',
+            ip_address='').access_token
 
-    def test_absent_arguments(self):
+    def api_authentication(self):
+
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
+
+    def test_absent_arguments_anonymous(self):
 
         response = self.client.post(self.url, {})
 
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        expected_output = {
+            'ok': 0,
+            'error': {
+                'error_code': 400,
+                'error_msg': ['ensure_new_password', 'new_password', 'reset_password_token']
+            }
+        }
 
-    def test_passwords_dont_match(self):
+        output = response.data
+        output['error']['error_msg'] = extract_dict_keys(output['error']['error_msg'])
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(expected_output, output)
+
+    def test_absent_arguments_authorized(self):
+
+        self.api_authentication()
+        response = self.client.post(self.url, {})
+
+        expected_output = {
+            'ok': 0,
+            'error': {
+                'error_code': 400,
+                'error_msg': ['ensure_new_password', 'new_password', 'old_password']
+            }
+        }
+
+        output = response.data
+        output['error']['error_msg'] = extract_dict_keys(output['error']['error_msg'])
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(expected_output, output)
+
+
+    def test_passwords_dont_match_anonymous(self):
 
         user_data = {
-            'password': 'one',
-            'ensure_password': 'two',
-            'token': 'token'
+            'new_password': 'one',
+            'ensure_new_password': 'two',
+            'reset_password_token': 'token'
         }
 
         response = self.client.post(self.url, user_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('ensure_password', response.data['error']['error_msg'].keys())
+        self.assertIn('ensure_new_password', response.data['error']['error_msg'].keys())
 
-    def test_invalid_reset_password_token(self):
+    def test_passwords_dont_match_authorized(self):
+
+        self.api_authentication()
+
+        user_data = {
+            'new_password': 'one',
+            'ensure_new_password': 'two',
+            'old_password': self.password
+        }
+
+        response = self.client.post(self.url, user_data)
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('ensure_new_password', response.data['error']['error_msg'].keys())
+
+    def test_invalid_reset_password_token_anonymous(self):
 
         _ = self.user.get_or_create_reset_password_token()
 
         user_data = {
-            'password': 'password',
-            'ensure_password': 'password',
-            'token': 'token'
+            'new_password': 'password',
+            'ensure_new_password': 'password',
+            'reset_password_token': 'token'
         }
 
         response = self.client.post(self.url, user_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('token', response.data['error']['error_msg'].keys())
+        self.assertIn('reset_password_token', response.data['error']['error_msg'].keys())
 
-    def test_reset_password_token_expired(self):
+    def test_wrong_old_password_authorized(self):
+
+        self.api_authentication()
+        user_data = {
+            'old_password': 'wrong',
+            'new_password': 'newpass',
+            'ensure_new_password': 'newpass'
+        }
+
+        response = self.client.post(self.url, user_data)
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertIn('old_password', response.data['error']['error_msg'].keys())
+
+    def test_reset_password_token_expired_anonymous(self):
 
         token = self.user.get_or_create_reset_password_token()
         self.user._reset_password_token_valid_until = \
@@ -299,23 +368,35 @@ class SetPasswordTestCase(APITestCase):
         self.user.save()
 
         user_data = {
-            'password': 'password',
-            'ensure_password': 'password',
-            'token': token
+            'new_password': 'password',
+            'ensure_new_password': 'password',
+            'reset_password_token': token
         }
 
         response = self.client.post(self.url, user_data)
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertIn('token', response.data['error']['error_msg'].keys())
+        self.assertIn('reset_password_token', response.data['error']['error_msg'].keys())
 
-    def test_success_password_set(self):
+    def test_success_password_set_anonymous(self):
 
         token = self.user.get_or_create_reset_password_token()
         user_data = {
-            'password': 'password_after',
-            'ensure_password': 'password_after',
-            'token': token
+            'new_password': 'password_after',
+            'ensure_new_password': 'password_after',
+            'reset_password_token': token
+        }
+
+        response = self.client.post(self.url, user_data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_success_password_set_authorized(self):
+
+        self.api_authentication()
+        user_data = {
+            'old_password': self.password,
+            'new_password': 'newpass',
+            'ensure_new_password': 'newpass'
         }
 
         response = self.client.post(self.url, user_data)
@@ -344,53 +425,14 @@ class ObtainResetTokenTestCase(APITestCase):
             user_agent='',
             ip_address='').access_token
 
-        self.api_authentication()
-
-    def api_authentication(self):
-
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token)
-
-    def test_absent_input_authorized(self):
-
-        response = self.client.post(self.url, {})
-
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(['password'], list(response.data['error']['error_msg'].keys()))
-
-    def test_wrong_password_authorized(self):
-
-        user_data = {
-            'password': 'wrong'
-        }
-
-        response = self.client.post(self.url, user_data)
-
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
-        self.assertEqual(['password'], list(response.data['error']['error_msg'].keys()))
-
-    def test_success_authorized(self):
-
-        user_data = {
-            'password': self.password
-        }
-
-        response = self.client.post(self.url, user_data)
-
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(['reset_password_token'], list(response.data['response'].keys()))
-
-    def test_absent_input_anonymous(self):
-
-        self.client.credentials()
+    def test_absent_input(self):
 
         response = self.client.post(self.url, {})
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(['email'], list(response.data['error']['error_msg'].keys()))
 
-    def test_bad_email_anonymous(self):
-
-        self.client.credentials()
+    def test_bad_email(self):
 
         user_data = {
             'email': 'bad_email'
@@ -401,9 +443,7 @@ class ObtainResetTokenTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(['email'], list(response.data['error']['error_msg'].keys()))
 
-    def test_absent_email_anonymous(self):
-
-        self.client.credentials()
+    def test_nonexistent_email(self):
 
         user_data = {
             'email': 'man@gmail.com'
@@ -414,9 +454,7 @@ class ObtainResetTokenTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertEqual(['email'], list(response.data['error']['error_msg'].keys()))
 
-    def test_email_sent_with_token_anonymous(self):
-
-        self.client.credentials()
+    def test_email_sent_with_token(self):
 
         user_data = {
             'email': self.email

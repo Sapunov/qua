@@ -7,8 +7,8 @@ from app.rest import QuaAPIResponse
 from app import misc
 from .serializers import (
     UsernameExistsSerializer, EmailExistsSerializer, UserSerializer,
-    SetPasswordSerializer, ObtainResetTokenSerializer,
-    ObtainResetTokenAuthorizedSerializer, ObtainAccessTokenSerializer,
+    SetPasswordSerializer, SetPasswordAuthorizedSerializer,
+    ObtainResetTokenSerializer, ObtainAccessTokenSerializer,
     UserSessionsSerializer, IndividualUserSessionSerializer)
 from .models import (User, UserSession)
 
@@ -83,11 +83,17 @@ class SetPasswordView(GenericAPIView):
 
     def post(self, request):
 
+        user = request.user
+        if user.is_anonymous:
+            self.serializer_class = SetPasswordSerializer
+        else:
+            self.serializer_class = SetPasswordAuthorizedSerializer
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
         user = serializer.validated_data['user']
-        user.set_password(serializer.validated_data['password'])
+        user.set_password(serializer.validated_data['new_password'])
 
         return QuaAPIResponse({}, status=status.HTTP_200_OK)
 
@@ -98,27 +104,16 @@ class ObtainResetTokenView(GenericAPIView):
     '''
 
     permission_classes = (AllowAny,)
-    serializer_class = None
+    serializer_class = ObtainResetTokenSerializer
 
     def post(self, request):
 
-        if request.user.is_anonymous:
-            self.serializer_class = ObtainResetTokenSerializer
-        else:
-            self.serializer_class = ObtainResetTokenAuthorizedSerializer
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        serializer.validated_data['user'].send_reset_password_link(request)
 
-        if request.user.is_anonymous:
-            serializer.validated_data['user'].send_reset_password_link(request)
-            return QuaAPIResponse(
-                {'email_sent': True}, status=status.HTTP_200_OK)
-        else:
-            token = serializer.validated_data['token']
-            return QuaAPIResponse(
-                {'reset_password_token': token},
-                status=status.HTTP_200_OK)
+        return QuaAPIResponse(
+            {'email_sent': True}, status=status.HTTP_200_OK)
 
 
 class ObtainAccessTokenView(GenericAPIView):
